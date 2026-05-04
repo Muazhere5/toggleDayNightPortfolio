@@ -1,65 +1,93 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+// ============================================================
+// page.jsx — HOMEPAGE ASSEMBLER
+// This file is the conductor. It:
+//   1. Receives { theme, toggleTheme } injected by layout.jsx
+//   2. Renders the correct background layer (Day or Night)
+//   3. Renders the ThemeToggle button (fixed, always visible)
+//   4. Stacks all 5 portfolio sections in order
+//   5. Passes theme prop into every section component
+//
+// CONNECTION MAP:
+//   layout.jsx → injects props → page.jsx
+//   page.jsx   → imports       → DayVision/page.jsx (background)
+//   page.jsx   → imports       → NightVision/page.jsx (background)
+//   page.jsx   → imports       → all 6 components in /components
+// ============================================================
+
+import dynamic from 'next/dynamic';
+
+// ── BACKGROUND LAYERS ─────────────────────────────────────
+// Dynamic import with ssr:false prevents hydration mismatch
+// because these components use window/animation APIs.
+const DayBackground  = dynamic(() => import('./DayVision/page'),  { ssr: false });
+const NightBackground = dynamic(() => import('./NightVision/page'), { ssr: false });
+
+// ── COMPONENTS ────────────────────────────────────────────
+import ThemeToggle   from '@/components/ThemeToggle';
+import Landing       from '@/components/Landing';
+import Projects      from '@/components/Projects';
+import Skills        from '@/components/Skills';
+import TestMe        from '@/components/TestMe';
+import Achievements  from '@/components/Achievements';
+
+// ============================================================
+// HOME PAGE COMPONENT
+// Props come from layout.jsx via cloneElement injection.
+// ============================================================
+export default function Home({ theme = 'day', toggleTheme = () => {} }) {
+  const isDay = theme === 'day';
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      {/*
+        ── BACKGROUND LAYER ────────────────────────────────
+        Only one background renders at a time based on theme.
+        Both are position:fixed, full-viewport, z-index:0.
+        They sit BEHIND all content sections.
+        DayBackground  → clouds, sun, birds, kite animations
+        NightBackground → star field, nebula blobs, rocket, planets
+      */}
+      {isDay ? <DayBackground /> : <NightBackground />}
+
+      {/*
+        ── THEME TOGGLE ────────────────────────────────────
+        Fixed to top-right corner, always visible on scroll.
+        Receives theme (to show current state visually)
+        and toggleTheme (to fire the switch on click).
+        Defined in: components/ThemeToggle.jsx
+      */}
+      <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+
+      {/*
+        ── MAIN CONTENT ────────────────────────────────────
+        position:relative, z-index:1 so it floats above background.
+        All 5 sections stack vertically in a single scroll flow.
+        Each receives theme prop for conditional day/night styling.
+      */}
+      <main
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          minHeight: '100vh',
+        }}
+      >
+        {/* 1. LANDING — hero, anime gif, your intro */}
+        <Landing theme={theme} />
+
+        
+        <Projects theme={theme} />
+
+        
+        <Skills theme={theme} />
+
+        
+        <TestMe theme={theme} />
+
+        
+        <Achievements theme={theme} />
       </main>
-    </div>
+    </>
   );
 }
