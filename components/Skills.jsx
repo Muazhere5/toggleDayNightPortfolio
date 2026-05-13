@@ -39,7 +39,7 @@ import {
   SiGit,
   SiTailwindcss,
   SiGithub,
-  SiVisualstudiocode,
+  SiVscode,
 } from 'react-icons/si';
 import {
   FaGithub, FaLinkedin, FaFacebook,
@@ -60,7 +60,7 @@ const SKILLS = [
   { id: 8, name: 'CSS3',       Icon: SiCss,         color: '#1572B6', orbit: 'outer'  },
   { id: 9, name: 'Tailwind',   Icon: SiTailwindcss, color: '#38BDF8', orbit: 'outer'  },
   { id: 10, name: 'Git',       Icon: SiGit,         color: '#F05032', orbit: 'mid'    },
-  { id: 11, name: 'VS Code',   Icon: SiVisualstudiocode, color: '#007ACC', orbit: 'outer' },
+  { id: 11, name: 'VS Code',   Icon: SiVscode, color: '#007ACC', orbit: 'outer' },
   { id: 12, name: 'GitHub',    Icon: SiGithub,      color: '#ffffff', orbit: 'inner'  },
 ];
 
