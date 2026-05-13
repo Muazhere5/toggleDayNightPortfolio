@@ -28,10 +28,18 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import {
-  SiReact, SiNextdotjs, SiNodedotjs,
-  SiMongodb, SiExpress, SiJavascript,
-  SiHtml5, SiCss3, SiGit, SiTailwindcss,
-  SiGithub, SiVisualstudiocode,
+  SiReact,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiMongodb,
+  SiExpress,
+  SiJavascript,
+  SiHtml5,
+  SiCss,
+  SiGit,
+  SiTailwindcss,
+  SiGithub,
+  SiVisualstudiocode,
 } from 'react-icons/si';
 import {
   FaGithub, FaLinkedin, FaFacebook,
