@@ -25,7 +25,7 @@
 //   Edit SKILLS and SOCIALS arrays below with your real links.
 //
 // FIX APPLIED:
-//   SiVisualstudiocode → SiVscode (correct name in react-icons v5+)
+//   SiCss3 → SiCss (renamed in react-icons v5+)
 // ============================================================
 
 import { motion } from 'framer-motion';
@@ -33,7 +33,7 @@ import { useState } from 'react';
 import {
   SiReact, SiNextdotjs, SiNodedotjs,
   SiMongodb, SiExpress, SiJavascript,
-  SiHtml5, SiCss3, SiGit, SiTailwindcss,
+  SiHtml5, SiCss, SiGit, SiTailwindcss,
   SiGithub, SiVscode,
 } from 'react-icons/si';
 import {
@@ -52,7 +52,7 @@ const SKILLS = [
   { id: 5,  name: 'Express',    Icon: SiExpress,     color: '#cccccc', orbit: 'mid'    },
   { id: 6,  name: 'JavaScript', Icon: SiJavascript,  color: '#F7DF1E', orbit: 'outer'  },
   { id: 7,  name: 'HTML5',      Icon: SiHtml5,       color: '#E34F26', orbit: 'outer'  },
-  { id: 8,  name: 'CSS3',       Icon: SiCss3,        color: '#1572B6', orbit: 'outer'  },
+  { id: 8,  name: 'CSS3',       Icon: SiCss,         color: '#1572B6', orbit: 'outer'  },
   { id: 9,  name: 'Tailwind',   Icon: SiTailwindcss, color: '#38BDF8', orbit: 'outer'  },
   { id: 10, name: 'Git',        Icon: SiGit,         color: '#F05032', orbit: 'mid'    },
   { id: 11, name: 'VS Code',    Icon: SiVscode,      color: '#007ACC', orbit: 'outer'  },
