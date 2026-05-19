@@ -23,23 +23,18 @@
 //
 // CUSTOMISE:
 //   Edit SKILLS and SOCIALS arrays below with your real links.
+//
+// FIX APPLIED:
+//   SiVisualstudiocode → SiVscode (correct name in react-icons v5+)
 // ============================================================
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import {
-  SiReact,
-  SiNextdotjs,
-  SiNodedotjs,
-  SiMongodb,
-  SiExpress,
-  SiJavascript,
-  SiHtml5,
-  SiCss,
-  SiGit,
-  SiTailwindcss,
-  SiGithub,
-  SiVscode,
+  SiReact, SiNextdotjs, SiNodedotjs,
+  SiMongodb, SiExpress, SiJavascript,
+  SiHtml5, SiCss3, SiGit, SiTailwindcss,
+  SiGithub, SiVscode,
 } from 'react-icons/si';
 import {
   FaGithub, FaLinkedin, FaFacebook,
@@ -50,39 +45,38 @@ import {
 // orbit: 'inner' | 'mid' | 'outer'  (used in night mode rings)
 // color: icon accent color
 const SKILLS = [
-  { id: 1, name: 'React',      Icon: SiReact,       color: '#61DAFB', orbit: 'inner'  },
-  { id: 2, name: 'Next.js',    Icon: SiNextdotjs,   color: '#ffffff', orbit: 'inner'  },
-  { id: 3, name: 'Node.js',    Icon: SiNodedotjs,   color: '#68A063', orbit: 'mid'    },
-  { id: 4, name: 'MongoDB',    Icon: SiMongodb,     color: '#47A248', orbit: 'mid'    },
-  { id: 5, name: 'Express',    Icon: SiExpress,     color: '#cccccc', orbit: 'mid'    },
-  { id: 6, name: 'JavaScript', Icon: SiJavascript,  color: '#F7DF1E', orbit: 'outer'  },
-  { id: 7, name: 'HTML5',      Icon: SiHtml5,       color: '#E34F26', orbit: 'outer'  },
-  { id: 8, name: 'CSS3',       Icon: SiCss,         color: '#1572B6', orbit: 'outer'  },
-  { id: 9, name: 'Tailwind',   Icon: SiTailwindcss, color: '#38BDF8', orbit: 'outer'  },
-  { id: 10, name: 'Git',       Icon: SiGit,         color: '#F05032', orbit: 'mid'    },
-  { id: 11, name: 'VS Code',   Icon: SiVscode, color: '#007ACC', orbit: 'outer' },
-  { id: 12, name: 'GitHub',    Icon: SiGithub,      color: '#ffffff', orbit: 'inner'  },
+  { id: 1,  name: 'React',      Icon: SiReact,       color: '#61DAFB', orbit: 'inner'  },
+  { id: 2,  name: 'Next.js',    Icon: SiNextdotjs,   color: '#ffffff', orbit: 'inner'  },
+  { id: 3,  name: 'Node.js',    Icon: SiNodedotjs,   color: '#68A063', orbit: 'mid'    },
+  { id: 4,  name: 'MongoDB',    Icon: SiMongodb,     color: '#47A248', orbit: 'mid'    },
+  { id: 5,  name: 'Express',    Icon: SiExpress,     color: '#cccccc', orbit: 'mid'    },
+  { id: 6,  name: 'JavaScript', Icon: SiJavascript,  color: '#F7DF1E', orbit: 'outer'  },
+  { id: 7,  name: 'HTML5',      Icon: SiHtml5,       color: '#E34F26', orbit: 'outer'  },
+  { id: 8,  name: 'CSS3',       Icon: SiCss3,        color: '#1572B6', orbit: 'outer'  },
+  { id: 9,  name: 'Tailwind',   Icon: SiTailwindcss, color: '#38BDF8', orbit: 'outer'  },
+  { id: 10, name: 'Git',        Icon: SiGit,         color: '#F05032', orbit: 'mid'    },
+  { id: 11, name: 'VS Code',    Icon: SiVscode,      color: '#007ACC', orbit: 'outer'  },
+  { id: 12, name: 'GitHub',     Icon: SiGithub,      color: '#ffffff', orbit: 'inner'  },
 ];
 
 // ── SOCIALS DATA — replace hrefs with your real links ────────
 const SOCIALS = [
-  { id: 1, name: 'GitHub',   Icon: FaGithub,   href: 'https://github.com/yourusername',         color: '#ffffff',  planet: '#2d333b' },
-  { id: 2, name: 'LinkedIn', Icon: FaLinkedin, href: 'https://linkedin.com/in/yourprofile',      color: '#0A66C2',  planet: '#1a3550' },
-  { id: 3, name: 'Facebook', Icon: FaFacebook, href: 'https://facebook.com/yourprofile',         color: '#1877F2',  planet: '#1a2a45' },
-  { id: 4, name: 'Twitter',  Icon: FaTwitter,  href: 'https://twitter.com/yourhandle',           color: '#1DA1F2',  planet: '#1a3040' },
-  { id: 5, name: 'Email',    Icon: FaEnvelope, href: 'mailto:your@email.com',                    color: '#EA4335',  planet: '#3a1a1a' },
+  { id: 1, name: 'GitHub',   Icon: FaGithub,   href: 'https://github.com/yourusername',     color: '#ffffff', planet: '#2d333b' },
+  { id: 2, name: 'LinkedIn', Icon: FaLinkedin, href: 'https://linkedin.com/in/yourprofile',  color: '#0A66C2', planet: '#1a3550' },
+  { id: 3, name: 'Facebook', Icon: FaFacebook, href: 'https://facebook.com/yourprofile',     color: '#1877F2', planet: '#1a2a45' },
+  { id: 4, name: 'Twitter',  Icon: FaTwitter,  href: 'https://twitter.com/yourhandle',       color: '#1DA1F2', planet: '#1a3040' },
+  { id: 5, name: 'Email',    Icon: FaEnvelope, href: 'mailto:your@email.com',                color: '#EA4335', planet: '#3a1a1a' },
 ];
 
 // ════════════════════════════════════════════════════════════
 // DAY VISION — KITE STRING LAYOUT
 // ════════════════════════════════════════════════════════════
 
-// Single kite SVG at the top of the string
 const KiteTop = () => (
   <svg width="48" height="90" viewBox="0 0 48 90" fill="none" style={{ margin: '0 auto', display: 'block' }}>
     <polygon points="24,2 46,32 24,58 2,32" fill="#FF6B6B" opacity="0.88" />
     <polygon points="24,2 46,32 24,58 2,32" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.2" />
-    <line x1="2" y1="32" x2="46" y2="32" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
+    <line x1="2"  y1="32" x2="46" y2="32" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
     <line x1="24" y1="2"  x2="24" y2="58" stroke="rgba(255,255,255,0.4)" strokeWidth="0.8" />
     <path d="M24 58 Q18 68 24 78 Q30 88 24 88"
       stroke="rgba(255,107,107,0.6)" strokeWidth="1.8" fill="none" strokeLinecap="round" />
@@ -92,10 +86,8 @@ const KiteTop = () => (
   </svg>
 );
 
-// Skill badge for kite string (Day)
 function KiteSkillBadge({ skill, index, isDay }) {
   const [hovered, setHovered] = useState(false);
-  // Sway animation — each badge slightly out of phase
   const swayDelay = index * 0.18;
 
   return (
@@ -139,9 +131,7 @@ function KiteSkillBadge({ skill, index, isDay }) {
           gap: '6px',
           padding: '12px 16px',
           borderRadius: '14px',
-          background: hovered
-            ? 'rgba(255,255,255,0.75)'
-            : 'rgba(255,255,255,0.55)',
+          background: hovered ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.55)',
           border: '1.5px solid rgba(255,255,255,0.8)',
           backdropFilter: 'blur(10px)',
           boxShadow: hovered
@@ -170,9 +160,7 @@ function KiteSkillBadge({ skill, index, isDay }) {
   );
 }
 
-// Full kite string layout
 function KiteStringLayout({ isDay }) {
-  // Split skills into rows: 3 + 4 + 5 (feels natural, like multiple strings)
   const rows = [
     SKILLS.slice(0, 3),
     SKILLS.slice(3, 7),
@@ -196,7 +184,6 @@ function KiteStringLayout({ isDay }) {
             flexWrap: 'wrap',
           }}
         >
-          {/* Kite at start of each row */}
           {rowIndex === 0 && (
             <div style={{
               display: 'flex',
@@ -229,7 +216,6 @@ function KiteStringLayout({ isDay }) {
 // NIGHT VISION — SATELLITE ORBIT LAYOUT
 // ════════════════════════════════════════════════════════════
 
-// Single orbiting icon
 function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -246,14 +232,12 @@ function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
       }}
       animate={{ rotate: [startAngle, startAngle + 360] }}
       transition={{ duration, repeat: Infinity, ease: 'linear' }}
-      // counter-rotate child so icon stays upright
     >
       <motion.div
         style={{
           width: size,
           height: size,
           position: 'relative',
-          // offset to orbit radius
           transform: `translateX(${orbitRadius}px)`,
         }}
         animate={{ rotate: [-(startAngle), -(startAngle + 360)] }}
@@ -271,9 +255,7 @@ function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '2px',
-            background: hovered
-              ? 'rgba(123,104,238,0.28)'
-              : 'rgba(8,8,28,0.7)',
+            background: hovered ? 'rgba(123,104,238,0.28)' : 'rgba(8,8,28,0.7)',
             border: `1.5px solid ${hovered ? skill.color : 'rgba(123,104,238,0.3)'}`,
             backdropFilter: 'blur(10px)',
             boxShadow: hovered
@@ -304,7 +286,6 @@ function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
   );
 }
 
-// Orbit ring SVG
 const OrbitRing = ({ radius, opacity = 0.18 }) => (
   <div style={{
     position: 'absolute',
@@ -320,14 +301,13 @@ const OrbitRing = ({ radius, opacity = 0.18 }) => (
 );
 
 function SatelliteOrbitLayout() {
-  const innerSkills  = SKILLS.filter(s => s.orbit === 'inner');
-  const midSkills    = SKILLS.filter(s => s.orbit === 'mid');
-  const outerSkills  = SKILLS.filter(s => s.orbit === 'outer');
+  const innerSkills = SKILLS.filter(s => s.orbit === 'inner');
+  const midSkills   = SKILLS.filter(s => s.orbit === 'mid');
+  const outerSkills = SKILLS.filter(s => s.orbit === 'outer');
 
-  const INNER_R  = 100;
-  const MID_R    = 160;
-  const OUTER_R  = 220;
-
+  const INNER_R = 100;
+  const MID_R   = 160;
+  const OUTER_R = 220;
   const containerSize = (OUTER_R + 60) * 2;
 
   return (
@@ -338,12 +318,11 @@ function SatelliteOrbitLayout() {
       margin: '0 auto',
       maxWidth: '100%',
     }}>
-      {/* Orbit rings */}
-      <OrbitRing radius={INNER_R}  opacity={0.22} />
-      <OrbitRing radius={MID_R}    opacity={0.17} />
-      <OrbitRing radius={OUTER_R}  opacity={0.13} />
+      <OrbitRing radius={INNER_R} opacity={0.22} />
+      <OrbitRing radius={MID_R}   opacity={0.17} />
+      <OrbitRing radius={OUTER_R} opacity={0.13} />
 
-      {/* Center hub — your name/logo */}
+      {/* Center hub */}
       <motion.div
         style={{
           position: 'absolute',
@@ -380,40 +359,19 @@ function SatelliteOrbitLayout() {
         </span>
       </motion.div>
 
-      {/* Inner orbit icons */}
       {innerSkills.map((skill, i) => (
-        <OrbitIcon
-          key={skill.id}
-          skill={skill}
-          orbitRadius={INNER_R}
-          duration={14}
-          startAngle={(i / innerSkills.length) * 360}
-          size={44}
-        />
+        <OrbitIcon key={skill.id} skill={skill} orbitRadius={INNER_R} duration={14}
+          startAngle={(i / innerSkills.length) * 360} size={44} />
       ))}
 
-      {/* Mid orbit icons */}
       {midSkills.map((skill, i) => (
-        <OrbitIcon
-          key={skill.id}
-          skill={skill}
-          orbitRadius={MID_R}
-          duration={22}
-          startAngle={(i / midSkills.length) * 360 + 30}
-          size={44}
-        />
+        <OrbitIcon key={skill.id} skill={skill} orbitRadius={MID_R} duration={22}
+          startAngle={(i / midSkills.length) * 360 + 30} size={44} />
       ))}
 
-      {/* Outer orbit icons */}
       {outerSkills.map((skill, i) => (
-        <OrbitIcon
-          key={skill.id}
-          skill={skill}
-          orbitRadius={OUTER_R}
-          duration={32}
-          startAngle={(i / outerSkills.length) * 360 + 15}
-          size={40}
-        />
+        <OrbitIcon key={skill.id} skill={skill} orbitRadius={OUTER_R} duration={32}
+          startAngle={(i / outerSkills.length) * 360 + 15} size={40} />
       ))}
     </div>
   );
@@ -456,9 +414,7 @@ function SocialsRow({ isDay }) {
             padding: '10px 20px',
             borderRadius: isDay ? '50px' : '14px',
             textDecoration: 'none',
-            background: isDay
-              ? 'rgba(255,255,255,0.62)'
-              : `rgba(8,8,28,0.7)`,
+            background: isDay ? 'rgba(255,255,255,0.62)' : 'rgba(8,8,28,0.7)',
             border: isDay
               ? '1.5px solid rgba(255,255,255,0.85)'
               : `1.5px solid ${social.color}44`,
