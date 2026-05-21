@@ -1,98 +1,96 @@
 'use client';
 
-// ============================================================
-// app/page.jsx — HOMEPAGE ASSEMBLER (FIXED)
-//
-// WHAT WAS WRONG:
-//   export default function Home({ theme = 'day', toggleTheme = () => {} })
-//   This expected props from layout.jsx via cloneElement.
-//   App Router NEVER delivers props this way.
-//   theme was always 'day' (the default), toggle did nothing.
-//
-// WHAT IS FIXED:
-//   useTheme() reads directly from ThemeContext.
-//   ThemeProvider in layout.jsx makes this available.
-//   theme and toggleTheme are now REAL values that work.
-//
-// CONNECTION MAP:
-//   ThemeContext.jsx → ThemeProvider wraps app in layout.jsx
-//   page.jsx         → useTheme() pulls { theme, toggleTheme }
-//   page.jsx         → passes theme as prop to all 5 sections
-//   page.jsx         → passes toggleTheme to ThemeToggle
-// ============================================================
-
 import dynamic from 'next/dynamic';
+import { useMemo } from 'react';
+
 import { useTheme } from './ThemeContext';
 
-// ── BACKGROUND LAYERS ─────────────────────────────────────────
-// ssr: false prevents hydration errors from framer-motion
-// scroll hooks and window references used inside these files
+import ThemeToggle from '@/components/ThemeToggle';
+import Landing from '@/components/Landing';
+import Skills from '@/components/Skills';
+import Projects from '@/components/Projects';
+import Achievements from '@/components/Achievements';
+import TestMe from '@/components/TestMe';
+
+// ============================================================
+// DYNAMIC BACKGROUND IMPORTS
+// ============================================================
+
 const DayBackground = dynamic(
   () => import('./DayVision/page'),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => null,
+  }
 );
+
 const NightBackground = dynamic(
   () => import('./NightVision/page'),
-  { ssr: false }
+  {
+    ssr: false,
+    loading: () => null,
+  }
 );
 
-// ── SECTION COMPONENTS ───────────────────────────────────────
-import ThemeToggle  from '@/components/ThemeToggle';
-import Landing      from '@/components/Landing';
-import Projects     from '@/components/Projects';
-import Skills       from '@/components/Skills';
-import TestMe       from '@/components/TestMe';
-import Achievements from '@/components/Achievements';
-
-// ══════════════════════════════════════════════════════════════
+// ============================================================
 // HOME PAGE
-// ══════════════════════════════════════════════════════════════
-export default function Home() {
-  // ── THE FIX: read theme from Context, not from props ──────
-  const { theme, toggleTheme } = useTheme();
-  const isDay = theme === 'day';
+// ============================================================
+
+export default function HomePage() {
+  const { theme } = useTheme();
+
+  // ==========================================================
+  // MEMOIZED BACKGROUND
+  // ==========================================================
+
+  const BackgroundComponent = useMemo(() => {
+    return theme === 'day'
+      ? <DayBackground />
+      : <NightBackground />;
+  }, [theme]);
 
   return (
-    <>
-      {/* ── BACKGROUND LAYER (z-index 0, position fixed) ──
-          Fills entire viewport behind all content.
-          Swaps instantly when theme toggles.
-          DayBackground   → sky gradient, clouds, birds, planes
-          NightBackground → space gradient, stars, rocket, planets */}
-      {isDay
-        ? <DayBackground />
-        : <NightBackground />
-      }
+    <main className="relative overflow-x-hidden">
 
-      {/* ── THEME TOGGLE (z-index 9999, position fixed) ───
-          Sun/Moon Horizon Switch.
-          Always visible in top-right corner while scrolling.
-          theme     → controls visual state (sun vs moon)
-          toggleTheme → fires state change on click           */}
-      <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      {/* ======================================================
+          FIXED BACKGROUND LAYER
+      ====================================================== */}
 
-      {/* ── MAIN CONTENT (z-index 1) ─────────────────────
-          Sits above the fixed background layer.
-          Single vertical scroll flow — no routing needed.
-          Each section gets theme as prop for styling.        */}
-      <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+      <div
+        className="fixed inset-0 z-0 pointer-events-none"
+        aria-hidden="true"
+      >
+        {BackgroundComponent}
+      </div>
 
-        {/* Section 1 — Hero: GIF bubble, typing name, explore button */}
-        <Landing theme={theme} />
+      {/* ======================================================
+          THEME TOGGLE
+      ====================================================== */}
 
-        {/* Section 2 — Projects: GIF cards, Live Demo + GitHub */}
-        <Projects theme={theme} />
+      <ThemeToggle />
 
-        {/* Section 3 — Skills + Socials: kite string / orbit */}
-        <Skills theme={theme} />
+      {/* ======================================================
+          MAIN CONTENT LAYER
+      ====================================================== */}
 
-        {/* Section 4 — TestMe: challenge arena + EmailJS */}
-        <TestMe theme={theme} />
+      <div className="relative z-10">
 
-        {/* Section 5 — Achievements: cloud banners / star map */}
-        <Achievements theme={theme} />
+        {/* HERO / LANDING */}
+        <Landing />
 
-      </main>
-    </>
+        {/* SKILLS */}
+        <Skills />
+
+        {/* PROJECTS */}
+        <Projects />
+
+        {/* ACHIEVEMENTS */}
+        <Achievements />
+
+        {/* CONTACT / TEST ME */}
+        <TestMe />
+
+      </div>
+    </main>
   );
 }
