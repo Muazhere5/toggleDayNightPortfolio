@@ -1,33 +1,49 @@
 'use client';
 
 // ============================================================
-// components/Landing.jsx — HERO / LANDING SECTION
+// components/Landing.jsx — HERO / LANDING SECTION (UPDATED)
+//
+// WHAT CHANGED FROM PREVIOUS VERSION:
+//   ✅ GIF bubble replaced with 3D GLB character viewer
+//   ✅ ThreeDCharacter loaded via next/dynamic (ssr:false)
+//      → Prevents "document is not defined" crash from Three.js
+//   ✅ Bubble container resized to 340×380 (taller for full body model)
+//   ✅ Day/Night platform + lighting auto-adapts via theme prop
+//   ✅ All original text, tags, buttons, scroll indicator UNCHANGED
+//   ✅ MiniCloud decorations KEPT for day mode (around the bubble)
+//   ✅ OrbitStars KEPT for night mode (around the bubble)
 //
 // CONNECTION MAP:
-//   page.jsx       → mounts <Landing theme={theme} />
-//   globals.css    → base styles, CSS variables, fonts
-//   DayVision/     → sky background already fixed behind this
-//   NightVision/   → space background already fixed behind this
-//   public/assets/character/character-day.gif   → day GIF
-//   public/assets/character/character-night.gif → night GIF
+//   page.jsx              → mounts <Landing theme={theme} />
+//   ThreeDCharacter.jsx   → handles GLB loading + Three.js scene
+//   globals.css           → base styles, CSS variables, fonts
+//   public/assets/character/threedavator.glb → 3D model
 //
 // PROPS:
-//   theme {string} 'day' | 'night' — controls all conditional styles
-//
-// SECTIONS INSIDE:
-//   1. GIF bubble (with orbiting decorations)
-//   2. Text block (greeting, typing name, subtitle, tags)
-//   3. Explore button (scrolls to #projects)
-//   4. Scroll indicator (bouncing arrow at bottom)
+//   theme {string} 'day' | 'night'
 // ============================================================
 
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
+
+// ── 3D CHARACTER — loaded dynamically (no SSR) ───────────────
+// Three.js uses browser APIs (WebGL, window) — SSR will crash
+// next/dynamic with ssr:false ensures it only runs in browser
+const ThreeDCharacter = dynamic(
+  () => import('./ThreeDCharacter'),
+  {
+    ssr: false,
+    // Show nothing while the dynamic chunk loads
+    // (ThreeDCharacter has its own Suspense fallback inside)
+    loading: () => null,
+  }
+);
 
 // ── TECH STACK TAGS ──────────────────────────────────────────
 const TECH_TAGS = ['ReactJS', 'Next.js', 'Node.js', 'MongoDB', 'Express'];
 
-// ── TYPING HOOK — animates text letter by letter ─────────────
+// ── TYPING HOOK ───────────────────────────────────────────────
 function useTypingEffect(text, startDelay = 700, speed = 85) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone]           = useState(false);
@@ -78,9 +94,7 @@ const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
       marginLeft: -size / 2,
       pointerEvents: 'none',
     }}
-    animate={{
-      rotate: [0, 360],
-    }}
+    animate={{ rotate: [0, 360] }}
     transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
     transformTemplate={({ rotate }) =>
       `rotate(${rotate}) translateX(${radius}px)`
@@ -120,13 +134,11 @@ const ScrollIndicator = ({ isDay }) => (
       {isDay ? 'Explore Below' : 'Begin Mission'}
     </span>
 
-    {/* Bouncing arrow */}
     <motion.div
       animate={{ y: [0, 8, 0] }}
       transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
     >
       {isDay ? (
-        // Paper plane pointing down
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
           <path d="M11 2 L20 11 L11 8 L2 11 Z" fill="rgba(255,255,255,0.85)" />
           <path d="M11 8 L11 20" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" />
@@ -134,7 +146,6 @@ const ScrollIndicator = ({ isDay }) => (
             strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
       ) : (
-        // Mini rocket pointing down
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
           <path d="M11 2 Q16 6 16 13 L11 16 L6 13 Q6 6 11 2Z" fill="rgba(200,210,240,0.85)" />
           <circle cx="11" cy="9" r="2.5" fill="rgba(100,180,255,0.7)" />
@@ -172,12 +183,10 @@ const scaleIn = (delay = 0) => ({
 export default function Landing({ theme }) {
   const isDay = theme === 'day';
 
-  // Typing effect for name — restarts when theme switches
   const { displayed: typedName, done: typingDone } = useTypingEffect(
     'Muaz', 750, 90
   );
 
-  // Explore button smooth scroll
   const handleExplore = () => {
     const el = document.getElementById('projects');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -207,72 +216,39 @@ export default function Landing({ theme }) {
     flexWrap: 'wrap',
   };
 
-  // GIF bubble outer ring
+  // ── 3D CHARACTER CONTAINER ──────────────────────────────────
+  // Taller than the old GIF bubble — full body model needs height
+  // Width/height here is the outer decoration wrapper
   const bubbleWrapStyle = {
     position: 'relative',
-    width: '280px',
-    height: '280px',
+    width: '320px',
+    height: '380px',
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   };
 
-  // GIF bubble container
-  const bubbleStyle = {
-    width: '240px',
-    height: '240px',
+  // The actual container for the Three.js Canvas
+  // Circular clip + glass background + theme border
+  const canvasContainerStyle = {
+    width: '300px',
+    height: '360px',
     borderRadius: '50%',
     overflow: 'hidden',
     position: 'relative',
+    // Subtle background so the model doesn't float on pure transparency
     background: isDay
-      ? 'rgba(255,255,255,0.25)'
-      : 'rgba(10,10,30,0.6)',
+      ? 'radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.28) 0%, rgba(135,206,235,0.18) 50%, rgba(135,206,235,0.08) 100%)'
+      : 'radial-gradient(ellipse at 40% 30%, rgba(30,20,60,0.55) 0%, rgba(10,10,30,0.45) 50%, rgba(5,5,20,0.3) 100%)',
     border: isDay
       ? '3px solid rgba(255,255,255,0.7)'
       : '3px solid rgba(123,104,238,0.5)',
     boxShadow: isDay
-      ? '0 0 0 8px rgba(255,255,255,0.12), 0 12px 50px rgba(46,134,193,0.3), 0 0 80px rgba(135,206,235,0.2)'
-      : '0 0 0 8px rgba(123,104,238,0.08), 0 12px 50px rgba(0,0,0,0.7), 0 0 60px rgba(123,104,238,0.25)',
-    backdropFilter: 'blur(8px)',
+      ? '0 0 0 8px rgba(255,255,255,0.10), 0 16px 60px rgba(46,134,193,0.28), 0 0 100px rgba(135,206,235,0.18)'
+      : '0 0 0 8px rgba(123,104,238,0.07), 0 16px 60px rgba(0,0,0,0.7), 0 0 80px rgba(123,104,238,0.22)',
+    backdropFilter: 'blur(4px)',
     transition: 'border 0.8s ease, box-shadow 0.8s ease',
-  };
-
-  const gifStyle = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    objectPosition: 'center top',
-  };
-
-  // Text block
-  const textBlockStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: '14px',
-    maxWidth: '420px',
-  };
-
-  const greetingStyle = {
-    fontFamily: "'Rajdhani', sans-serif",
-    fontSize: '1.05rem',
-    fontWeight: 600,
-    letterSpacing: '0.2em',
-    textTransform: 'uppercase',
-    color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.75)',
-  };
-
-  const nameStyle = {
-    fontFamily: "'Orbitron', sans-serif",
-    fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
-    fontWeight: 900,
-    lineHeight: 1.05,
-    color: isDay ? '#ffffff' : '#E8E8F0',
-    textShadow: isDay
-      ? '0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
-      : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
-    letterSpacing: '0.04em',
   };
 
   const cursorStyle = {
@@ -286,20 +262,12 @@ export default function Landing({ theme }) {
     animation: typingDone ? 'none' : 'blink 0.75s step-end infinite',
   };
 
-  const subtitleStyle = {
-    fontFamily: "'Nunito', sans-serif",
-    fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
-    fontWeight: 600,
-    color: isDay ? 'rgba(255,255,255,0.82)' : 'rgba(200,210,240,0.78)',
-    lineHeight: 1.5,
-    maxWidth: '360px',
-  };
-
-  const tagsRowStyle = {
+  const textBlockStyle = {
     display: 'flex',
-    flexWrap: 'wrap',
-    gap: '8px',
-    marginTop: '4px',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '14px',
+    maxWidth: '420px',
   };
 
   const tagStyle = {
@@ -374,8 +342,15 @@ export default function Landing({ theme }) {
             className="landing-text"
             {...fadeLeft(0.1)}
           >
-            {/* Greeting line */}
-            <motion.p style={greetingStyle} {...fadeLeft(0.3)}>
+            {/* Greeting */}
+            <motion.p style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontSize: '1.05rem',
+              fontWeight: 600,
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.75)',
+            }} {...fadeLeft(0.3)}>
               {isDay ? '✈ Welcome to my sky' : '🛸 Incoming transmission'}
             </motion.p>
 
@@ -392,20 +367,39 @@ export default function Landing({ theme }) {
             </motion.div>
 
             {/* Typing name */}
-            <motion.h1 style={nameStyle} {...fadeLeft(0.6)}>
+            <motion.h1 style={{
+              fontFamily: "'Orbitron', sans-serif",
+              fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
+              fontWeight: 900,
+              lineHeight: 1.05,
+              color: isDay ? '#ffffff' : '#E8E8F0',
+              textShadow: isDay
+                ? '0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
+                : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
+              letterSpacing: '0.04em',
+            }} {...fadeLeft(0.6)}>
               {typedName}
               <span style={cursorStyle} />
             </motion.h1>
 
             {/* Subtitle */}
-            <motion.p style={subtitleStyle} {...fadeUp(1.0)}>
+            <motion.p style={{
+              fontFamily: "'Nunito', sans-serif",
+              fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
+              fontWeight: 600,
+              color: isDay ? 'rgba(255,255,255,0.82)' : 'rgba(200,210,240,0.78)',
+              lineHeight: 1.5,
+              maxWidth: '360px',
+            }} {...fadeUp(1.0)}>
               {isDay
                 ? 'Full Stack Developer soaring through the MERN stack & Next.js — building things that live in the cloud.'
                 : 'Full Stack Developer navigating the MERN stack & Next.js — launching ideas into orbit.'}
             </motion.p>
 
             {/* Tech tags */}
-            <motion.div style={tagsRowStyle} {...fadeUp(1.2)}>
+            <motion.div style={{
+              display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px',
+            }} {...fadeUp(1.2)}>
               {TECH_TAGS.map((tag, i) => (
                 <motion.span
                   key={tag}
@@ -447,12 +441,9 @@ export default function Landing({ theme }) {
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
                 />
-
-                {/* Icon */}
                 <span style={{ fontSize: '1.1rem', position: 'relative' }}>
                   {isDay ? '✈' : '🚀'}
                 </span>
-
                 <span style={{ position: 'relative' }}>
                   {isDay ? 'Explore My Work' : 'Begin Mission'}
                 </span>
@@ -460,47 +451,61 @@ export default function Landing({ theme }) {
             </motion.div>
           </motion.div>
 
-          {/* ══ RIGHT — GIF BUBBLE ═════════════════════════ */}
+          {/* ══ RIGHT — 3D CHARACTER ════════════════════════ */}
           <motion.div style={bubbleWrapStyle} {...scaleIn(0.2)}>
 
-            {/* Day: mini clouds around bubble */}
+            {/* Day: mini clouds floating around the character */}
             {isDay && (
               <>
                 <motion.div
-                  style={{ position: 'absolute', top: '-18px', left: '-10px', zIndex: 2 }}
+                  style={{ position: 'absolute', top: '-18px', left: '-10px', zIndex: 2, pointerEvents: 'none' }}
                   animate={{ y: [0, -8, 0], x: [0, 4, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <MiniCloud style={{ opacity: 0.9 }} />
                 </motion.div>
                 <motion.div
-                  style={{ position: 'absolute', bottom: '-10px', right: '-12px', zIndex: 2, transform: 'scaleX(-1)' }}
+                  style={{ position: 'absolute', bottom: '-10px', right: '-12px', zIndex: 2, transform: 'scaleX(-1)', pointerEvents: 'none' }}
                   animate={{ y: [0, -6, 0], x: [0, -4, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
                 >
                   <MiniCloud style={{ opacity: 0.75 }} />
                 </motion.div>
+
+                {/* Day: soft sunlight ring */}
+                <motion.div
+                  style={{
+                    position: 'absolute',
+                    inset: '-16px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,220,80,0.12) 0%, transparent 70%)',
+                    pointerEvents: 'none',
+                    zIndex: 0,
+                  }}
+                  animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.06, 1] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                />
               </>
             )}
 
-            {/* Night: orbiting stars around bubble */}
+            {/* Night: orbiting stars around the character */}
             {!isDay && (
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-                <OrbitStar radius={130} duration={8}  delay={0}   size={5} />
-                <OrbitStar radius={145} duration={12} delay={2}   size={3.5} />
-                <OrbitStar radius={122} duration={6}  delay={1}   size={4} />
-                <OrbitStar radius={150} duration={15} delay={3.5} size={2.5} />
+              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
+                <OrbitStar radius={152} duration={8}  delay={0}   size={5} />
+                <OrbitStar radius={162} duration={12} delay={2}   size={3.5} />
+                <OrbitStar radius={145} duration={6}  delay={1}   size={4} />
+                <OrbitStar radius={170} duration={15} delay={3.5} size={2.5} />
               </div>
             )}
 
-            {/* Night: nebula glow behind bubble */}
+            {/* Night: deep nebula glow behind character */}
             {!isDay && (
               <motion.div
                 style={{
                   position: 'absolute',
                   inset: '-30px',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(123,104,238,0.2) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(123,104,238,0.22) 0%, transparent 70%)',
                   filter: 'blur(20px)',
                   zIndex: 0,
                   pointerEvents: 'none',
@@ -510,35 +515,26 @@ export default function Landing({ theme }) {
               />
             )}
 
-            {/* The GIF bubble itself */}
-            <motion.div
-              style={bubbleStyle}
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-            >
-              {/* Glassy inner highlight ring */}
-              <div style={{
-                position: 'absolute',
-                top: '8px', left: '8px', right: '8px', bottom: '8px',
-                borderRadius: '50%',
-                border: '1px solid rgba(255,255,255,0.2)',
-                zIndex: 2,
-                pointerEvents: 'none',
-              }} />
+            {/* ── THE 3D CHARACTER CANVAS ───────────────────
+                z-index: 1 so it sits above the glow rings
+                but below the orbiting star decorations (z:2)  */}
+            <div style={canvasContainerStyle} className="char-canvas-wrap">
+              <ThreeDCharacter theme={theme} />
+            </div>
 
-              {/* The actual GIF */}
-              <img
-                src={isDay
-                  ? '/assets/character/character-day.gif'
-                  : '/assets/character/character-night.gif'}
-                alt="Muaz waving hello"
-                style={gifStyle}
-                // Fallback to static image if GIF not yet added
-                onError={(e) => {
-                  e.target.src = '/assets/character/character-fallback.png';
-                }}
-              />
-            </motion.div>
+            {/* Glassy highlight ring on the bubble edge */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '300px',
+              height: '360px',
+              borderRadius: '50%',
+              border: '1px solid rgba(255,255,255,0.18)',
+              pointerEvents: 'none',
+              zIndex: 3,
+            }} />
 
           </motion.div>
           {/* ══ END RIGHT ══ */}
