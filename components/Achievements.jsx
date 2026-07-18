@@ -1,38 +1,38 @@
 'use client';
 
-// ============================================================
-// components/Achievements.jsx — ACHIEVEMENTS SECTION
-//
-// CONNECTION MAP:
-//   page.jsx    → mounts <Achievements theme={theme} /> last
-//   globals.css → CSS variables, fonts
-//
-// PROPS:
-//   theme {string} 'day' | 'night'
-//
-// DESIGN:
-//   Day Vision  → "Hall of Clouds"
-//                 Each achievement on a banner hanging from cloud
-//                 Gold + white ribbons drift in from alternating sides
-//                 Kite flies past on scroll trigger
-//
-//   Night Vision → "Star Map"
-//                 Each achievement is a glowing star node
-//                 Constellation lines connect related achievements
-//                 Click/tap a star to expand full details
-//                 Stars pulse with soft glow animation
-//
-// CUSTOMISE:
-//   Edit the ACHIEVEMENTS array below with your real milestones.
-//   Each item has: title, description, icon, date, type, group
-//   type: 'education' | 'project' | 'skill' | 'personal' | 'award'
-//   group: used in night mode to draw constellation lines (1 | 2 | 3)
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
 
-// ── YOUR ACHIEVEMENTS — edit this array ─────────────────────
+
 const ACHIEVEMENTS = [
   {
     id: 1,
@@ -84,7 +84,7 @@ const ACHIEVEMENTS = [
   },
 ];
 
-// ── TYPE CONFIG ───────────────────────────────────────────────
+
 const TYPE_CONFIG = {
   education: { label: 'Education', dayColor: 'rgba(100,160,220,0.8)',  nightColor: 'rgba(100,160,255,0.8)' },
   project:   { label: 'Project',   dayColor: 'rgba(255,165,50,0.85)',  nightColor: 'rgba(255,180,80,0.8)'  },
@@ -93,11 +93,11 @@ const TYPE_CONFIG = {
   award:     { label: 'Award',     dayColor: 'rgba(255,215,0,0.9)',    nightColor: 'rgba(255,215,0,0.85)'  },
 };
 
-// ════════════════════════════════════════════════════════════
-// DAY VISION — CLOUD BANNERS
-// ════════════════════════════════════════════════════════════
 
-// Cloud shape above banner
+
+
+
+
 const BannerCloud = ({ width = 200 }) => (
   <svg width={width} height={52} viewBox={`0 0 ${width} 52`} fill="none">
     <ellipse cx={width * 0.5}  cy={40} rx={width * 0.46} ry={16} fill="rgba(255,255,255,0.78)" />
@@ -107,7 +107,7 @@ const BannerCloud = ({ width = 200 }) => (
   </svg>
 );
 
-// Rope lines hanging from cloud
+
 const BannerRopes = ({ width = 200 }) => (
   <svg width={width} height={22} viewBox={`0 0 ${width} 22`} fill="none">
     <line x1={width * 0.28} y1="0" x2={width * 0.25} y2="22"
@@ -136,13 +136,13 @@ function CloudBannerCard({ achievement, index }) {
         margin: isLeft ? '0 auto 0 0' : '0 0 0 auto',
       }}
     >
-      {/* Cloud top */}
+      
       <BannerCloud width={280} />
 
-      {/* Ropes */}
+      
       <BannerRopes width={280} />
 
-      {/* Banner card */}
+      
       <motion.div
         whileHover={{ y: -6, rotate: isLeft ? -1 : 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 22 }}
@@ -156,14 +156,14 @@ function CloudBannerCard({ achievement, index }) {
           boxShadow: '0 8px 28px rgba(46,134,193,0.15), 0 2px 8px rgba(135,206,235,0.2)',
         }}
       >
-        {/* Colored top strip */}
+        
         <div style={{
           height: '5px',
           background: `linear-gradient(90deg, ${typeConf.dayColor}, rgba(255,215,0,0.6))`,
         }} />
 
         <div style={{ padding: '16px 18px 18px' }}>
-          {/* Icon + type row */}
+          
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <motion.span 
               style={{ fontSize: '1.6rem', display: 'inline-block' }}
@@ -205,7 +205,7 @@ function CloudBannerCard({ achievement, index }) {
             }}>{achievement.date}</span>
           </div>
 
-          {/* Title */}
+          
           <h3 style={{
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: '0.92rem',
@@ -218,7 +218,7 @@ function CloudBannerCard({ achievement, index }) {
             {achievement.title}
           </h3>
 
-          {/* Description */}
+          
           <p style={{
             fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '0.84rem',
@@ -254,11 +254,11 @@ function DayAchievements() {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// NIGHT VISION — STAR MAP CONSTELLATION
-// ════════════════════════════════════════════════════════════
 
-// Star positions — laid out manually for a good constellation look
+
+
+
+
 const STAR_POSITIONS = [
   { id: 1, x: 20,  y: 25  },
   { id: 2, x: 45,  y: 15  },
@@ -267,7 +267,7 @@ const STAR_POSITIONS = [
   { id: 5, x: 45,  y: 60  },
 ];
 
-// Constellation lines between stars (by achievement id pairs)
+
 const CONSTELLATION_LINES = [
   [1, 2], [2, 3], [3, 4], [4, 5], [5, 1],
 ];
@@ -281,7 +281,7 @@ function StarMapAchievements() {
   return (
     <div style={{ width: '100%', maxWidth: '780px', margin: '0 auto' }}>
 
-      {/* SVG constellation map */}
+      
       <div
         ref={containerRef}
         style={{
@@ -301,7 +301,7 @@ function StarMapAchievements() {
           viewBox="0 0 100 75"
           preserveAspectRatio="xMidYMid meet"
         >
-          {/* Background micro-stars */}
+          
           {Array.from({ length: 60 }, (_, i) => {
             const x = ((i * 17 + 3) % 97) + 1.5;
             const y = ((i * 13 + 7) % 72) + 1.5;
@@ -316,7 +316,7 @@ function StarMapAchievements() {
             );
           })}
 
-          {/* Constellation lines */}
+          
           {CONSTELLATION_LINES.map(([fromId, toId]) => {
             const from = STAR_POSITIONS.find(s => s.id === fromId);
             const to   = STAR_POSITIONS.find(s => s.id === toId);
@@ -337,7 +337,7 @@ function StarMapAchievements() {
             );
           })}
 
-          {/* Achievement stars */}
+          
           {STAR_POSITIONS.map((pos) => {
             const ach      = ACHIEVEMENTS.find(a => a.id === pos.id);
             const isActive = activeId === pos.id;
@@ -349,14 +349,14 @@ function StarMapAchievements() {
                 onClick={() => setActiveId(isActive ? null : pos.id)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Outer glow */}
+                
                 <motion.circle
                   cx={pos.x} cy={pos.y} r={isActive ? 4.5 : 3}
                   fill={typeConf.nightColor.replace('0.8', '0.12')}
                   animate={{ opacity: isActive ? [0.4, 0.9, 0.4] : [0.2, 0.5, 0.2] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                {/* Star core */}
+                
                 <motion.circle
                   cx={pos.x} cy={pos.y}
                   r={isActive ? 2.2 : 1.5}
@@ -367,7 +367,7 @@ function StarMapAchievements() {
                   animate={{ scale: isActive ? [1, 1.15, 1] : 1 }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
-                {/* Icon text */}
+                
                 <motion.text
                   x={pos.x} y={pos.y - 3.5}
                   textAnchor="middle"
@@ -378,7 +378,7 @@ function StarMapAchievements() {
                 >
                   {ach?.icon}
                 </motion.text>
-                {/* Label */}
+                
                 <text
                   x={pos.x}
                   y={pos.y + 4.5}
@@ -395,7 +395,7 @@ function StarMapAchievements() {
           })}
         </svg>
 
-        {/* Tap hint */}
+        
         <div style={{
           position: 'absolute',
           bottom: '10px',
@@ -412,7 +412,7 @@ function StarMapAchievements() {
         </div>
       </div>
 
-      {/* Detail panel — expands when a star is tapped */}
+      
       <AnimatePresence mode="wait">
         {activeAchievement && (
           <motion.div
@@ -491,7 +491,7 @@ function StarMapAchievements() {
         )}
       </AnimatePresence>
 
-      {/* Legend */}
+      
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
@@ -528,9 +528,9 @@ function StarMapAchievements() {
   );
 }
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function Achievements({ theme }) {
   const isDay = theme === 'day';
 
@@ -546,7 +546,7 @@ export default function Achievements({ theme }) {
     >
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
-        {/* ── SECTION HEADER ───────────────────────────── */}
+        
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -594,7 +594,7 @@ export default function Achievements({ theme }) {
           </p>
         </motion.div>
 
-        {/* ── THEME-SPECIFIC VISUALISATION ─────────────── */}
+        
         <motion.div
           key={theme}
           initial={{ opacity: 0 }}
@@ -608,7 +608,7 @@ export default function Achievements({ theme }) {
           }
         </motion.div>
 
-        {/* ── CLOSING LINE & DOCUMENT LINK ─────────────── */}
+        
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}

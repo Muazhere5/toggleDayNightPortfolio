@@ -1,42 +1,42 @@
 'use client';
 
-// ============================================================
-// app/NightVision/page.jsx — ANIMATED DEEP SPACE BACKGROUND
-//
-// PERFORMANCE OVERHAUL (Phase 3):
-//   OLD: 220 individual <motion.circle> elements, each with
-//        their own Framer Motion animation instance.
-//        = 220 JS timers + React state subscriptions running
-//          simultaneously → high CPU + memory usage.
-//
-//   NEW: Stars rendered as static SVG circles with CSS
-//        @keyframes animation applied via className groups.
-//        Stars are split into 3 speed groups, each using a
-//        single shared CSS animation — the browser compositor
-//        handles this in a single GPU pass at near-zero CPU cost.
-//        All other decorative elements (planets, rocket,
-//        satellites, shooting stars, nebulae) remain as
-//        Framer Motion components since there are few of them.
-//
-// OBJECTS (all inline SVG + CSS / framer-motion):
-//   220 twinkling stars   → CSS keyframe groups (3 speeds)
-//   5 nebula blobs        → soft purple/teal/blue glow
-//   1 ringed planet       → top-right, floats gently
-//   2 small planets       → sides, floating at different speeds
-//   1 rocket              → right side, bobs + rotates
-//   2 satellites          → drift across screen both directions
-//   4 shooting stars      → fire on staggered timers
-//   Parallax star layer   → CSS transform on scroll
-//   Deep space vignette   → darkens edges, content pops
-//   Scan line texture     → subtle CRT monitor effect
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-// ── DETERMINISTIC STAR GENERATOR ─────────────────────────────
-// Linear congruential generator seeded at 42 — stars never
-// re-randomise on re-render (same output every call).
+
+
+
 function generateStars(count, seed = 42) {
   const stars = [];
   let s = seed;
@@ -48,18 +48,18 @@ function generateStars(count, seed = 42) {
     stars.push({
       id: i,
       x: rand() * 100,
-      y: rand() * 130,       // 130% height for parallax headroom
+      y: rand() * 130,       
       r: rand() * 1.6 + 0.3,
-      // Assign to one of 3 twinkle speed groups
-      group: Math.floor(rand() * 3), // 0 = slow, 1 = mid, 2 = fast
-      delay: rand() * 6,             // stagger within group
+      
+      group: Math.floor(rand() * 3), 
+      delay: rand() * 6,             
       brightness: rand() * 0.6 + 0.4,
     });
   }
   return stars;
 }
 
-// ── NEBULA BLOB ───────────────────────────────────────────────
+
 const NebulaBlob = ({ cx, cy, rx, ry, color, duration, delay }) => (
   <motion.ellipse
     cx={cx} cy={cy} rx={rx} ry={ry}
@@ -70,7 +70,7 @@ const NebulaBlob = ({ cx, cy, rx, ry, color, duration, delay }) => (
   />
 );
 
-// ── ROCKET ────────────────────────────────────────────────────
+
 const Rocket = () => (
   <svg width="36" height="72" viewBox="0 0 36 72" fill="none">
     <path d="M18,2 Q30,10 30,30 L30,52 L18,60 L6,52 L6,30 Q6,10 18,2Z"
@@ -86,7 +86,7 @@ const Rocket = () => (
   </svg>
 );
 
-// ── SATELLITE ─────────────────────────────────────────────────
+
 const Satellite = ({ size = 1 }) => (
   <svg width={52 * size} height={22 * size} viewBox="0 0 52 22" fill="none">
     <rect x="18" y="6" width="16" height="10" rx="3"
@@ -107,7 +107,7 @@ const Satellite = ({ size = 1 }) => (
   </svg>
 );
 
-// ── RINGED PLANET ─────────────────────────────────────────────
+
 const PlanetRinged = ({ r = 28 }) => (
   <svg width={r * 4} height={r * 3} viewBox={`0 0 ${r * 4} ${r * 3}`} fill="none">
     <ellipse cx={r * 2} cy={r * 1.5} rx={r * 1.7} ry={r * 0.45}
@@ -123,7 +123,7 @@ const PlanetRinged = ({ r = 28 }) => (
   </svg>
 );
 
-// ── SMALL PLANET ──────────────────────────────────────────────
+
 const PlanetSmall = ({ r = 16, color = 'rgba(80,180,160,0.5)' }) => (
   <svg width={r * 2 + 4} height={r * 2 + 4} viewBox={`0 0 ${r * 2 + 4} ${r * 2 + 4}`} fill="none">
     <circle cx={r + 2} cy={r + 2} r={r} fill={color} />
@@ -133,7 +133,7 @@ const PlanetSmall = ({ r = 16, color = 'rgba(80,180,160,0.5)' }) => (
   </svg>
 );
 
-// ── SHOOTING STAR ─────────────────────────────────────────────
+
 const ShootingStar = ({ top, delay }) => (
   <motion.div
     style={{
@@ -165,10 +165,10 @@ const ShootingStar = ({ top, delay }) => (
   />
 );
 
-// ── CSS TWINKLE KEYFRAMES ─────────────────────────────────────
-// Injected once into the document — shared by all stars.
-// Three speed variants let different stars twinkle at different rates
-// without needing individual JS timers.
+
+
+
+
 const STAR_CSS = `
   @keyframes twinkle-slow {
     0%, 100% { opacity: var(--star-max, 1);    }
@@ -198,15 +198,15 @@ const STAR_CSS = `
   }
 `;
 
-// ══════════════════════════════════════════════════════════════
-// MAIN NIGHT BACKGROUND COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function NightBackground() {
 
-  // Memoised — generated once, same values every render
+  
   const stars = useMemo(() => generateStars(220), []);
 
-  // Inject the CSS keyframes once on mount
+  
   useEffect(() => {
     const id = 'night-star-styles';
     if (document.getElementById(id)) return;
@@ -215,7 +215,7 @@ export default function NightBackground() {
     style.textContent = STAR_CSS;
     document.head.appendChild(style);
     return () => {
-      // Clean up when NightBackground unmounts
+      
       const el = document.getElementById(id);
       if (el) el.remove();
     };
@@ -244,7 +244,7 @@ export default function NightBackground() {
         `,
       }}
     >
-      {/* ── STAR FIELD — CSS animated, no JS timers ────────── */}
+      
       <svg
         width="100%" height="130%"
         style={{ position: 'absolute', top: 0, left: 0 }}
@@ -259,7 +259,7 @@ export default function NightBackground() {
             fill={`rgba(255,255,255,${brightness})`}
             className={`${groupClass[group]} ${index % 2 !== 0 ? 'mobile-hidden' : ''}`}
             style={{
-              // CSS custom properties drive per-star brightness bounds
+              
               '--star-max': brightness,
               '--star-min': brightness * 0.15,
               animationDelay: `${delay}s`,
@@ -268,7 +268,7 @@ export default function NightBackground() {
         ))}
       </svg>
 
-      {/* ── NEBULA BLOBS ──────────────────────────────────── */}
+      
       <svg
         style={{
           position: 'absolute', inset: 0,
@@ -293,7 +293,7 @@ export default function NightBackground() {
           color="rgba(123,104,238,0.10)" duration={11} delay={3} />
       </svg>
 
-      {/* ── RINGED PLANET — top-right, floats gently ─────── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '6%', right: '5%', pointerEvents: 'none' }}
         animate={{ y: [0, -15, 0], rotate: [0, 2, 0] }}
@@ -302,7 +302,7 @@ export default function NightBackground() {
         <PlanetRinged r={38} />
       </motion.div>
 
-      {/* ── SMALL PLANET — left side mid ─────────────────── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '40%', left: '2%', pointerEvents: 'none' }}
         animate={{ y: [0, -20, 0] }}
@@ -311,7 +311,7 @@ export default function NightBackground() {
         <PlanetSmall r={20} color="rgba(80,180,160,0.5)" />
       </motion.div>
 
-      {/* ── SMALL PLANET — right side lower ─────────────── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '68%', right: '3%', pointerEvents: 'none' }}
         animate={{ y: [0, -12, 0] }}
@@ -320,7 +320,7 @@ export default function NightBackground() {
         <PlanetSmall r={14} color="rgba(220,120,80,0.45)" />
       </motion.div>
 
-      {/* ── ROCKET — right side, floats + tilts ─────────── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '15%', right: '10%', pointerEvents: 'none' }}
         animate={{ y: [0, -30, 0], rotate: [8, 12, 8] }}
@@ -329,7 +329,7 @@ export default function NightBackground() {
         <Rocket />
       </motion.div>
 
-      {/* ── SATELLITE 1 — drifts left to right slowly ───── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '25%', pointerEvents: 'none' }}
         initial={{ x: '-80px' }}
@@ -344,7 +344,7 @@ export default function NightBackground() {
         </motion.div>
       </motion.div>
 
-      {/* ── SATELLITE 2 — drifts right to left ──────────── */}
+      
       <motion.div
         style={{ position: 'absolute', top: '60%', pointerEvents: 'none' }}
         initial={{ x: '110vw' }}
@@ -359,14 +359,13 @@ export default function NightBackground() {
         </motion.div>
       </motion.div>
 
-      {/* ── SHOOTING STARS ───────────────────────────────── */}
+      
       <ShootingStar top="12%"  delay={3}  />
       <ShootingStar top="28%"  delay={9}  />
       <ShootingStar top="55%"  delay={18} />
       <ShootingStar top="72%"  delay={28} />
 
-      {/* ── DEEP SPACE VIGNETTE ───────────────────────────
-          Darkens edges so content cards pop off background  */}
+      
       <div
         style={{
           position: 'absolute', inset: 0,
@@ -375,8 +374,7 @@ export default function NightBackground() {
         }}
       />
 
-      {/* ── SCAN LINE TEXTURE ─────────────────────────────
-          Very faint horizontal lines — deep-space monitor feel */}
+      
       <div
         style={{
           position: 'absolute', inset: 0,

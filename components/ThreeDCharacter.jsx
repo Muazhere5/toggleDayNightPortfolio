@@ -1,31 +1,31 @@
 'use client';
 
-// ============================================================
-// components/ThreeDCharacter.jsx — CSS AVATAR PLACEHOLDER
-//
-// REPLACES: Three.js / @react-three/fiber / @react-three/drei
-//           + GLB model download (was 3MB on every page load)
-//
-// WHY REPLACED:
-//   - useGLTF.preload() was downloading 3MB silently on load
-//   - 3D canvas caused high GPU usage even with frameloop="demand"
-//   - @react-three imports added ~600KB to the JS bundle
-//   - WebGL context errors on low-end / older browsers
-//
-// THIS COMPONENT:
-//   - Same external API: accepts { theme } prop
-//   - Renders a stylized animated CSS avatar card
-//   - Day mode: frosted glass, warm sun glow, floating orbs
-//   - Night mode: dark terminal, neon purple border, pulsing dots
-//   - Zero external dependencies — pure React + CSS
-//   - Zero network requests on mount
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 
-// ── DAY AVATAR ───────────────────────────────────────────────
-// Warm glassmorphism card — looks like a holographic ID badge
+
+
 function DayAvatar() {
   return (
     <div style={{
@@ -40,7 +40,7 @@ function DayAvatar() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Animated background orbs */}
+      
       <motion.div
         style={{
           position: 'absolute',
@@ -68,7 +68,7 @@ function DayAvatar() {
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       />
 
-      {/* Avatar circle */}
+      
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -98,7 +98,7 @@ function DayAvatar() {
         </div>
       </motion.div>
 
-      {/* Name & title */}
+      
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <p style={{
           fontFamily: "var(--font-orbitron), sans-serif",
@@ -120,7 +120,7 @@ function DayAvatar() {
         }}>Full Stack Dev</p>
       </div>
 
-      {/* Skill dots */}
+      
       <div style={{
         display: 'flex',
         gap: '8px',
@@ -150,7 +150,7 @@ function DayAvatar() {
         ))}
       </div>
 
-      {/* Status bar */}
+      
       <motion.div
         style={{
           display: 'flex',
@@ -180,8 +180,8 @@ function DayAvatar() {
   );
 }
 
-// ── NIGHT AVATAR ─────────────────────────────────────────────
-// Dark terminal-style card — looks like a holo-display readout
+
+
 function NightAvatar() {
   return (
     <div style={{
@@ -196,7 +196,7 @@ function NightAvatar() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Nebula glow background */}
+      
       <motion.div
         style={{
           position: 'absolute',
@@ -209,7 +209,7 @@ function NightAvatar() {
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      {/* Scan-line overlay */}
+      
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(123,104,238,0.04) 3px, rgba(123,104,238,0.04) 4px)',
@@ -217,7 +217,7 @@ function NightAvatar() {
         zIndex: 0,
       }} />
 
-      {/* Terminal header bar */}
+      
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0,
@@ -244,7 +244,7 @@ function NightAvatar() {
         }}>muaz.dev</span>
       </div>
 
-      {/* Avatar circle */}
+      
       <motion.div
         animate={{ y: [0, -10, 0] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -272,7 +272,7 @@ function NightAvatar() {
             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
           />
 
-          {/* Corner brackets overlaying the image */}
+          
           {[['top:4px','left:4px'],['top:4px','right:4px'],['bottom:4px','left:4px'],['bottom:4px','right:4px']].map((pos, i) => {
             const [v, h] = pos;
             const vKey = v.split(':')[0];
@@ -294,7 +294,7 @@ function NightAvatar() {
         </div>
       </motion.div>
 
-      {/* Name */}
+      
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <p style={{
           fontFamily: "var(--font-orbitron), sans-serif",
@@ -316,7 +316,7 @@ function NightAvatar() {
         }}>Full Stack Dev</p>
       </div>
 
-      {/* Typing dots readout */}
+      
       <div style={{
         display: 'flex', gap: '6px',
         position: 'relative', zIndex: 1,
@@ -334,7 +334,7 @@ function NightAvatar() {
         ))}
       </div>
 
-      {/* Status */}
+      
       <motion.div
         style={{
           display: 'flex', alignItems: 'center', gap: '6px',
@@ -361,9 +361,9 @@ function NightAvatar() {
   );
 }
 
-// ── MAIN EXPORT ───────────────────────────────────────────────
-// Drop-in replacement for the old Three.js component.
-// Accepts the same { theme } prop — no changes needed in Landing.jsx.
+
+
+
 export default function ThreeDCharacter({ theme }) {
   const isDay = theme === 'day';
   return isDay ? <DayAvatar /> : <NightAvatar />;

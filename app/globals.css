@@ -1,41 +1,36 @@
 
 
-/* ============================================================
-   CSS VARIABLES — DAY & NIGHT DESIGN TOKENS
-   These variables are the single source of truth for all colors,
-   fonts, shadows, and transitions across every component.
-   Switching .day-mode ↔ .night-mode on <body> flips the entire theme.
-   ============================================================ */
 
-/* --- DAY VISION TOKENS --- */
+
+
 .day-mode {
-  /* Backgrounds */
+  
   --bg-primary: #e6f4f8;
   --bg-gradient: linear-gradient(180deg, #1d72b4 0%, #4ea8de 25%, #87CEEB 60%, #b8e4f7 85%, #d5f0ff 100%);
   --bg-card: rgba(255, 255, 255, 0.82);
   --bg-card-hover: rgba(255, 255, 255, 0.94);
   --bg-glass: rgba(255, 255, 255, 0.6);
 
-  /* Text - Changed from white to deep dark navy/slate for readability */
+  
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;
   --text-accent: #1d72b4;
 
-  /* Buttons */
+  
   --btn-bg: #ffffff;
   --btn-text: #1d72b4;
   --btn-border: #1d72b4;
   --btn-hover-bg: #1d72b4;
   --btn-hover-text: #ffffff;
 
-  /* Borders & Shadows */
+  
   --card-border: rgba(29, 114, 180, 0.15);
   --card-shadow: 0 8px 32px rgba(29, 114, 180, 0.08), 0 2px 8px rgba(135, 206, 235, 0.15);
   --card-shadow-hover: 0 24px 60px rgba(29, 114, 180, 0.18), 0 8px 24px rgba(135, 206, 235, 0.22);
   --glow: rgba(29, 114, 180, 0.2);
 
-  /* Decorative */
+  
   --cloud-color: rgba(255, 255, 255, 0.95);
   --sun-color: #FFD700;
   --accent-color: #4ea8de;
@@ -43,46 +38,46 @@
   --tag-text: #1d72b4;
   --tag-border: rgba(29, 114, 180, 0.18);
 
-  /* Toggle */
+  
   --toggle-track: linear-gradient(90deg, #FFD700 0%, #87CEEB 100%);
   --toggle-thumb: #FFD700;
   --toggle-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
 
-  /* Scrollbar */
+  
   --scrollbar-bg: #b8e4f7;
   --scrollbar-thumb: #4ea8de;
 }
 
-/* --- NIGHT VISION TOKENS --- */
+
 .night-mode {
   background-color: #000000;
-  /* Backgrounds */
+  
   --bg-primary: #000000;
   --bg-gradient: linear-gradient(180deg, #000000 0%, #050510 40%, #0a0a1a 100%);
   --bg-card: rgba(255, 255, 255, 0.04);
   --bg-card-hover: rgba(255, 255, 255, 0.08);
   --bg-glass: rgba(255, 255, 255, 0.03);
 
-  /* Text */
+  
   --text-primary: #E8E8F0;
   --text-secondary: rgba(232, 232, 240, 0.8);
   --text-muted: rgba(232, 232, 240, 0.5);
   --text-accent: #7B68EE;
 
-  /* Buttons */
+  
   --btn-bg: rgba(123, 104, 238, 0.15);
   --btn-text: #E8E8F0;
   --btn-border: rgba(123, 104, 238, 0.4);
   --btn-hover-bg: #7B68EE;
   --btn-hover-text: #ffffff;
 
-  /* Borders & Shadows */
+  
   --card-border: rgba(123, 104, 238, 0.2);
   --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(123, 104, 238, 0.08);
   --card-shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(123, 104, 238, 0.25);
   --glow: rgba(123, 104, 238, 0.4);
 
-  /* Decorative */
+  
   --star-color: #ffffff;
   --moon-color: #C8C8DC;
   --accent-color: #7B68EE;
@@ -91,19 +86,17 @@
   --tag-text: #a898ff;
   --tag-border: rgba(123, 104, 238, 0.3);
 
-  /* Toggle */
+  
   --toggle-track: linear-gradient(90deg, #1a1a2e 0%, #7B68EE 100%);
   --toggle-thumb: #C8C8DC;
   --toggle-shadow: 0 0 12px rgba(200, 200, 220, 0.5);
 
-  /* Scrollbar */
+  
   --scrollbar-bg: #050510;
   --scrollbar-thumb: #7B68EE;
 }
 
-/* ============================================================
-   GLOBAL RESET & BASE STYLES
-   ============================================================ */
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -126,12 +119,7 @@ body {
   min-height: 100vh;
 }
 
-/* ============================================================
-   TYPOGRAPHY SYSTEM
-   Orbitron  → headings / titles (futuristic, works for both themes)
-   Rajdhani  → subheadings / labels
-   Nunito    → body text (friendly and readable)
-   ============================================================ */
+
 h1, h2, h3 {
   font-family: var(--font-orbitron), sans-serif;
   font-weight: 700;
@@ -153,21 +141,7 @@ p, span, li {
   color: var(--text-secondary);
 }
 
-/* ============================================================
-   THEME TRANSITION — smooth cinematic switch
 
-   IMPORTANT: We do NOT apply transitions to all (*) elements.
-   Doing so causes two serious problems:
-     1. Framer-motion owns transform/opacity — a blanket
-        transition rule overrides spring physics with CSS easing
-     2. Every animated element (star, cloud, card) inherits an
-        extra transition, doubling composited layer cost
-
-   Instead, we only transition semantic theme tokens:
-   background-color, color, border-color, and box-shadow.
-   These are the CSS variables that flip on theme toggle.
-   Framer-motion's own transition prop handles everything else.
-   ============================================================ */
 body,
 body *:not([data-framer-component-type]):not([style*="transform"]) {
   transition:
@@ -177,17 +151,13 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
     box-shadow 0.55s ease;
 }
 
-/* Escape hatch for elements that must not transition at all */
+
 .no-transition,
 .no-transition * {
   transition: none !important;
 }
 
-/* ── FOUC GUARD ─────────────────────────────────────────────
-   The inline script in layout.jsx adds .no-transitions
-   before the first paint. ThemeContext removes it after 150ms.
-   This block ensures zero animated flash on initial load.
-   ────────────────────────────────────────────────────────── */
+
 .no-transitions,
 .no-transitions *,
 .no-transitions *::before,
@@ -196,11 +166,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
 }
 
 
-/* ============================================================
-   MAIN BACKGROUND — full viewport gradient
-   .day-mode body → sky blue gradient
-   .night-mode body → deep space gradient
-   ============================================================ */
+
 .day-mode body,
 .day-mode #app-root {
   background: var(--bg-gradient);
@@ -211,9 +177,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   background: var(--bg-gradient);
 }
 
-/* ============================================================
-   GLASS MORPHISM CARD — base style used by all section cards
-   ============================================================ */
+
 .glass-card {
   background: var(--bg-card);
   border: 1px solid var(--card-border);
@@ -230,9 +194,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   transform: translateY(-8px);
 }
 
-/* ============================================================
-   BUTTONS — base style
-   ============================================================ */
+
 .btn {
   font-family: var(--font-rajdhani), sans-serif;
   font-weight: 600;
@@ -262,9 +224,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   transform: translateY(0px);
 }
 
-/* ============================================================
-   TECH / SKILL TAGS
-   ============================================================ */
+
 .tag {
   font-family: var(--font-rajdhani), sans-serif;
   font-size: 0.78rem;
@@ -279,9 +239,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   display: inline-block;
 }
 
-/* ============================================================
-   SECTION LAYOUT
-   ============================================================ */
+
 .section {
   width: 100%;
   max-width: 1100px;
@@ -307,9 +265,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   margin-bottom: 56px;
 }
 
-/* ============================================================
-   SCROLLBAR STYLING
-   ============================================================ */
+
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -323,11 +279,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   border-radius: 10px;
 }
 
-/* ============================================================
-   DAY VISION — ANIMATED BACKGROUND ELEMENTS
-   Clouds drift across screen using keyframe animations.
-   These are used inside DayVision/page.jsx background layer.
-   ============================================================ */
+
 @keyframes cloudDrift {
   0%   { transform: translateX(-220px); opacity: 0; }
   5%   { opacity: 1; }
@@ -353,11 +305,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   50%       { transform: translateY(-18px) rotate(5deg); }
 }
 
-/* ============================================================
-   NIGHT VISION — ANIMATED BACKGROUND ELEMENTS
-   Stars twinkle, rocket scrolls, shooting stars streak.
-   These are used inside NightVision/page.jsx background layer.
-   ============================================================ */
+
 @keyframes starTwinkle {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.2; transform: scale(0.6); }
@@ -383,9 +331,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   50%       { opacity: 0.14; }
 }
 
-/* ============================================================
-   FLOATING ANIMATION — used on cards and section elements
-   ============================================================ */
+
 @keyframes floatUp {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-10px); }
@@ -395,11 +341,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   animation: floatUp 4s ease-in-out infinite;
 }
 
-/* ============================================================
-   PAGE ENTRANCE ANIMATION
-   Sections fade + slide up as they enter viewport.
-   Framer Motion handles the trigger, CSS handles the style.
-   ============================================================ */
+
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(40px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -409,10 +351,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   animation: fadeSlideUp 0.7s ease forwards;
 }
 
-/* ============================================================
-   NIGHT MODE — NEBULA BLOBS
-   Soft glowing background blobs for atmosphere in space mode
-   ============================================================ */
+
 .night-mode .nebula-blob {
   position: fixed;
   border-radius: 50%;
@@ -422,9 +361,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   z-index: 0;
 }
 
-/* ============================================================
-   RESPONSIVE UTILITIES
-   ============================================================ */
+
 @media (max-width: 768px) {
   .section {
     padding: 56px 16px;
@@ -446,9 +383,7 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   }
 }
 
-/* ============================================================
-   SELECTION COLOR
-   ============================================================ */
+
 .day-mode ::selection {
   background: rgba(46, 134, 193, 0.3);
   color: #ffffff;

@@ -49,18 +49,18 @@ export default function EmailObject({ theme }) {
           justifyContent: 'center',
         }}
         animate={{ 
-          rotate: isDay ? [-15, -5, -15] : [0, 0] // Paper airplane bobs slightly
+          rotate: isDay ? [-15, -5, -15] : [0, 0] 
         }}
         transition={{ 
           rotate: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
         }}
       >
         {isDay ? (
-          <div style={{ transform: 'rotate(-45deg)' /* Point forward left */ }}>
+          <div style={{ transform: 'rotate(-45deg)'  }}>
             <PaperAirplane />
           </div>
         ) : (
-          <div style={{ transform: 'scaleX(-1)' /* Flip star to point left */ }}>
+          <div style={{ transform: 'scaleX(-1)'  }}>
             🌠
           </div>
         )}

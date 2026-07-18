@@ -1,26 +1,26 @@
 'use client';
 
-// ============================================================
-// components/Landing.jsx — HERO / LANDING SECTION
-//
-// CONNECTION MAP:
-//   page.jsx            → mounts <Landing theme={theme} />
-//   ThreeDCharacter.jsx → CSS avatar placeholder (no Three.js)
-//   globals.css         → base styles, CSS variables, fonts
-//
-// PROPS:
-//   theme {string} 'day' | 'night'
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 import ThreeDCharacter from './ThreeDCharacter';
 
-// ── TECH STACK TAGS ──────────────────────────────────────────
+
 const TECH_TAGS = ['React', 'Next.js', 'MongoDB', 'Node.js', 'Express', 'Firebase', 'Vercel', 'Supabase'];
 
-// ── TYPING HOOK ───────────────────────────────────────────────
+
 function useTypingEffect(text, startDelay = 700, speed = 85) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone]           = useState(false);
@@ -56,7 +56,7 @@ function useTypingEffect(text, startDelay = 700, speed = 85) {
   return { displayed, done };
 }
 
-// ── SMALL CLOUD (day decoration around bubble) ───────────────
+
 const MiniCloud = ({ style }) => (
   <svg width="72" height="30" viewBox="0 0 72 30" fill="none" style={style}>
     <ellipse cx="36" cy="22" rx="32" ry="12" fill="rgba(255,255,255,0.72)" />
@@ -66,7 +66,7 @@ const MiniCloud = ({ style }) => (
   </svg>
 );
 
-// ── ORBITING STAR (night decoration around bubble) ───────────
+
 const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
   <motion.div
     style={{
@@ -95,7 +95,7 @@ const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
   </motion.div>
 );
 
-// ── SCROLL INDICATOR ─────────────────────────────────────────
+
 const ScrollIndicator = ({ isDay }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
@@ -143,7 +143,7 @@ const ScrollIndicator = ({ isDay }) => (
   </motion.div>
 );
 
-// ── FRAMER MOTION VARIANTS ────────────────────────────────────
+
 const fadeUp = (delay = 0) => ({
   initial:    { opacity: 0, y: 28 },
   animate:    { opacity: 1, y: 0  },
@@ -162,9 +162,9 @@ const scaleIn = (delay = 0) => ({
   transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] },
 });
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function Landing({ theme }) {
   const isDay = theme === 'day';
 
@@ -177,7 +177,7 @@ export default function Landing({ theme }) {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ── STYLES ─────────────────────────────────────────────────
+  
   const sectionStyle = {
     minHeight: '100vh',
     width: '100%',
@@ -201,9 +201,9 @@ export default function Landing({ theme }) {
     flexWrap: 'wrap',
   };
 
-  // ── 3D CHARACTER CONTAINER ──────────────────────────────────
-  // Taller than the old GIF bubble — full body model needs height
-  // Width/height here is the outer decoration wrapper
+  
+  
+  
   const bubbleWrapStyle = {
     position: 'relative',
     width: '320px',
@@ -214,7 +214,7 @@ export default function Landing({ theme }) {
     justifyContent: 'center',
   };
 
-  // The actual container for the CSS avatar placeholder
+  
   const canvasContainerStyle = {
     width: '300px',
     height: '360px',
@@ -298,7 +298,7 @@ export default function Landing({ theme }) {
 
   return (
     <>
-      {/* Blinking cursor keyframe */}
+      
       <style>{`
         @keyframes blink {
           0%, 100% { opacity: 1; }
@@ -319,13 +319,13 @@ export default function Landing({ theme }) {
       <section id="landing" style={sectionStyle}>
         <div style={innerStyle} className="landing-inner">
 
-          {/* ══ LEFT — TEXT BLOCK ══════════════════════════ */}
+          
           <motion.div
             style={textBlockStyle}
             className="landing-text"
             {...fadeLeft(0.1)}
           >
-            {/* Greeting */}
+            
             <motion.p style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '1.05rem',
@@ -339,7 +339,7 @@ export default function Landing({ theme }) {
               {isDay ? '✈ Welcome to my sky' : '🛸 Incoming transmission'}
             </motion.p>
 
-            {/* Hi line */}
+            
             <motion.div {...fadeLeft(0.5)}>
               <span style={{
                 fontFamily: "var(--font-nunito), sans-serif",
@@ -353,7 +353,7 @@ export default function Landing({ theme }) {
               </span>
             </motion.div>
 
-            {/* Typing name */}
+            
             <motion.h1 style={{
               fontFamily: "var(--font-orbitron), sans-serif",
               fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
@@ -369,7 +369,7 @@ export default function Landing({ theme }) {
               <span style={cursorStyle} />
             </motion.h1>
 
-            {/* Subtitle */}
+            
             <motion.p style={{
               fontFamily: "var(--font-nunito), sans-serif",
               fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
@@ -383,7 +383,7 @@ export default function Landing({ theme }) {
                 : 'By night: I chase the edge cases the world forgets debugging in the dark until the code holds.'}
             </motion.p>
 
-            {/* Tech tags */}
+            
             <motion.div style={{
               display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px',
             }} {...fadeUp(1.2)}>
@@ -401,9 +401,9 @@ export default function Landing({ theme }) {
               ))}
             </motion.div>
 
-            {/* Buttons Container */}
+            
             <motion.div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.7)}>
-              {/* Explore button */}
+              
               <motion.button
                 style={buttonStyle}
                 onClick={handleExplore}
@@ -418,7 +418,7 @@ export default function Landing({ theme }) {
                 }}
                 whileTap={{ scale: 0.97 }}
               >
-                {/* Shimmer overlay */}
+                
                 <motion.div
                   style={{
                     position: 'absolute',
@@ -437,7 +437,7 @@ export default function Landing({ theme }) {
                 </span>
               </motion.button>
 
-              {/* Contact button */}
+              
               <motion.a
                 href="mailto:muazctg07@gmail.com"
                 style={{ ...buttonStyle, textDecoration: 'none' }}
@@ -452,7 +452,7 @@ export default function Landing({ theme }) {
                 }}
                 whileTap={{ scale: 0.97 }}
               >
-                {/* Shimmer overlay */}
+                
                 <motion.div
                   style={{
                     position: 'absolute',
@@ -473,10 +473,10 @@ export default function Landing({ theme }) {
             </motion.div>
           </motion.div>
 
-          {/* ══ RIGHT — 3D CHARACTER ════════════════════════ */}
+          
           <motion.div style={bubbleWrapStyle} {...scaleIn(0.2)}>
 
-            {/* Day: mini clouds floating around the character */}
+            
             {isDay && (
               <>
                 <motion.div
@@ -494,7 +494,7 @@ export default function Landing({ theme }) {
                   <MiniCloud style={{ opacity: 0.75 }} />
                 </motion.div>
 
-                {/* Day: soft sunlight ring */}
+                
                 <motion.div
                   style={{
                     position: 'absolute',
@@ -510,7 +510,7 @@ export default function Landing({ theme }) {
               </>
             )}
 
-            {/* Night: orbiting stars around the character */}
+            
             {!isDay && (
               <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
                 <OrbitStar radius={152} duration={8}  delay={0}   size={5} />
@@ -520,7 +520,7 @@ export default function Landing({ theme }) {
               </div>
             )}
 
-            {/* Night: deep nebula glow behind character */}
+            
             {!isDay && (
               <motion.div
                 style={{
@@ -537,14 +537,12 @@ export default function Landing({ theme }) {
               />
             )}
 
-            {/* ── THE CSS AVATAR ─────────────────────────────
-                z-index: 1 so it sits above the glow rings
-                but below the orbiting star decorations (z:2)  */}
+            
             <div style={canvasContainerStyle} className="char-canvas-wrap">
               <ThreeDCharacter theme={theme} />
             </div>
 
-            {/* Glassy highlight ring on the bubble edge */}
+            
             <div style={{
               position: 'absolute',
               top: '50%',
@@ -559,11 +557,11 @@ export default function Landing({ theme }) {
             }} />
 
           </motion.div>
-          {/* ══ END RIGHT ══ */}
+          
 
         </div>
 
-        {/* ── SCROLL INDICATOR ───────────────────────────── */}
+        
         <ScrollIndicator isDay={isDay} />
 
       </section>

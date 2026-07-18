@@ -1,26 +1,26 @@
 'use client';
 
-// ============================================================
-// components/Projects.jsx — PROJECT SHOWCASE SECTION
-//
-// CONNECTION MAP:
-//   page.jsx    → mounts <Projects theme={theme} /> after Landing
-//   globals.css → CSS variables, fonts, glass-card base styles
-//   public/assets/projects/project1-preview.gif  etc.
-//
-// PROPS:
-//   theme {string} 'day' | 'night'
-//
-// DESIGN:
-//   Day Vision  → Cards = floating sky platforms, clouds underneath,
-//                 soft sky-blue shadows, wind-lift hover
-//   Night Vision → Cards = space station windows, cyan/purple glow
-//                  borders, depth-push hover into space
-//
-// CUSTOMISE:
-//   Edit the PROJECTS array below to add your real projects.
-//   Replace GIF paths with your real files in public/assets/projects/
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -33,7 +33,7 @@ import {
   SiJavascript, SiHtml5,
 } from 'react-icons/si';
 
-// ── TAG ICON MAP ─────────────────────────────────────────────
+
 const TAG_ICONS = {
   'React':      <SiReact />,
   'Next.js':    <SiNextdotjs />,
@@ -45,9 +45,9 @@ const TAG_ICONS = {
   'HTML/CSS':   <SiHtml5 />,
 };
 
-// ── YOUR PROJECTS — edit this array ─────────────────────────
-// Replace with your real project data.
-// Add a `previewIcon` emoji or short label for the CSS preview card.
+
+
+
 const PROJECTS = [
   {
     id: 1,
@@ -93,10 +93,10 @@ const PROJECTS = [
   },
 ];
 
-// ── PROJECT PREVIEW (CSS) ──────────────────────────────────
-// Replaces broken gif/png <img> tags with a fully CSS preview.
-// Day: frosted glass terminal window with animated dots
-// Night: dark display with scan lines and neon accent
+
+
+
+
 function ProjectPreview({ project, isDay, hovered }) {
   return (
     <div style={{
@@ -112,7 +112,7 @@ function ProjectPreview({ project, isDay, hovered }) {
       flexDirection: 'column',
     }}>
 
-      {/* Window chrome bar */}
+      
       <div style={{
         height: '28px',
         background: isDay ? 'rgba(255,255,255,0.3)' : 'rgba(123,104,238,0.12)',
@@ -139,7 +139,7 @@ function ProjectPreview({ project, isDay, hovered }) {
         }}>{project.previewLabel || 'PROJECT'}</span>
       </div>
 
-      {/* Preview body */}
+      
       <div style={{
         flex: 1,
         display: 'flex',
@@ -150,7 +150,7 @@ function ProjectPreview({ project, isDay, hovered }) {
         padding: '16px',
         position: 'relative',
       }}>
-        {/* Scanlines for night */}
+        
         {!isDay && (
           <div style={{
             position: 'absolute', inset: 0,
@@ -159,7 +159,7 @@ function ProjectPreview({ project, isDay, hovered }) {
           }} />
         )}
 
-        {/* Icon */}
+        
         <motion.div
           animate={{ scale: hovered ? [1,1.15,1] : 1, y: hovered ? [0,-6,0] : 0 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
@@ -168,7 +168,7 @@ function ProjectPreview({ project, isDay, hovered }) {
           {project.previewIcon || '📁'}
         </motion.div>
 
-        {/* Animated loading dots */}
+        
         <div style={{ display:'flex', gap:'5px', position:'relative', zIndex:1 }}>
           {[0,1,2].map(i => (
             <motion.div
@@ -183,7 +183,7 @@ function ProjectPreview({ project, isDay, hovered }) {
           ))}
         </div>
 
-        {/* Label */}
+        
         <span style={{
           fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.6rem',
@@ -195,7 +195,7 @@ function ProjectPreview({ project, isDay, hovered }) {
         }}>preview available soon</span>
       </div>
 
-      {/* Overlay gradient */}
+      
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
@@ -209,7 +209,7 @@ function ProjectPreview({ project, isDay, hovered }) {
   );
 }
 
-// ── SMALL CLOUD under card (Day only) ────────────────────────
+
 const CardCloud = ({ style }) => (
   <svg width="180" height="44" viewBox="0 0 180 44" fill="none" style={style}>
     <ellipse cx="90"  cy="34" rx="82"  ry="16" fill="rgba(255,255,255,0.55)" />
@@ -219,7 +219,7 @@ const CardCloud = ({ style }) => (
   </svg>
 );
 
-// ── SPACE STATION CORNER DETAILS (Night only) ────────────────
+
 const StationCorner = ({ flip }) => (
   <svg
     width="36" height="36" viewBox="0 0 36 36" fill="none"
@@ -232,7 +232,7 @@ const StationCorner = ({ flip }) => (
   </svg>
 );
 
-// ── FEATURED BADGE ────────────────────────────────────────────
+
 const FeaturedBadge = ({ isDay }) => (
   <div style={{
     position: 'absolute',
@@ -256,7 +256,7 @@ const FeaturedBadge = ({ isDay }) => (
   </div>
 );
 
-// ── PROJECT CARD ─────────────────────────────────────────────
+
 function ProjectCard({ project, isDay, index }) {
   const [hovered, setHovered] = useState(false);
 
@@ -297,7 +297,7 @@ function ProjectCard({ project, isDay, index }) {
     >
       {project.featured && <FeaturedBadge isDay={isDay} />}
 
-      {/* Night: corner station details */}
+      
       {!isDay && (
         <>
           <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 4, pointerEvents: 'none' }}>
@@ -309,7 +309,7 @@ function ProjectCard({ project, isDay, index }) {
         </>
       )}
 
-      {/* Night: animated glow border on hover */}
+      
       {!isDay && hovered && (
         <motion.div
           style={{
@@ -325,13 +325,13 @@ function ProjectCard({ project, isDay, index }) {
         />
       )}
 
-      {/* ── PROJECT PREVIEW (CSS) ──────────────────────── */}
+      
       <ProjectPreview project={project} isDay={isDay} hovered={hovered} />
 
-      {/* ── CARD BODY ────────────────────────────────────── */}
+      
       <div style={{ padding: '20px 22px 22px' }}>
 
-        {/* Subtitle */}
+        
         <p style={{
           fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.7rem',
@@ -344,7 +344,7 @@ function ProjectCard({ project, isDay, index }) {
           {project.subtitle}
         </p>
 
-        {/* Title */}
+        
         <h3 style={{
           fontFamily: "var(--font-orbitron), sans-serif",
           fontSize: '1.18rem',
@@ -359,7 +359,7 @@ function ProjectCard({ project, isDay, index }) {
           {project.title}
         </h3>
 
-        {/* Description */}
+        
         <p style={{
           fontFamily: "var(--font-nunito), sans-serif",
           fontSize: '0.9rem',
@@ -370,7 +370,7 @@ function ProjectCard({ project, isDay, index }) {
           {project.description}
         </p>
 
-        {/* Tags */}
+        
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginBottom: '20px' }}>
           {project.tags.map(tag => (
             <span key={tag} style={{
@@ -398,10 +398,10 @@ function ProjectCard({ project, isDay, index }) {
           ))}
         </div>
 
-        {/* Buttons row */}
+        
         <div style={{ display: 'flex', gap: '12px' }}>
 
-          {/* Live Demo */}
+          
           <motion.a
             href={project.liveUrl}
             target="_blank"
@@ -442,7 +442,7 @@ function ProjectCard({ project, isDay, index }) {
             Live Demo
           </motion.a>
 
-          {/* GitHub */}
+          
           {project.githubUrl && (
             <motion.a
               href={project.githubUrl}
@@ -477,7 +477,7 @@ function ProjectCard({ project, isDay, index }) {
             </motion.a>
           )}
 
-          {/* GitHub Server */}
+          
           {project.githubServerUrl && (
             <motion.a
               href={project.githubServerUrl}
@@ -515,7 +515,7 @@ function ProjectCard({ project, isDay, index }) {
         </div>
       </div>
 
-      {/* Day: cloud platform underneath card */}
+      
       {isDay && (
         <div style={{
           position: 'absolute',
@@ -535,9 +535,9 @@ function ProjectCard({ project, isDay, index }) {
   );
 }
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function Projects({ theme }) {
   const isDay = theme === 'day';
 
@@ -553,7 +553,7 @@ export default function Projects({ theme }) {
     >
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
 
-        {/* ── SECTION HEADER ───────────────────────────── */}
+        
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -561,7 +561,7 @@ export default function Projects({ theme }) {
           transition={{ duration: 0.6 }}
           style={{ textAlign: 'center', marginBottom: '70px' }}
         >
-          {/* Eyebrow label */}
+          
           <p style={{
             fontFamily: "var(--font-rajdhani), sans-serif",
             fontSize: '0.75rem',
@@ -574,7 +574,7 @@ export default function Projects({ theme }) {
             {isDay ? '✈ Things I Built' : '🛸 Missions Completed'}
           </p>
 
-          {/* Title */}
+          
           <h2 style={{
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
@@ -589,7 +589,7 @@ export default function Projects({ theme }) {
             My Projects
           </h2>
 
-          {/* Decorative divider */}
+          
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
             <div style={{
               height: '1.5px', width: '60px',
@@ -610,7 +610,7 @@ export default function Projects({ theme }) {
           </div>
         </motion.div>
 
-        {/* ── PROJECT CARDS GRID ────────────────────────── */}
+        
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -627,7 +627,7 @@ export default function Projects({ theme }) {
           ))}
         </div>
 
-        {/* ── BOTTOM CTA ────────────────────────────────── */}
+        
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

@@ -1,14 +1,14 @@
 'use client';
 
-// ============================================================
-// components/TestMe.jsx — CHALLENGE ARENA SECTION
-// BUG FIX APPLIED:
-//   🔴 localStorage called in component body during SSR
-//      sortedChallenges used localStorage.getItem() directly
-//      in component render = "localStorage is not defined" crash
-//   ✅ Fixed by moving sort logic into useState + useEffect
-//      so it only runs on client after mount
-// ============================================================
+
+
+
+
+
+
+
+
+
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
@@ -26,21 +26,21 @@ const CATEGORIES = [
   { id: 'other',           label: 'Other',                icon: '📦', desc: 'Anything else you can think of'          },
 ];
 
-// ── ADMIN UTILS (Hidden) ──────────────────────────────────────
-// You can uncomment and run these to manage your showcases programmatically:
-// const createProblem = async () => {
-//   await addDoc(collection(db, 'problems'), {
-//     order: 1, category: 'problem-solving', challengerName: 'Alex R.',
-//     challenge: 'How would you build a real-time notification system without WebSockets?',
-//     solution: 'Great challenge! I would use Server-Sent Events (SSE)...',
-//     tags: ['Node.js', 'React'], solvedAt: 'March 2025', stars: 0, comments: []
-//   });
-// };
-// const deleteProblem = async (id) => {
-//   await deleteDoc(doc(db, 'problems', id));
-// };
 
-// ── STAR RATING ───────────────────────────────────────────────
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function StarRating({ challengeId, currentStars, isDay }) {
   const [hasStarred, setHasStarred] = useState(false);
 
@@ -60,7 +60,7 @@ function StarRating({ challengeId, currentStars, isDay }) {
       });
     } catch (err) {
       console.error('Failed to star:', err);
-      setHasStarred(false); // Revert on failure
+      setHasStarred(false); 
     }
   };
 
@@ -97,7 +97,7 @@ function StarRating({ challengeId, currentStars, isDay }) {
   );
 }
 
-// ── REPLIES / COMMENTS COMPONENT ──────────────────────────────
+
 function RepliesSection({ challengeId, comments = [], isDay }) {
   const [replyText, setReplyText] = useState('');
 
@@ -148,7 +148,7 @@ function RepliesSection({ challengeId, comments = [], isDay }) {
   );
 }
 
-// ── SOLVED CHALLENGE CARD ─────────────────────────────────────
+
 function SolvedCard({ challenge, isDay, index }) {
   const [expanded, setExpanded] = useState(false);
   const cat = CATEGORIES.find(c => c.id === challenge.category);
@@ -303,7 +303,7 @@ function SolvedCard({ challenge, isDay, index }) {
   );
 }
 
-// ── CHALLENGE FORM ────────────────────────────────────────────
+
 function ChallengeForm({ isDay }) {
   const [step, setStep]           = useState('idle');
   const [selectedCat, setSelectedCat] = useState(null);
@@ -355,7 +355,7 @@ function ChallengeForm({ isDay }) {
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
       <AnimatePresence mode="wait">
 
-        {/* STEP 0 — idle button */}
+        
         {step === 'idle' && (
           <motion.div key="idle"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -394,7 +394,7 @@ function ChallengeForm({ isDay }) {
           </motion.div>
         )}
 
-        {/* STEP 1 — category selector */}
+        
         {step === 'category' && (
           <motion.div key="category"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -452,7 +452,7 @@ function ChallengeForm({ isDay }) {
           </motion.div>
         )}
 
-        {/* STEP 2 — input form */}
+        
         {step === 'form' && !result && (
           <motion.div key="form"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
@@ -556,7 +556,7 @@ function ChallengeForm({ isDay }) {
           </motion.div>
         )}
 
-        {/* STEP 3 — success / error */}
+        
         {result && (
           <motion.div key="result"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -616,9 +616,9 @@ function ChallengeForm({ isDay }) {
   );
 }
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function TestMe({ theme }) {
   const isDay = theme === 'day';
 
@@ -631,7 +631,7 @@ export default function TestMe({ theme }) {
         id: doc.id,
         ...doc.data()
       }));
-      // Sort by stars first, then order
+      
       data.sort((a, b) => (b.stars || 0) - (a.stars || 0) || (a.order || 0) - (b.order || 0));
       setChallenges(data);
       setLoading(false);

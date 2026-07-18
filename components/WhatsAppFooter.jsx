@@ -48,7 +48,7 @@ export default function WhatsAppFooter({ theme }) {
           transition: 'box-shadow 0.3s ease',
         }}
       >
-        {/* Shimmer overlay */}
+        
         <motion.div
           style={{
             position: 'absolute',

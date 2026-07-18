@@ -1,24 +1,24 @@
 'use client';
 
-// ============================================================
-// DayVision/page.jsx — ANIMATED DAYTIME SKY BACKGROUND
-//
-// CONNECTION MAP:
-//   page.jsx (root) → dynamically imports this file
-//   globals.css     → provides --day-* CSS variables used here
-//   layout.jsx      → applies .day-mode class to <body>
-//
-// This component renders as a FIXED full-viewport background
-// layer (z-index: 0) behind all content sections.
-// It is only mounted when theme === 'day' in page.jsx.
-//
-// All objects are pure inline SVG + CSS/framer-motion.
-// Zero external image files required for the background itself.
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion } from 'framer-motion';
 
-// ── CLOUD FILTER & GRADIENTS DEFINITION ────────────────────────
+
 const CloudFilters = () => (
   <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
     <defs>
@@ -56,8 +56,8 @@ const CloudFilters = () => (
   </svg>
 );
 
-// ── CLOUD SVG SHAPES ─────────────────────────────────────────
-// Multi-layered shapes warped with feTurbulence filter applied at container level
+
+
 const CloudLarge = ({ opacity = 0.82 }) => (
   <svg
     width="450"
@@ -113,7 +113,7 @@ const CloudSmall = ({ opacity = 0.62 }) => (
   </svg>
 );
 
-// ── SUN WITH LIGHT FLARE ───────────────────────────────────────
+
 const Sun = () => (
   <motion.div
     style={{
@@ -149,7 +149,7 @@ const Sun = () => (
   </motion.div>
 );
 
-// ── KITE ─────────────────────────────────────────────────────
+
 const Kite = () => (
   <motion.div
     style={{ position: 'absolute', top: '7%', right: '7%', zIndex: 1 }}
@@ -157,15 +157,15 @@ const Kite = () => (
     transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
   >
     <svg width="60" height="120" viewBox="0 0 60 120" fill="none">
-      {/* Kite body */}
+      
       <polygon points="30,2 58,40 30,72 2,40" fill="#FF6B6B" opacity="0.88" />
       <polygon points="30,2 58,40 30,72 2,40" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
-      {/* Cross lines */}
+      
       <line x1="2" y1="40" x2="58" y2="40" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
       <line x1="30" y1="2" x2="30" y2="72" stroke="rgba(255,255,255,0.5)" strokeWidth="1" />
-      {/* Tail */}
+      
       <path d="M30 72 Q22 85 30 95 Q38 105 30 115" stroke="rgba(255,107,107,0.7)" strokeWidth="2" fill="none" strokeLinecap="round" />
-      {/* Tail bows */}
+      
       {[80, 92, 104].map((y, i) => (
         <ellipse key={i} cx="30" cy={y} rx="5" ry="3" fill="#FFD700" opacity="0.8" />
       ))}
@@ -173,7 +173,7 @@ const Kite = () => (
   </motion.div>
 );
 
-// ── BIRD FLOCK ────────────────────────────────────────────────
+
 const BirdShape = ({ x, y, scale = 1 }) => (
   <g transform={`translate(${x},${y}) scale(${scale})`}>
     <path d="M0,0 Q-8,-5 -14,0" stroke="rgba(60,80,100,0.7)" strokeWidth="1.8" fill="none" strokeLinecap="round" />
@@ -181,7 +181,7 @@ const BirdShape = ({ x, y, scale = 1 }) => (
   </g>
 );
 
-// ── HOT AIR BALLOON ───────────────────────────────────────────
+
 const HotAirBalloon = () => (
   <motion.div
     style={{ position: 'absolute', left: '3%', top: '38%', zIndex: 1 }}
@@ -189,24 +189,24 @@ const HotAirBalloon = () => (
     transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
   >
     <svg width="55" height="80" viewBox="0 0 55 80" fill="none">
-      {/* Balloon */}
+      
       <ellipse cx="27" cy="28" rx="22" ry="26" fill="rgba(255,160,80,0.85)" />
       <path d="M5,28 Q27,2 49,28" fill="rgba(255,200,100,0.7)" />
-      {/* Stripes */}
+      
       <path d="M12,12 Q27,2 42,12 Q27,30 12,12" fill="rgba(255,255,255,0.25)" />
       <path d="M8,30 Q27,18 46,30 Q27,48 8,30" fill="rgba(255,255,255,0.15)" />
-      {/* Ropes */}
+      
       <line x1="16" y1="52" x2="19" y2="62" stroke="rgba(150,100,50,0.6)" strokeWidth="1.2" />
       <line x1="27" y1="54" x2="27" y2="62" stroke="rgba(150,100,50,0.6)" strokeWidth="1.2" />
       <line x1="38" y1="52" x2="35" y2="62" stroke="rgba(150,100,50,0.6)" strokeWidth="1.2" />
-      {/* Basket */}
+      
       <rect x="17" y="62" width="21" height="12" rx="3" fill="rgba(180,130,70,0.8)" />
       <rect x="17" y="62" width="21" height="12" rx="3" fill="none" stroke="rgba(150,100,50,0.5)" strokeWidth="1" />
     </svg>
   </motion.div>
 );
 
-// ── FIGHTER JET ───────────────────────────────────────────────
+
 const FighterJet = ({ direction = 1 }) => (
   <svg width="70" height="28" viewBox="0 0 70 28" fill="none" style={{ transform: direction < 0 ? 'scaleX(-1)' : 'none' }}>
     <path d="M65,14 L10,8 L2,14 L10,20 Z" fill="rgba(160,180,200,0.75)" />
@@ -215,12 +215,12 @@ const FighterJet = ({ direction = 1 }) => (
     <path d="M18,10 L10,6 L8,10 Z" fill="rgba(120,140,160,0.65)" />
     <path d="M18,18 L10,22 L8,18 Z" fill="rgba(120,140,160,0.65)" />
     <circle cx="58" cy="14" r="3" fill="rgba(100,130,160,0.6)" />
-    {/* Exhaust trail */}
+    
     <path d="M2,14 Q-8,14 -20,14" stroke="rgba(255,255,255,0.35)" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
-// ── PRIVATE PLANE ─────────────────────────────────────────────
+
 const PrivatePlane = () => (
   <svg width="80" height="30" viewBox="0 0 80 30" fill="none">
     <path d="M72,15 L8,10 L2,15 L8,20 Z" fill="rgba(220,230,240,0.78)" />
@@ -233,7 +233,7 @@ const PrivatePlane = () => (
   </svg>
 );
 
-// ── CLOUD CONFIGS ─────────────────────────────────────────
+
 const clouds = [
   { id: 'c1', Type: CloudLarge,  top: '6%',  duration: 62, delay: 0,  opacity: 0.88, blur: 0, repeatDelay: 3 },
   { id: 'c2', Type: CloudMedium, top: '14%', duration: 44, delay: 8,  opacity: 0.78, blur: 0, repeatDelay: 5 },
@@ -246,23 +246,23 @@ const clouds = [
   { id: 'c9', Type: CloudSmall,  top: '88%', duration: 28, delay: 16, opacity: 0.48, blur: 0, repeatDelay: 5 },
 ];
 
-// ── BIRD FLOCK CONFIGS ────────────────────────────────────
+
 const birdFlocks = [
   { id: 'b1', top: '12%', duration: 32, delay: 4,  scale: 1.0 },
   { id: 'b2', top: '28%', duration: 42, delay: 18, scale: 0.8 },
   { id: 'b3', top: '50%', duration: 38, delay: 28, scale: 0.7 },
 ];
 
-// ── PLANE CONFIGS ─────────────────────────────────────────
+
 const planes = [
   { id: 'p1', top: '4%',  type: 'fighter',  duration: 48, delay: 10, direction: 1  },
   { id: 'p2', top: '18%', type: 'private',  duration: 72, delay: 35, direction: -1 },
   { id: 'p3', top: '8%',  type: 'fighter',  duration: 55, delay: 55, direction: 1  },
 ];
 
-// ══════════════════════════════════════════════════════════════
-// MAIN DAY BACKGROUND COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function DayBackground() {
   return (
     <div
@@ -272,7 +272,7 @@ export default function DayBackground() {
         zIndex: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
-        // Rich sky-blue gradient — deeper blue at top for text readability, transitioning to soft haze
+        
         background: `
           linear-gradient(
             180deg,
@@ -292,35 +292,33 @@ export default function DayBackground() {
           }
         }
       `}</style>
-      {/* ── SVG FILTERS & GRADIENTS FOR REALISTIC CLOUDS ───── */}
+      
       <CloudFilters />
 
-      {/* ── ATMOSPHERIC DEPTH OVERLAY ──────────────────────
-          Subtle radial gradient gives depth — brighter center
-          fades to slightly deeper blue at edges               */}
+      
       <div style={{
         position: 'absolute', inset: 0,
         background: 'radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
-      {/* ── HORIZON HAZE ─────────────────────────────────── */}
+      
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0, height: '28%',
         background: 'linear-gradient(to top, rgba(220,245,255,0.55) 0%, transparent 100%)',
         pointerEvents: 'none',
       }} />
 
-      {/* ── SUN ──────────────────────────────────────────── */}
+      
       <Sun />
 
-      {/* ── KITE ─────────────────────────────────────────── */}
+      
       <Kite />
 
-      {/* ── HOT AIR BALLOON ──────────────────────────────── */}
+      
       <HotAirBalloon />
 
-      {/* ── CLOUDS ───────────────────────────────────────── */}
+      
       {clouds.map(({ id, Type, top, duration, delay, opacity, blur, repeatDelay }, index) => (
         <motion.div
           key={id}
@@ -345,7 +343,7 @@ export default function DayBackground() {
         </motion.div>
       ))}
 
-      {/* ── BIRD FLOCKS ──────────────────────────────────── */}
+      
       {birdFlocks.map(({ id, top, duration, delay, scale }) => (
         <motion.div
           key={id}
@@ -355,7 +353,7 @@ export default function DayBackground() {
           transition={{ duration, delay, repeat: Infinity, ease: 'linear', repeatDelay: 6 }}
         >
           <svg width="100" height="40" viewBox="0 0 100 40" fill="none">
-            {/* V-formation: lead bird + 4 followers */}
+            
             <BirdShape x={50} y={12} scale={scale} />
             <BirdShape x={35} y={22} scale={scale * 0.9} />
             <BirdShape x={65} y={22} scale={scale * 0.9} />
@@ -365,7 +363,7 @@ export default function DayBackground() {
         </motion.div>
       ))}
 
-      {/* ── PLANES ───────────────────────────────────────── */}
+      
       {planes.map(({ id, top, type, duration, delay, direction }) => (
         <motion.div
           key={id}
@@ -381,8 +379,7 @@ export default function DayBackground() {
         </motion.div>
       ))}
 
-      {/* ── SMALL FLOATING WISPY STREAKS ─────────────────── 
-          Thin horizontal light streaks add realism to sky      */}
+      
       {[18, 38, 62, 82].map((top, i) => (
         <motion.div
           key={`streak-${i}`}

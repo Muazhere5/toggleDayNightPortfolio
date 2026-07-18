@@ -1,14 +1,14 @@
 'use client';
 
-// ============================================================
-// components/Skills.jsx — TECH STACK + SOCIALS SECTION
-// BUG FIXES APPLIED:
-//   🔴 SiVscode  → removed (doesn't exist in installed version)
-//   🔴 SiCss3   → removed (doesn't exist in installed version)
-//   🔴 SiCss    → removed (uncertain across versions)
-//   ✅ Replaced with FaCss3Alt + FaCode from react-icons/fa
-//      (fa icons are stable across ALL react-icons versions)
-// ============================================================
+
+
+
+
+
+
+
+
+
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -33,7 +33,7 @@ import {
   FaEnvelope,
 } from 'react-icons/fa';
 
-// ── SKILLS DATA ───────────────────────────────────────────────
+
 const SKILLS = [
   { id: 1,  name: 'React',        Icon: FaReact,       color: '#61DAFB', orbit: 'inner'  },
   { id: 2,  name: 'Next.js',      Icon: SiNextdotjs,   color: '#888888', orbit: 'inner'  },
@@ -47,7 +47,7 @@ const SKILLS = [
   { id: 10, name: 'Supabase',     Icon: SiSupabase,    color: '#3ECF8E', orbit: 'outer'  },
 ];
 
-// ── SOCIALS DATA ──────────────────────────────────────────────
+
 const SOCIALS = [
   { id: 1, name: 'GitHub',   Icon: FaGithub,   href: 'https://github.com/Muazhere5',    color: '#ffffff' },
   { id: 2, name: 'LinkedIn', Icon: FaLinkedin, href: 'https://www.linkedin.com/in/abdullah-al-muaz-bb97a3370', color: '#0A66C2' },
@@ -57,9 +57,9 @@ const SOCIALS = [
   { id: 6, name: 'Email',    Icon: FaEnvelope, href: 'mailto:muazctg07@gmail.com',               color: '#EA4335' },
 ];
 
-// ════════════════════════════════════════════════════════════
-// DAY VISION — KITE STRING LAYOUT
-// ════════════════════════════════════════════════════════════
+
+
+
 
 const KiteTop = () => (
   <svg width="48" height="90" viewBox="0 0 48 90" fill="none"
@@ -172,9 +172,9 @@ function KiteStringLayout({ isDay }) {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// NIGHT VISION — SATELLITE ORBIT LAYOUT
-// ════════════════════════════════════════════════════════════
+
+
+
 
 function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
   const [hovered, setHovered] = useState(false);
@@ -323,9 +323,9 @@ function SatelliteOrbitLayout() {
   );
 }
 
-// ════════════════════════════════════════════════════════════
-// SOCIALS ROW
-// ════════════════════════════════════════════════════════════
+
+
+
 function SocialsRow({ isDay }) {
   return (
     <motion.div
@@ -381,9 +381,9 @@ function SocialsRow({ isDay }) {
   );
 }
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function Skills({ theme }) {
   const isDay = theme === 'day';
 

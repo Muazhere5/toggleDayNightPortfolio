@@ -1,36 +1,36 @@
 'use client';
 
-// ============================================================
-// components/ThemeToggle.jsx — THE HORIZON SWITCH
-//
-// CONNECTION MAP:
-//   layout.jsx  → holds theme state + toggleTheme function
-//   page.jsx    → receives {theme, toggleTheme} from layout.jsx
-//                 renders <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-//   globals.css → CSS variables consumed via inline styles here
-//
-// POSITION: Fixed top-right corner, always visible on scroll.
-// PROPS:
-//   theme        {string}   'day' | 'night'
-//   toggleTheme  {function} flips the theme state in layout.jsx
-//
-// DESIGN: "The Horizon Switch"
-//   - Track gradient = sky-blue → deep black (horizon panorama)
-//   - Day thumb  = glowing SUN  (golden)
-//   - Night thumb = crescent MOON (silver-white)
-//   - Labels: "DAY" and "NGHT" on each end
-//   - Thumb slides with spring physics on toggle
-//   - Entire toggle glows matching the active mode
-//   - On switch → brief ripple pulse emanates outward
-// ============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/app/ThemeContext';
-// ── SUN ICON (inline SVG) ────────────────────────────────────
+
 const SunIcon = () => (
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-    {/* Rays */}
+    
     {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
       <line
         key={i}
@@ -43,28 +43,28 @@ const SunIcon = () => (
         strokeLinecap="round"
       />
     ))}
-    {/* Body */}
+    
     <circle cx="11" cy="11" r="5.5" fill="#FFD700" />
     <circle cx="11" cy="11" r="3.8" fill="#FFEC6E" />
   </svg>
 );
 
-// ── MOON ICON (inline SVG) ───────────────────────────────────
+
 const MoonIcon = () => (
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-    {/* Crescent shape — circle minus offset circle */}
+    
     <path
       d="M15.5 11.5 C15.5 15.09 12.59 18 9 18 C5.41 18 2.5 15.09 2.5 11.5 C2.5 7.91 5.41 5 9 5 C6.5 6.5 5 8.8 5 11.5 C5 14.2 6.5 16.5 9 18 C12.59 18 15.5 15.09 15.5 11.5Z"
       fill="rgba(200,210,240,0.95)"
     />
-    {/* Stars near moon */}
+    
     <circle cx="16" cy="6"  r="1.2" fill="rgba(200,210,240,0.8)" />
     <circle cx="19" cy="10" r="0.8" fill="rgba(200,210,240,0.6)" />
     <circle cx="14" cy="4"  r="0.7" fill="rgba(200,210,240,0.5)" />
   </svg>
 );
 
-// ── PARTICLE BURST on toggle ─────────────────────────────────
+
 const particles = Array.from({ length: 8 }, (_, i) => ({
   id: i,
   angle: (i / 8) * 360,
@@ -101,9 +101,9 @@ const Burst = ({ isDay }) => (
   </AnimatePresence>
 );
 
-// ══════════════════════════════════════════════════════════════
-// MAIN COMPONENT
-// ══════════════════════════════════════════════════════════════
+
+
+
 export default function ThemeToggle() {
 
   const { theme, toggleTheme } = useTheme();
@@ -111,19 +111,19 @@ export default function ThemeToggle() {
   const isDay  = theme === 'day';
   const [bursting, setBursting] = useState(false);
   
-  // Phase 1: Localized State Tracking
+  
   const [showNudge, setShowNudge] = useState(false);
-  const [hasCalibratedTheme, setHasCalibratedTheme] = useState(true); // default true to prevent hydration flash
+  const [hasCalibratedTheme, setHasCalibratedTheme] = useState(true); 
 
   useEffect(() => {
-    // Check if the user has already calibrated the theme
+    
     const calibrated = localStorage.getItem('hasCalibratedTheme') === 'true';
     setHasCalibratedTheme(calibrated);
     
     if (calibrated) return;
 
     const handleScroll = () => {
-      // If user scrolls past 300px and hasn't calibrated, show the nudge
+      
       if (window.scrollY > 300) {
         setShowNudge(true);
       } else {
@@ -132,15 +132,15 @@ export default function ThemeToggle() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    // Initial check in case they loaded halfway down the page
+    
     handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fire burst animation + call the actual toggle
+  
   const handleToggle = () => {
-    // Phase 4: Resolution
+    
     if (!hasCalibratedTheme || showNudge) {
       setShowNudge(false);
       setHasCalibratedTheme(true);
@@ -148,17 +148,17 @@ export default function ThemeToggle() {
     }
 
     setBursting(false);
-    // tiny timeout so AnimatePresence re-mounts the burst
+    
     setTimeout(() => {
       setBursting(true);
       toggleTheme();
-      // clear burst after animation finishes
+      
       setTimeout(() => setBursting(false), 600);
     }, 10);
   };
 
   return (
-    // Fixed container — always top-right, above everything
+    
     <div
       style={{
         position: 'fixed',
@@ -167,14 +167,13 @@ export default function ThemeToggle() {
         zIndex: 9999,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-end', // Aligned to right to match right positioning
+        alignItems: 'flex-end', 
         gap: '6px',
         pointerEvents: 'auto',
       }}
     >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-      {/* ── MODE LABEL ──────────────────────────────────────
-          Shows current mode above the toggle button          */}
+      
       <motion.div
         key={theme}
         initial={{ opacity: 0, y: -6 }}
@@ -195,8 +194,7 @@ export default function ThemeToggle() {
         {isDay ? '☀ Day Vision' : '🌙 Night Vision'}
       </motion.div>
 
-      {/* ── TOGGLE TRACK ────────────────────────────────────
-          The pill-shaped track showing the horizon gradient   */}
+      
       <motion.button
         onClick={handleToggle}
         aria-label={`Switch to ${isDay ? 'Night' : 'Day'} Vision`}
@@ -212,18 +210,18 @@ export default function ThemeToggle() {
           padding: 0,
           overflow: 'visible',
           outline: 'none',
-          // Track gradient — always shows both sky and space
+          
           background: isDay
             ? 'linear-gradient(90deg, #FFD700 0%, #87CEEB 50%, #b8e4f7 100%)'
             : 'linear-gradient(90deg, #050510 0%, #1a1a3e 50%, #7B68EE 100%)',
-          // Outer glow matches active mode
+          
           boxShadow: isDay
             ? '0 0 0 2px rgba(255,215,0,0.35), 0 4px 20px rgba(255,215,0,0.25), 0 2px 8px rgba(135,206,235,0.3)'
             : '0 0 0 2px rgba(123,104,238,0.4), 0 4px 20px rgba(123,104,238,0.3), 0 2px 8px rgba(0,0,0,0.5)',
           transition: 'background 0.8s ease, box-shadow 0.6s ease',
         }}
       >
-        {/* ── PHASE 2: SONAR BEACON EFFECT ──────────────── */}
+        
         <AnimatePresence>
           {showNudge && (
             <motion.div
@@ -243,7 +241,7 @@ export default function ThemeToggle() {
           )}
         </AnimatePresence>
 
-        {/* ── TRACK INNER BORDER ────────────────────────── */}
+        
         <div style={{
           position: 'absolute',
           inset: '2px',
@@ -254,7 +252,7 @@ export default function ThemeToggle() {
           pointerEvents: 'none',
         }} />
 
-        {/* ── DAY LABEL (left end) ──────────────────────── */}
+        
         <span style={{
           position: 'absolute',
           left: '8px',
@@ -272,7 +270,7 @@ export default function ThemeToggle() {
           DAY
         </span>
 
-        {/* ── NIGHT LABEL (right end) ───────────────────── */}
+        
         <span style={{
           position: 'absolute',
           right: '8px',
@@ -290,9 +288,7 @@ export default function ThemeToggle() {
           NGT
         </span>
 
-        {/* ── SLIDING THUMB ────────────────────────────────
-            Spring-physics slide from left (day) to right (night)
-            Sun icon in day mode, Moon icon in night mode        */}
+        
         <motion.div
           layout
           animate={{ x: isDay ? 2 : 42 }}
@@ -306,11 +302,11 @@ export default function ThemeToggle() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            // Thumb background
+            
             background: isDay
               ? 'radial-gradient(circle at 40% 35%, #FFEC6E, #FFB800)'
               : 'radial-gradient(circle at 40% 35%, #dde4f5, #9aa8d0)',
-            // Thumb glow
+            
             boxShadow: isDay
               ? '0 0 0 2px rgba(255,255,255,0.5), 0 2px 12px rgba(255,200,0,0.7), 0 0 24px rgba(255,215,0,0.4)'
               : '0 0 0 2px rgba(255,255,255,0.2), 0 2px 12px rgba(150,160,200,0.6), 0 0 20px rgba(123,104,238,0.35)',
@@ -318,7 +314,7 @@ export default function ThemeToggle() {
             zIndex: 2,
           }}
         >
-          {/* Icon crossfade */}
+          
           <AnimatePresence mode="wait">
             <motion.div
               key={theme}
@@ -331,11 +327,11 @@ export default function ThemeToggle() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Particle burst on toggle */}
+          
           {bursting && <Burst isDay={isDay} />}
         </motion.div>
 
-        {/* ── RIPPLE PULSE on click ─────────────────────── */}
+        
         <AnimatePresence>
           {bursting && (
             <motion.div
@@ -357,7 +353,7 @@ export default function ThemeToggle() {
 
       </motion.button>
 
-      {/* ── INSTRUCTION HINT (fades after first interaction) */}
+      
       <motion.div
         initial={{ opacity: 0.7 }}
         animate={{ opacity: 0.7 }}
@@ -373,7 +369,7 @@ export default function ThemeToggle() {
       </motion.div>
       </div>
 
-      {/* ── PHASE 3: ELEGANT TOOLTIP ─────────────────────── */}
+      
       <AnimatePresence>
         {showNudge && (
           <motion.div
@@ -387,7 +383,7 @@ export default function ThemeToggle() {
               right: 0,
               marginTop: '10px',
               width: 'max-content',
-              maxWidth: 'calc(100vw - 40px)', // Ensures it doesn't overflow left edge on mobile
+              maxWidth: 'calc(100vw - 40px)', 
               padding: '10px 14px',
               borderRadius: '12px',
               background: isDay ? 'rgba(255, 245, 230, 0.75)' : 'rgba(10, 15, 30, 0.75)',
