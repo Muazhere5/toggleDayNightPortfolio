@@ -326,21 +326,55 @@ function ChallengeForm({ isDay }) {
   const handleSubmit = async () => {
     if (!name.trim() || !challenge.trim()) return;
     setSending(true);
+    setResult(null);
+
+    let firestoreSuccess = false;
+
     try {
+      // 1. Write to Firestore first (The "Sky" Standard)
+      const newProblem = {
+        challengerName: name.trim(),
+        category: selectedCat,
+        challenge: challenge.trim(),
+        solvedAt: 'Pending',
+        solution: 'Processing transmission...',
+        stars: 0,
+        comments: [],
+        createdAt: new Date().toISOString(),
+        order: Date.now()
+      };
+      
+      await addDoc(collection(db, 'problems'), newProblem);
+      firestoreSuccess = true;
+
+      // 2. Trigger EmailJS Notification
+      const emailPayload = {
+        from_name: name.trim(),
+        category: CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat,
+        challenge: challenge.trim(),
+        sent_at: new Date().toLocaleString(),
+      };
+      
+      console.log('Attempting EmailJS send with payload:', emailPayload);
+
       await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID',
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID',
-        {
-          from_name: name.trim(),
-          category:  CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat,
-          challenge: challenge.trim(),
-          sent_at:   new Date().toLocaleString(),
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY',
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        emailPayload,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
       );
+      
       setResult('success');
-    } catch {
-      setResult('error');
+    } catch (error) {
+      console.error('Submission Error:', error);
+      
+      // Fallback: If Firestore succeeded but EmailJS failed, the submission is still valid
+      if (firestoreSuccess) {
+        console.warn('EmailJS notification failed, but Firestore submission succeeded.');
+        setResult('success'); // Allow the user to proceed anyway
+      } else {
+        setResult('error');
+      }
     } finally {
       setSending(false);
     }
