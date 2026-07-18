@@ -1,47 +1,24 @@
 'use client';
 
 // ============================================================
-// components/Landing.jsx — HERO / LANDING SECTION (UPDATED)
-//
-// WHAT CHANGED FROM PREVIOUS VERSION:
-//   ✅ GIF bubble replaced with 3D GLB character viewer
-//   ✅ ThreeDCharacter loaded via next/dynamic (ssr:false)
-//      → Prevents "document is not defined" crash from Three.js
-//   ✅ Bubble container resized to 340×380 (taller for full body model)
-//   ✅ Day/Night platform + lighting auto-adapts via theme prop
-//   ✅ All original text, tags, buttons, scroll indicator UNCHANGED
-//   ✅ MiniCloud decorations KEPT for day mode (around the bubble)
-//   ✅ OrbitStars KEPT for night mode (around the bubble)
+// components/Landing.jsx — HERO / LANDING SECTION
 //
 // CONNECTION MAP:
-//   page.jsx              → mounts <Landing theme={theme} />
-//   ThreeDCharacter.jsx   → handles GLB loading + Three.js scene
-//   globals.css           → base styles, CSS variables, fonts
-//   public/assets/character/threedavator.glb → 3D model
+//   page.jsx            → mounts <Landing theme={theme} />
+//   ThreeDCharacter.jsx → CSS avatar placeholder (no Three.js)
+//   globals.css         → base styles, CSS variables, fonts
 //
 // PROPS:
 //   theme {string} 'day' | 'night'
 // ============================================================
 
-import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
-// ── 3D CHARACTER — loaded dynamically (no SSR) ───────────────
-// Three.js uses browser APIs (WebGL, window) — SSR will crash
-// next/dynamic with ssr:false ensures it only runs in browser
-const ThreeDCharacter = dynamic(
-  () => import('./ThreeDCharacter'),
-  {
-    ssr: false,
-    // Show nothing while the dynamic chunk loads
-    // (ThreeDCharacter has its own Suspense fallback inside)
-    loading: () => null,
-  }
-);
+import ThreeDCharacter from './ThreeDCharacter';
 
 // ── TECH STACK TAGS ──────────────────────────────────────────
-const TECH_TAGS = ['ReactJS', 'Next.js', 'Node.js', 'MongoDB', 'Express'];
+const TECH_TAGS = ['React', 'Next.js', 'MongoDB', 'Node.js', 'Express', 'Firebase', 'Vercel', 'Supabase'];
 
 // ── TYPING HOOK ───────────────────────────────────────────────
 function useTypingEffect(text, startDelay = 700, speed = 85) {
@@ -49,23 +26,31 @@ function useTypingEffect(text, startDelay = 700, speed = 85) {
   const [done, setDone]           = useState(false);
 
   useEffect(() => {
-    setDisplayed('');
-    setDone(false);
-    let i     = 0;
     let timer = null;
+    let start = null;
 
-    const start = setTimeout(() => {
-      timer = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) {
-          clearInterval(timer);
-          setDone(true);
-        }
-      }, speed);
-    }, startDelay);
+    const timeoutId = setTimeout(() => {
+      setDisplayed('');
+      setDone(false);
 
-    return () => { clearTimeout(start); clearInterval(timer); };
+      let i = 0;
+      start = setTimeout(() => {
+        timer = setInterval(() => {
+          i++;
+          setDisplayed(text.slice(0, i));
+          if (i >= text.length) {
+            clearInterval(timer);
+            setDone(true);
+          }
+        }, speed);
+      }, startDelay);
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (start) clearTimeout(start);
+      if (timer) clearInterval(timer);
+    };
   }, [text, startDelay, speed]);
 
   return { displayed, done };
@@ -125,7 +110,7 @@ const ScrollIndicator = ({ isDay }) => (
     }}
   >
     <span style={{
-      fontFamily: "'Rajdhani', sans-serif",
+      fontFamily: "var(--font-rajdhani), sans-serif",
       fontSize: '0.68rem',
       letterSpacing: '0.18em',
       textTransform: 'uppercase',
@@ -184,7 +169,7 @@ export default function Landing({ theme }) {
   const isDay = theme === 'day';
 
   const { displayed: typedName, done: typingDone } = useTypingEffect(
-    'Muaz', 750, 90
+    'Abdullah Al Muaz', 750, 90
   );
 
   const handleExplore = () => {
@@ -229,15 +214,13 @@ export default function Landing({ theme }) {
     justifyContent: 'center',
   };
 
-  // The actual container for the Three.js Canvas
-  // Circular clip + glass background + theme border
+  // The actual container for the CSS avatar placeholder
   const canvasContainerStyle = {
     width: '300px',
     height: '360px',
-    borderRadius: '50%',
+    borderRadius: '24px',
     overflow: 'hidden',
     position: 'relative',
-    // Subtle background so the model doesn't float on pure transparency
     background: isDay
       ? 'radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.28) 0%, rgba(135,206,235,0.18) 50%, rgba(135,206,235,0.08) 100%)'
       : 'radial-gradient(ellipse at 40% 30%, rgba(30,20,60,0.55) 0%, rgba(10,10,30,0.45) 50%, rgba(5,5,20,0.3) 100%)',
@@ -271,7 +254,7 @@ export default function Landing({ theme }) {
   };
 
   const tagStyle = {
-    fontFamily: "'Rajdhani', sans-serif",
+    fontFamily: "var(--font-rajdhani), sans-serif",
     fontSize: '0.78rem',
     fontWeight: 700,
     letterSpacing: '0.1em',
@@ -289,7 +272,7 @@ export default function Landing({ theme }) {
   };
 
   const buttonStyle = {
-    fontFamily: "'Orbitron', sans-serif",
+    fontFamily: "var(--font-orbitron), sans-serif",
     fontSize: '0.82rem',
     fontWeight: 700,
     letterSpacing: '0.14em',
@@ -344,12 +327,14 @@ export default function Landing({ theme }) {
           >
             {/* Greeting */}
             <motion.p style={{
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '1.05rem',
               fontWeight: 600,
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
               color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.75)',
+              WebkitTextStroke: isDay ? '0.5px rgba(0,0,0,0.4)' : 'none',
+              textShadow: isDay ? '0px 1px 3px rgba(0,0,0,0.5)' : 'none',
             }} {...fadeLeft(0.3)}>
               {isDay ? '✈ Welcome to my sky' : '🛸 Incoming transmission'}
             </motion.p>
@@ -357,10 +342,12 @@ export default function Landing({ theme }) {
             {/* Hi line */}
             <motion.div {...fadeLeft(0.5)}>
               <span style={{
-                fontFamily: "'Nunito', sans-serif",
+                fontFamily: "var(--font-nunito), sans-serif",
                 fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
                 fontWeight: 700,
                 color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.85)',
+                WebkitTextStroke: isDay ? '0.5px rgba(0,0,0,0.4)' : 'none',
+                textShadow: isDay ? '0px 1px 3px rgba(0,0,0,0.5)' : 'none',
               }}>
                 Hey there! I&apos;m 👋
               </span>
@@ -368,13 +355,13 @@ export default function Landing({ theme }) {
 
             {/* Typing name */}
             <motion.h1 style={{
-              fontFamily: "'Orbitron', sans-serif",
+              fontFamily: "var(--font-orbitron), sans-serif",
               fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
               fontWeight: 900,
               lineHeight: 1.05,
               color: isDay ? '#ffffff' : '#E8E8F0',
               textShadow: isDay
-                ? '0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
+                ? '0px 1px 3px rgba(0,0,0,0.7), 0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
                 : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
               letterSpacing: '0.04em',
             }} {...fadeLeft(0.6)}>
@@ -384,7 +371,7 @@ export default function Landing({ theme }) {
 
             {/* Subtitle */}
             <motion.p style={{
-              fontFamily: "'Nunito', sans-serif",
+              fontFamily: "var(--font-nunito), sans-serif",
               fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
               fontWeight: 600,
               color: isDay ? 'rgba(255,255,255,0.82)' : 'rgba(200,210,240,0.78)',
@@ -392,8 +379,8 @@ export default function Landing({ theme }) {
               maxWidth: '360px',
             }} {...fadeUp(1.0)}>
               {isDay
-                ? 'Full Stack Developer soaring through the MERN stack & Next.js — building things that live in the cloud.'
-                : 'Full Stack Developer navigating the MERN stack & Next.js — launching ideas into orbit.'}
+                ? 'By day: I architect clarity clean components, scalable systems, interfaces that feel like light.'
+                : 'By night: I chase the edge cases the world forgets debugging in the dark until the code holds.'}
             </motion.p>
 
             {/* Tech tags */}
@@ -414,8 +401,9 @@ export default function Landing({ theme }) {
               ))}
             </motion.div>
 
-            {/* Explore button */}
-            <motion.div {...fadeUp(1.7)}>
+            {/* Buttons Container */}
+            <motion.div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.7)}>
+              {/* Explore button */}
               <motion.button
                 style={buttonStyle}
                 onClick={handleExplore}
@@ -448,6 +436,40 @@ export default function Landing({ theme }) {
                   {isDay ? 'Explore My Work' : 'Begin Mission'}
                 </span>
               </motion.button>
+
+              {/* Contact button */}
+              <motion.a
+                href="mailto:muazctg07@gmail.com"
+                style={{ ...buttonStyle, textDecoration: 'none' }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: isDay
+                    ? '0 0 30px rgba(255,255,255,0.4), 0 8px 24px rgba(46,134,193,0.3)'
+                    : '0 0 30px rgba(123,104,238,0.5), 0 8px 24px rgba(0,0,0,0.4)',
+                  background: isDay
+                    ? 'rgba(255,255,255,0.28)'
+                    : 'rgba(123,104,238,0.22)',
+                }}
+                whileTap={{ scale: 0.97 }}
+              >
+                {/* Shimmer overlay */}
+                <motion.div
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%)',
+                    borderRadius: '50px',
+                  }}
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
+                />
+                <span style={{ fontSize: '1.1rem', position: 'relative' }}>
+                  ✉️
+                </span>
+                <span style={{ position: 'relative' }}>
+                  Direct Mail
+                </span>
+              </motion.a>
             </motion.div>
           </motion.div>
 
@@ -515,7 +537,7 @@ export default function Landing({ theme }) {
               />
             )}
 
-            {/* ── THE 3D CHARACTER CANVAS ───────────────────
+            {/* ── THE CSS AVATAR ─────────────────────────────
                 z-index: 1 so it sits above the glow rings
                 but below the orbiting star decorations (z:2)  */}
             <div style={canvasContainerStyle} className="char-canvas-wrap">
@@ -530,7 +552,7 @@ export default function Landing({ theme }) {
               transform: 'translate(-50%, -50%)',
               width: '300px',
               height: '360px',
-              borderRadius: '50%',
+              borderRadius: '24px',
               border: '1px solid rgba(255,255,255,0.18)',
               pointerEvents: 'none',
               zIndex: 3,

@@ -1,5 +1,26 @@
 'use client';
 
+// ============================================================
+// app/ThemeContext.jsx — THEME STATE (REBUILT)
+//
+// RESPONSIBILITIES:
+//   ✅ Holds 'day' | 'night' state
+//   ✅ Reads saved preference from localStorage on first mount
+//   ✅ Applies .day-mode / .night-mode class to <html>
+//   ✅ Saves preference back to localStorage on change
+//   ✅ Removes .no-transitions after first paint (prevents FOUC)
+//   ✅ Exposes { theme, toggleTheme } via useTheme() hook
+//
+// NOT RESPONSIBLE FOR:
+//   ✗ Lenis scroll — now in LenisProvider.jsx (single concern)
+//
+// HYDRATION STRATEGY:
+//   layout.jsx inline script runs before React hydrates and
+//   sets the correct class on <html> + adds .no-transitions.
+//   This context then syncs React state to match that class,
+//   so there is never a server/client mismatch.
+// ============================================================
+
 import {
   createContext,
   useContext,
@@ -9,10 +30,7 @@ import {
   useMemo,
 } from 'react';
 
-// ============================================================
-// THEME CONTEXT
-// ============================================================
-
+// ── CONTEXT (default = day so SSR never renders without a value) ──
 const ThemeContext = createContext({
   theme: 'day',
   toggleTheme: () => {},
@@ -21,118 +39,59 @@ const ThemeContext = createContext({
 // ============================================================
 // THEME PROVIDER
 // ============================================================
-
 export function ThemeProvider({ children }) {
+  // Start with 'day' — the inline script in layout.jsx has
+  // already set the correct HTML class before this runs,
+  // so there is no visible flash even if localStorage says 'night'.
   const [theme, setTheme] = useState('day');
-  const [mounted, setMounted] = useState(false);
 
-  // ==========================================================
-  // READ SAVED THEME
-  // ==========================================================
-
+  // ── MOUNT: read localStorage and sync state ───────────────
   useEffect(() => {
     try {
-      const savedTheme = window.localStorage.getItem('portfolio-theme');
-
-      if (savedTheme === 'day' || savedTheme === 'night') {
-        setTheme(savedTheme);
+      const saved = window.localStorage.getItem('portfolio-theme');
+      if (saved === 'day' || saved === 'night') {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setTheme(saved);
       }
-    } catch (err) {
-      console.warn('Theme localStorage read failed:', err);
-    } finally {
-      setMounted(true);
+    } catch {
+      // localStorage unavailable (private browsing etc.) — stay on 'day'
     }
-  }, []);
+  }, []); // runs once on client mount
 
-  // ==========================================================
-  // APPLY BODY CLASS
-  // ==========================================================
-
+  // ── APPLY CLASS + SAVE ────────────────────────────────────
+  // Runs after every theme change (including the mount sync above).
+  // Removes the old class, adds the new one, saves to localStorage.
   useEffect(() => {
-    if (!mounted) return;
-
-    const body = document.body;
-
-    body.classList.remove('day-mode', 'night-mode');
-    body.classList.add(theme === 'day' ? 'day-mode' : 'night-mode');
+    const html = document.documentElement;
+    html.classList.remove('day-mode', 'night-mode');
+    html.classList.add(theme === 'day' ? 'day-mode' : 'night-mode');
 
     try {
       window.localStorage.setItem('portfolio-theme', theme);
-    } catch (err) {
-      console.warn('Theme localStorage write failed:', err);
+    } catch {
+      // ignore write failures
     }
-  }, [theme, mounted]);
+  }, [theme]);
 
-  // ==========================================================
-  // TOGGLE THEME
-  // ==========================================================
+  // ── REMOVE .no-transitions AFTER FIRST PAINT ─────────────
+  // The inline script adds .no-transitions so the initial
+  // class application has no animated flash.
+  // We remove it after a short delay so subsequent theme
+  // toggles DO animate smoothly.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      document.documentElement.classList.remove('no-transitions');
+    }, 150);
+    return () => clearTimeout(timer);
+  }, []); // runs once only
 
+  // ── TOGGLE ───────────────────────────────────────────────
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === 'day' ? 'night' : 'day'));
   }, []);
 
-  // ==========================================================
-  // LENIS SMOOTH SCROLL
-  // ==========================================================
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    let lenis;
-    let rafId;
-
-    const initLenis = async () => {
-      try {
-        const LenisModule = await import('lenis');
-
-        const Lenis = LenisModule.default;
-
-        lenis = new Lenis({
-          duration: 1.2,
-          smoothWheel: true,
-          smoothTouch: false,
-        });
-
-        const raf = (time) => {
-          lenis.raf(time);
-          rafId = requestAnimationFrame(raf);
-        };
-
-        rafId = requestAnimationFrame(raf);
-      } catch (err) {
-        console.warn('Lenis initialization failed:', err);
-      }
-    };
-
-    initLenis();
-
-    return () => {
-      if (rafId) cancelAnimationFrame(rafId);
-
-      if (lenis) {
-        lenis.destroy();
-      }
-    };
-  }, [mounted]);
-
-  // ==========================================================
-  // MEMOIZED CONTEXT VALUE
-  // ==========================================================
-
-  const value = useMemo(() => {
-    return {
-      theme,
-      toggleTheme,
-    };
-  }, [theme, toggleTheme]);
-
-  // ==========================================================
-  // PREVENT HYDRATION FLASH
-  // ==========================================================
-
-  if (!mounted) {
-    return null;
-  }
+  // ── MEMOISED VALUE ────────────────────────────────────────
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
   return (
     <ThemeContext.Provider value={value}>
@@ -144,7 +103,6 @@ export function ThemeProvider({ children }) {
 // ============================================================
 // CUSTOM HOOK
 // ============================================================
-
 export function useTheme() {
   return useContext(ThemeContext);
 }

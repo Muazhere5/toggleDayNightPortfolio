@@ -46,48 +46,168 @@ const TAG_ICONS = {
 };
 
 // ── YOUR PROJECTS — edit this array ─────────────────────────
-// Replace with your real project data
+// Replace with your real project data.
+// Add a `previewIcon` emoji or short label for the CSS preview card.
 const PROJECTS = [
   {
     id: 1,
-    title: 'Project One',
-    subtitle: 'Full Stack Web App',
+    title: 'StyleDecor',
+    subtitle: 'Smart Home & Ceremony Decoration Booking Platform',
     description:
-      'A full stack MERN application with user authentication, real-time features and a clean responsive UI. Built to solve a real-world problem.',
-    tags: ['React', 'Node.js', 'MongoDB', 'Express'],
-    gif: '/assets/projects/project1-preview.gif',
-    thumb: '/assets/projects/project1-thumb.png',
-    liveUrl: 'https://your-live-link.vercel.app',
-    githubUrl: 'https://github.com/yourusername/project1',
+      'A full-stack service marketplace that digitizes how local decoration businesses operate — replacing manual bookings and guesswork with real-time scheduling, secure payments, and live progress tracking. Customers browse services, book consultations, and watch their event come together status-by-status, while admins and decorators manage assignments through dedicated role-based dashboards. (Admin Login: james_cosmo@gameofthron.com / 7654321)',
+    tags: ['React', 'Vite', 'Node.js', 'Express', 'MongoDB', 'Firebase Auth', 'JWT', 'Stripe', 'Tailwind CSS', 'DaisyUI', 'Framer Motion'],
+    previewIcon: '🎉',
+    previewLabel: 'Book it. Track it. Celebrate it.',
+    liveUrl: 'https://styledecor-27d33.web.app',
+    serverUrl: 'https://style-decor-sever.vercel.app',
+    githubUrl: 'https://github.com/Muazhere5/Style-Decor-ClientSide.git',
+    githubServerUrl: 'https://github.com/Muazhere5/StyleDecor-Sever.git',
     featured: true,
   },
   {
     id: 2,
-    title: 'Project Two',
-    subtitle: 'MERN Stack Application',
+    title: 'Habit Tracker',
+    subtitle: 'Build Routines, Track Streaks, Stay Consistent',
     description:
-      'A dynamic data-driven web platform with full CRUD operations, JWT authentication and a polished mobile-first interface.',
-    tags: ['React', 'Node.js', 'MongoDB', 'Tailwind'],
-    gif: '/assets/projects/project2-preview.gif',
-    thumb: '/assets/projects/project2-thumb.png',
-    liveUrl: 'https://your-live-link.vercel.app',
-    githubUrl: 'https://github.com/yourusername/project2',
+      'A productivity-focused web app that turns daily discipline into a visual, motivating experience. Users create habits, track consecutive-day streaks, and watch their consistency come alive through analytics graphs — all backed by secure authentication and a public habit-discovery feed for shared motivation.',
+    tags: ['React', 'Vite', 'Firebase Auth', 'Node.js', 'Express', 'MongoDB Atlas', 'Firebase Admin SDK', 'Recharts', 'Tailwind CSS', 'DaisyUI'],
+    previewIcon: '🔥',
+    previewLabel: 'Small streaks. Big change.',
+    liveUrl: 'https://assignement-10-tracker.web.app',
+    githubUrl: 'https://github.com/Muazhere5/habitClientsite.git',
+    githubServerUrl: 'https://github.com/Muazhere5/serverside.git',
     featured: false,
   },
   {
     id: 3,
-    title: 'Project Three',
-    subtitle: 'Next.js Portfolio',
+    title: 'HERO.IO',
+    subtitle: 'Discover & Explore Trending Productivity Apps',
     description:
-      'This very portfolio website — built with Next.js App Router, framer-motion animations, and a dual Day/Night sky-space theme system.',
-    tags: ['Next.js', 'React', 'Tailwind', 'JavaScript'],
-    gif: '/assets/projects/project3-preview.gif',
-    thumb: '/assets/projects/project3-thumb.png',
-    liveUrl: 'https://your-live-link.vercel.app',
-    githubUrl: 'https://github.com/yourusername/portfolio',
+      'An app-store-inspired discovery platform that showcases trending productivity apps through a sleek, interactive interface. Real-time stats on downloads, reviews, and active users combine with smooth category filtering to deliver a fast, engaging browsing experience — all wrapped in a fully responsive design.',
+    tags: ['React', 'Vite', 'Tailwind CSS', 'DaisyUI', 'JavaScript (ES6)'],
+    previewIcon: '🚀',
+    previewLabel: 'Where great apps get discovered.',
+    liveUrl: 'https://myapp-909.surge.sh',
+    githubUrl: '',
     featured: false,
   },
 ];
+
+// ── PROJECT PREVIEW (CSS) ──────────────────────────────────
+// Replaces broken gif/png <img> tags with a fully CSS preview.
+// Day: frosted glass terminal window with animated dots
+// Night: dark display with scan lines and neon accent
+function ProjectPreview({ project, isDay, hovered }) {
+  return (
+    <div style={{
+      width: '100%',
+      height: '210px',
+      borderRadius: '18px 18px 0 0',
+      overflow: 'hidden',
+      background: isDay
+        ? 'linear-gradient(135deg, rgba(30,100,180,0.18) 0%, rgba(135,206,235,0.25) 100%)'
+        : 'linear-gradient(135deg, rgba(5,5,20,0.9) 0%, rgba(20,10,50,0.85) 100%)',
+      position: 'relative',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+
+      {/* Window chrome bar */}
+      <div style={{
+        height: '28px',
+        background: isDay ? 'rgba(255,255,255,0.3)' : 'rgba(123,104,238,0.12)',
+        borderBottom: isDay
+          ? '1px solid rgba(255,255,255,0.5)'
+          : '1px solid rgba(123,104,238,0.25)',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 10px',
+        gap: '5px',
+        flexShrink: 0,
+      }}>
+        {['rgba(255,80,80,0.7)','rgba(255,200,0,0.7)','rgba(80,200,80,0.7)'].map((c,i) => (
+          <div key={i} style={{ width:'7px', height:'7px', borderRadius:'50%', background: c }} />
+        ))}
+        <span style={{
+          marginLeft: '8px',
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.55rem',
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+          color: isDay ? 'rgba(30,80,130,0.6)' : 'rgba(123,104,238,0.6)',
+        }}>{project.previewLabel || 'PROJECT'}</span>
+      </div>
+
+      {/* Preview body */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        padding: '16px',
+        position: 'relative',
+      }}>
+        {/* Scanlines for night */}
+        {!isDay && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 3px)',
+            pointerEvents: 'none',
+          }} />
+        )}
+
+        {/* Icon */}
+        <motion.div
+          animate={{ scale: hovered ? [1,1.15,1] : 1, y: hovered ? [0,-6,0] : 0 }}
+          transition={{ duration: 0.6, ease: 'easeInOut' }}
+          style={{ fontSize: '2.8rem', position: 'relative', zIndex: 1 }}
+        >
+          {project.previewIcon || '📁'}
+        </motion.div>
+
+        {/* Animated loading dots */}
+        <div style={{ display:'flex', gap:'5px', position:'relative', zIndex:1 }}>
+          {[0,1,2].map(i => (
+            <motion.div
+              key={i}
+              style={{
+                width:'5px', height:'5px', borderRadius:'50%',
+                background: isDay ? 'rgba(30,100,180,0.5)' : 'rgba(123,104,238,0.7)',
+              }}
+              animate={{ opacity:[0.2,1,0.2], scale:[0.8,1.3,0.8] }}
+              transition={{ duration:1.4, repeat:Infinity, delay: i*0.2, ease:'easeInOut' }}
+            />
+          ))}
+        </div>
+
+        {/* Label */}
+        <span style={{
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: isDay ? 'rgba(30,100,180,0.55)' : 'rgba(123,104,238,0.55)',
+          position: 'relative', zIndex: 1,
+        }}>preview available soon</span>
+      </div>
+
+      {/* Overlay gradient */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: '35%',
+        background: isDay
+          ? 'linear-gradient(to top, rgba(255,255,255,0.12), transparent)'
+          : 'linear-gradient(to top, rgba(8,8,24,0.5), transparent)',
+        pointerEvents: 'none',
+      }} />
+    </div>
+  );
+}
 
 // ── SMALL CLOUD under card (Day only) ────────────────────────
 const CardCloud = ({ style }) => (
@@ -121,7 +241,7 @@ const FeaturedBadge = ({ isDay }) => (
     zIndex: 5,
     padding: '3px 12px',
     borderRadius: '20px',
-    fontFamily: "'Rajdhani', sans-serif",
+    fontFamily: "var(--font-rajdhani), sans-serif",
     fontSize: '0.65rem',
     fontWeight: 700,
     letterSpacing: '0.15em',
@@ -139,7 +259,6 @@ const FeaturedBadge = ({ isDay }) => (
 // ── PROJECT CARD ─────────────────────────────────────────────
 function ProjectCard({ project, isDay, index }) {
   const [hovered, setHovered] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
   const cardStyle = {
     position: 'relative',
@@ -206,57 +325,15 @@ function ProjectCard({ project, isDay, index }) {
         />
       )}
 
-      {/* ── GIF / IMAGE PREVIEW ──────────────────────────── */}
-      <div style={{
-        width: '100%',
-        height: '210px',
-        borderRadius: '18px 18px 0 0',
-        overflow: 'hidden',
-        position: 'relative',
-        background: isDay
-          ? 'rgba(135,206,235,0.2)'
-          : 'rgba(5,5,20,0.8)',
-      }}>
-        <img
-          src={imgError ? project.thumb : project.gif}
-          alt={`${project.title} preview`}
-          onError={() => setImgError(true)}
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.5s ease',
-            transform: hovered ? 'scale(1.04)' : 'scale(1)',
-          }}
-        />
-
-        {/* Overlay gradient on image */}
-        <div style={{
-          position: 'absolute',
-          bottom: 0, left: 0, right: 0,
-          height: '40%',
-          background: isDay
-            ? 'linear-gradient(to top, rgba(255,255,255,0.15), transparent)'
-            : 'linear-gradient(to top, rgba(8,8,24,0.6), transparent)',
-          pointerEvents: 'none',
-        }} />
-
-        {/* Night: scan line effect on image */}
-        {!isDay && (
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px)',
-            pointerEvents: 'none',
-          }} />
-        )}
-      </div>
+      {/* ── PROJECT PREVIEW (CSS) ──────────────────────── */}
+      <ProjectPreview project={project} isDay={isDay} hovered={hovered} />
 
       {/* ── CARD BODY ────────────────────────────────────── */}
       <div style={{ padding: '20px 22px 22px' }}>
 
         {/* Subtitle */}
         <p style={{
-          fontFamily: "'Rajdhani', sans-serif",
+          fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.7rem',
           fontWeight: 700,
           letterSpacing: '0.2em',
@@ -269,14 +346,14 @@ function ProjectCard({ project, isDay, index }) {
 
         {/* Title */}
         <h3 style={{
-          fontFamily: "'Orbitron', sans-serif",
+          fontFamily: "var(--font-orbitron), sans-serif",
           fontSize: '1.18rem',
           fontWeight: 700,
           color: isDay ? '#ffffff' : '#E8E8F0',
           marginBottom: '10px',
           letterSpacing: '0.03em',
           textShadow: isDay
-            ? '0 2px 12px rgba(46,134,193,0.3)'
+            ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(46,134,193,0.3)'
             : '0 2px 12px rgba(123,104,238,0.4)',
         }}>
           {project.title}
@@ -284,7 +361,7 @@ function ProjectCard({ project, isDay, index }) {
 
         {/* Description */}
         <p style={{
-          fontFamily: "'Nunito', sans-serif",
+          fontFamily: "var(--font-nunito), sans-serif",
           fontSize: '0.9rem',
           lineHeight: 1.6,
           color: isDay ? 'rgba(255,255,255,0.8)' : 'rgba(200,210,240,0.72)',
@@ -300,7 +377,7 @@ function ProjectCard({ project, isDay, index }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '5px',
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.72rem',
               fontWeight: 700,
               letterSpacing: '0.08em',
@@ -339,7 +416,7 @@ function ProjectCard({ project, isDay, index }) {
               gap: '7px',
               padding: '10px 0',
               borderRadius: '50px',
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.8rem',
               fontWeight: 700,
               letterSpacing: '0.1em',
@@ -366,37 +443,74 @@ function ProjectCard({ project, isDay, index }) {
           </motion.a>
 
           {/* GitHub */}
-          <motion.a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            style={{
-              flex: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '7px',
-              padding: '10px 0',
-              borderRadius: '50px',
-              fontFamily: "'Rajdhani', sans-serif",
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              textDecoration: 'none',
-              background: 'transparent',
-              color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.8)',
-              border: isDay
-                ? '1.5px solid rgba(255,255,255,0.55)'
-                : '1.5px solid rgba(200,210,240,0.2)',
-              transition: 'background 0.3s, border 0.3s',
-            }}
-          >
-            <FaGithub size={13} />
-            GitHub
-          </motion.a>
+          {project.githubUrl && (
+            <motion.a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '7px',
+                padding: '10px 0',
+                borderRadius: '50px',
+                fontFamily: "var(--font-rajdhani), sans-serif",
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                background: 'transparent',
+                color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.8)',
+                border: isDay
+                  ? '1.5px solid rgba(255,255,255,0.55)'
+                  : '1.5px solid rgba(200,210,240,0.2)',
+                transition: 'background 0.3s, border 0.3s',
+              }}
+            >
+              <FaGithub size={13} />
+              GitHub
+            </motion.a>
+          )}
+
+          {/* GitHub Server */}
+          {project.githubServerUrl && (
+            <motion.a
+              href={project.githubServerUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              style={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '7px',
+                padding: '10px 0',
+                borderRadius: '50px',
+                fontFamily: "var(--font-rajdhani), sans-serif",
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                textDecoration: 'none',
+                background: 'transparent',
+                color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.8)',
+                border: isDay
+                  ? '1.5px solid rgba(255,255,255,0.55)'
+                  : '1.5px solid rgba(200,210,240,0.2)',
+                transition: 'background 0.3s, border 0.3s',
+              }}
+            >
+              <FaGithub size={13} />
+              Server
+            </motion.a>
+          )}
 
         </div>
       </div>
@@ -449,7 +563,7 @@ export default function Projects({ theme }) {
         >
           {/* Eyebrow label */}
           <p style={{
-            fontFamily: "'Rajdhani', sans-serif",
+            fontFamily: "var(--font-rajdhani), sans-serif",
             fontSize: '0.75rem',
             fontWeight: 700,
             letterSpacing: '0.28em',
@@ -462,13 +576,13 @@ export default function Projects({ theme }) {
 
           {/* Title */}
           <h2 style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
             color: isDay ? '#ffffff' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0 2px 24px rgba(46,134,193,0.4)'
+              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>
@@ -499,7 +613,7 @@ export default function Projects({ theme }) {
         {/* ── PROJECT CARDS GRID ────────────────────────── */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: isDay ? '48px 32px' : '36px 28px',
           alignItems: 'start',
         }}>
@@ -522,7 +636,7 @@ export default function Projects({ theme }) {
           style={{ textAlign: 'center', marginTop: '64px' }}
         >
           <p style={{
-            fontFamily: "'Nunito', sans-serif",
+            fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '0.92rem',
             color: isDay ? 'rgba(255,255,255,0.65)' : 'rgba(200,210,240,0.5)',
             marginBottom: '16px',
@@ -541,7 +655,7 @@ export default function Projects({ theme }) {
               gap: '8px',
               padding: '10px 28px',
               borderRadius: '50px',
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.82rem',
               fontWeight: 700,
               letterSpacing: '0.12em',

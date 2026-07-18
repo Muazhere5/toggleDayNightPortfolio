@@ -1,51 +1,57 @@
 // ============================================================
-// app/layout.jsx — ROOT LAYOUT (FIXED)
+// app/layout.jsx — ROOT LAYOUT (SERVER COMPONENT)
 //
-// PROBLEMS FIXED FROM YOUR PREVIOUS VERSION:
+// ARCHITECTURE:
+//   This file is intentionally NOT a Client Component.
+//   Keeping it a Server Component allows:
+//     ✅ export const metadata (SEO — only works in server components)
+//     ✅ Static HTML shell rendered on the server
+//     ✅ No React hydration mismatch on <html>/<body>
 //
-//   OLD ❌  'use client' at top
-//   NEW ✅  Removed completely — layout is now a Server Component
-//           This makes metadata work correctly
+// FOUC PREVENTION:
+//   The inline <script> in <head> runs synchronously before
+//   the browser paints. It reads localStorage, sets the correct
+//   .day-mode or .night-mode class on <html>, and adds
+//   .no-transitions so the initial class has no animated flash.
+//   ThemeContext.jsx removes .no-transitions after 150ms so
+//   subsequent theme toggles animate smoothly.
 //
-//   OLD ❌  export const metadata = { ... } (broken with 'use client')
-//   NEW ✅  metadata works perfectly now (Server Component only)
-//
-//   OLD ❌  useState, useEffect, cloneElement imported here
-//   NEW ✅  All removed — state lives in ThemeContext.jsx instead
-//
-//   OLD ❌  cloneElement(children, { theme, toggleTheme })
-//   NEW ✅  Removed — ThemeProvider shares state via Context
-//
-//   OLD ❌  <body className={theme === 'day' ? ...}>
-//           This caused server/client hydration mismatch
-//   NEW ✅  <body> has no className here
-//           ThemeContext.jsx sets it on client via useEffect
-//           No more hydration mismatch or theme flash
-//
-// HOW IT WORKS NOW:
-//   layout.jsx wraps the whole app in <ThemeProvider>
-//   ThemeProvider (in ThemeContext.jsx) holds all state
-//   page.jsx and all components get theme via useTheme()
-//   ThemeToggle still works exactly the same — zero changes
-//
-// FILE LOCATION: src/app/layout.jsx
+// PROVIDERS:
+//   ThemeProvider — holds day/night state + context
+//   LenisProvider — smooth scroll (single responsibility)
 // ============================================================
 
-// ── Import ThemeProvider from the new ThemeContext file ──────
-// ThemeProvider is a Client Component ('use client' is in
-// ThemeContext.jsx). layout.jsx itself stays a Server Component.
-// This is the correct Next.js App Router pattern.
 import { ThemeProvider } from './ThemeContext';
-
-// ── Import your global styles ────────────────────────────────
+import LenisProvider     from './LenisProvider';
 import './globals.css';
+import { Orbitron, Rajdhani, Nunito } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
 
-// ── Metadata — works correctly now (Server Component) ────────
-// This is what controls your browser tab title, SEO description,
-// and social media preview when someone shares your portfolio.
+const orbitron = Orbitron({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '900'],
+  variable: '--font-orbitron',
+  display: 'swap',
+});
+
+const rajdhani = Rajdhani({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-rajdhani',
+  display: 'swap',
+});
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['300', '400', '600', '700'],
+  variable: '--font-nunito',
+  display: 'swap',
+});
+
+// ── SEO METADATA ─────────────────────────────────────────────
 export const metadata = {
   title: 'YOU TECH BD — Portfolio',
-  description: 'Full Stack Developer Portfolio — Sky & Space Edition',
+  description: 'Full Stack Developer Portfolio — Sky & Space Edition by Muaz',
   keywords: [
     'Full Stack Developer',
     'MERN Stack',
@@ -59,58 +65,50 @@ export const metadata = {
     title: 'YOU TECH BD — Portfolio',
     description: 'Sky & Space themed developer portfolio by Muaz',
     type: 'website',
-    images: ['/assets/og/og-image.png'],
   },
 };
 
-// ── Root Layout Component ─────────────────────────────────────
+// ── ROOT LAYOUT ───────────────────────────────────────────────
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      {/*
-        ── WHY <body> HAS NO className HERE ──────────────────
-
-        OLD (broken):
-          <body className={theme === 'day' ? 'day-mode' : 'night-mode'}>
-          This caused a React hydration mismatch error because:
-          - Server renders with className="day-mode"
-          - Client reads localStorage, finds "night"
-          - React sees a mismatch and throws a warning
-          - Sometimes causes visual flash or broken styling
-
-        NEW (correct):
-          <body> has no className
-          ThemeContext.jsx adds the class via:
-            document.body.classList.add('day-mode')
-          This runs only on the client after localStorage is read
-          No server/client mismatch, no flash, no errors ✅
-
-        globals.css handles the styling via:
-          .day-mode  { --bg-primary: #87CEEB; ... all sky vars }
-          .night-mode { --bg-primary: #000000; ... all space vars }
-      */}
-      <body id="app-root">
-
+    // suppressHydrationWarning: the inline script modifies <html> classNames
+    // before React hydrates — this tells React to accept that difference
+    <html lang="en" suppressHydrationWarning className={`${orbitron.variable} ${rajdhani.variable} ${nunito.variable}`}>
+      <head>
         {/*
-          ── ThemeProvider EXPLAINED ────────────────────────
+          FOUC PREVENTION — runs synchronously before first paint.
+          Sets the correct theme class and disables transitions so
+          there is zero flash of the wrong theme or animated jump.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = window.localStorage.getItem('portfolio-theme');
+                  var theme = saved === 'night' ? 'night' : 'day';
+                  var html  = document.documentElement;
+                  html.classList.add(theme + '-mode');
+                  html.classList.add('no-transitions');
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
 
-          ThemeProvider comes from src/app/ThemeContext.jsx
-          It is a Client Component that:
-            ✅ Holds theme state ('day' | 'night')
-            ✅ Reads localStorage on first load
-            ✅ Sets .day-mode / .night-mode class on <body>
-            ✅ Provides { theme, toggleTheme } to entire app
-            ✅ Initialises Lenis smooth scroll
-            ✅ Prevents hydration flash
-
-          {children} = your page.jsx and all components inside it
-          They all get access to theme state automatically via
-          the useTheme() hook — no prop drilling through layout.
+      <body id="app-root">
+        {/*
+          ThemeProvider: provides { theme, toggleTheme } via context
+          LenisProvider: initialises smooth scroll once on mount
+          Both are Client Components wrapping Server-rendered children
         */}
         <ThemeProvider>
-          {children}
+          <LenisProvider>
+            {children}
+          </LenisProvider>
         </ThemeProvider>
-
+        <Analytics />
       </body>
     </html>
   );

@@ -36,60 +36,51 @@ import { useState, useRef } from 'react';
 const ACHIEVEMENTS = [
   {
     id: 1,
-    title: 'Completed First MERN Project',
-    description: 'Built and deployed a full-stack MERN application with user authentication, CRUD operations, and responsive UI. First production-ready project.',
-    icon: '🚀',
-    date: '2024',
-    type: 'project',
-    group: 1,
+    title: 'MERN Stack Development Course',
+    description: 'Successfully finished "Programming Hero" by Jhankar Mahabub.',
+    icon: '💻',
+    date: '2025',
+    type: 'skill',
+    group: 2,
     highlight: true,
   },
   {
     id: 2,
-    title: 'Mastered React.js',
-    description: 'Gained deep understanding of React hooks, context API, component patterns, and state management through building real projects.',
-    icon: '⚛️',
-    date: '2024',
-    type: 'skill',
-    group: 1,
+    title: 'ICT OLYMPIAD',
+    description: 'Participated and competed in the ICT Olympiad.',
+    icon: '🏆',
+    date: 'Recent',
+    type: 'award',
+    group: 3,
+    highlight: true,
   },
   {
     id: 3,
-    title: 'Second Full Stack Project',
-    description: 'Delivered a second MERN project with advanced features — JWT auth, file uploads, and an admin dashboard panel.',
-    icon: '💻',
-    date: '2024',
-    type: 'project',
-    group: 2,
-    highlight: true,
-  },
-  {
-    id: 4,
-    title: 'Started Learning Next.js',
-    description: 'Began the journey into Next.js App Router, server components, and modern full-stack patterns — this portfolio is the proof.',
-    icon: '▲',
-    date: '2025',
+    title: 'Digital Marketing Certification',
+    description: 'Completed a short online-based digital marketing course.',
+    icon: '📈',
+    date: 'Recent',
     type: 'skill',
     group: 2,
   },
   {
-    id: 5,
-    title: 'Built Sky Portfolio',
-    description: 'Created this unique Day/Night sky-space themed portfolio in Next.js with framer-motion animations, dual theme system, and challenge arena.',
-    icon: '🌤️',
-    date: '2025',
-    type: 'project',
-    group: 3,
+    id: 4,
+    title: 'HSC Examination (Science) - GPA 5.00',
+    description: 'Chittagong Port College.',
+    icon: '🎓',
+    date: '2018',
+    type: 'education',
+    group: 1,
     highlight: true,
   },
   {
-    id: 6,
-    title: 'Self-Taught Developer',
-    description: 'Every skill, every project, every line of code learned independently — proof that consistency beats credentials.',
-    icon: '🎓',
-    date: '2023–2025',
-    type: 'personal',
-    group: 3,
+    id: 5,
+    title: 'BSc. in Information & Communication Engineering (ICE)',
+    description: 'Noakhali Science And Technology University (NSTU) - 4th Year.',
+    icon: '🏛️',
+    date: '2018 - Present',
+    type: 'education',
+    group: 1,
   },
 ];
 
@@ -174,9 +165,16 @@ function CloudBannerCard({ achievement, index }) {
         <div style={{ padding: '16px 18px 18px' }}>
           {/* Icon + type row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '1.5rem' }}>{achievement.icon}</span>
+            <motion.span 
+              style={{ fontSize: '1.6rem', display: 'inline-block' }}
+              whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
+              animate={{ filter: ['drop-shadow(0 0 0px rgba(0,0,0,0))', `drop-shadow(0 0 8px ${typeConf.dayColor})`, 'drop-shadow(0 0 0px rgba(0,0,0,0))'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              {achievement.icon}
+            </motion.span>
             <span style={{
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.62rem',
               fontWeight: 700,
               letterSpacing: '0.15em',
@@ -191,7 +189,7 @@ function CloudBannerCard({ achievement, index }) {
             </span>
             {achievement.highlight && (
               <span style={{
-                fontFamily: "'Rajdhani', sans-serif",
+                fontFamily: "var(--font-rajdhani), sans-serif",
                 fontSize: '0.58rem',
                 fontWeight: 700,
                 letterSpacing: '0.1em',
@@ -200,7 +198,7 @@ function CloudBannerCard({ achievement, index }) {
             )}
             <span style={{
               marginLeft: 'auto',
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.65rem',
               color: 'rgba(100,120,140,0.7)',
               letterSpacing: '0.08em',
@@ -209,7 +207,7 @@ function CloudBannerCard({ achievement, index }) {
 
           {/* Title */}
           <h3 style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: '0.92rem',
             fontWeight: 700,
             color: '#2a5a8a',
@@ -222,7 +220,7 @@ function CloudBannerCard({ achievement, index }) {
 
           {/* Description */}
           <p style={{
-            fontFamily: "'Nunito', sans-serif",
+            fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '0.84rem',
             color: 'rgba(40,80,120,0.8)',
             lineHeight: 1.6,
@@ -262,21 +260,20 @@ function DayAchievements() {
 
 // Star positions — laid out manually for a good constellation look
 const STAR_POSITIONS = [
-  { id: 1, x: 15,  y: 18  },
-  { id: 2, x: 38,  y: 8   },
-  { id: 3, x: 62,  y: 22  },
-  { id: 4, x: 80,  y: 10  },
-  { id: 5, x: 50,  y: 55  },
-  { id: 6, x: 22,  y: 68  },
+  { id: 1, x: 20,  y: 25  },
+  { id: 2, x: 45,  y: 15  },
+  { id: 3, x: 75,  y: 25  },
+  { id: 4, x: 80,  y: 55  },
+  { id: 5, x: 45,  y: 60  },
 ];
 
 // Constellation lines between stars (by achievement id pairs)
 const CONSTELLATION_LINES = [
-  [1, 2], [2, 3], [3, 4], [2, 5], [5, 6], [1, 6],
+  [1, 2], [2, 3], [3, 4], [4, 5], [5, 1],
 ];
 
 function StarMapAchievements() {
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState(1);
   const containerRef = useRef(null);
 
   const activeAchievement = ACHIEVEMENTS.find(a => a.id === activeId);
@@ -356,7 +353,7 @@ function StarMapAchievements() {
                 <motion.circle
                   cx={pos.x} cy={pos.y} r={isActive ? 4.5 : 3}
                   fill={typeConf.nightColor.replace('0.8', '0.12')}
-                  animate={{ r: isActive ? [4.5, 5.5, 4.5] : [3, 3.8, 3] }}
+                  animate={{ opacity: isActive ? [0.4, 0.9, 0.4] : [0.2, 0.5, 0.2] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 {/* Star core */}
@@ -371,14 +368,16 @@ function StarMapAchievements() {
                   transition={{ duration: 1.5, repeat: Infinity }}
                 />
                 {/* Icon text */}
-                <text
+                <motion.text
                   x={pos.x} y={pos.y - 3.5}
                   textAnchor="middle"
-                  fontSize="2.8"
+                  fontSize="3"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}
+                  animate={{ filter: ['drop-shadow(0 0 0px rgba(0,0,0,0))', `drop-shadow(0 0 6px ${typeConf.nightColor})`, 'drop-shadow(0 0 0px rgba(0,0,0,0))'] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {ach?.icon}
-                </text>
+                </motion.text>
                 {/* Label */}
                 <text
                   x={pos.x}
@@ -386,7 +385,7 @@ function StarMapAchievements() {
                   textAnchor="middle"
                   fontSize="1.8"
                   fill="rgba(200,210,240,0.7)"
-                  fontFamily="Rajdhani, sans-serif"
+                  fontFamily="var(--font-rajdhani), sans-serif"
                   style={{ pointerEvents: 'none', userSelect: 'none', letterSpacing: '0.04em' }}
                 >
                   #{String(pos.id).padStart(2, '0')}
@@ -402,7 +401,7 @@ function StarMapAchievements() {
           bottom: '10px',
           left: '50%',
           transform: 'translateX(-50%)',
-          fontFamily: "'Rajdhani', sans-serif",
+          fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.62rem',
           letterSpacing: '0.14em',
           textTransform: 'uppercase',
@@ -436,7 +435,7 @@ function StarMapAchievements() {
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
                   <span style={{
-                    fontFamily: "'Rajdhani', sans-serif",
+                    fontFamily: "var(--font-rajdhani), sans-serif",
                     fontSize: '0.62rem',
                     fontWeight: 700,
                     letterSpacing: '0.15em',
@@ -451,7 +450,7 @@ function StarMapAchievements() {
                   </span>
                   {activeAchievement.highlight && (
                     <span style={{
-                      fontFamily: "'Rajdhani', sans-serif",
+                      fontFamily: "var(--font-rajdhani), sans-serif",
                       fontSize: '0.6rem',
                       color: 'rgba(255,215,0,0.75)',
                       letterSpacing: '0.1em',
@@ -459,7 +458,7 @@ function StarMapAchievements() {
                   )}
                   <span style={{
                     marginLeft: 'auto',
-                    fontFamily: "'Rajdhani', sans-serif",
+                    fontFamily: "var(--font-rajdhani), sans-serif",
                     fontSize: '0.65rem',
                     color: 'rgba(200,210,240,0.45)',
                     letterSpacing: '0.08em',
@@ -467,7 +466,7 @@ function StarMapAchievements() {
                 </div>
 
                 <h3 style={{
-                  fontFamily: "'Orbitron', sans-serif",
+                  fontFamily: "var(--font-orbitron), sans-serif",
                   fontSize: '1rem',
                   fontWeight: 700,
                   color: '#E8E8F0',
@@ -479,7 +478,7 @@ function StarMapAchievements() {
                 </h3>
 
                 <p style={{
-                  fontFamily: "'Nunito', sans-serif",
+                  fontFamily: "var(--font-nunito), sans-serif",
                   fontSize: '0.88rem',
                   color: 'rgba(200,210,240,0.75)',
                   lineHeight: 1.65,
@@ -516,7 +515,7 @@ function StarMapAchievements() {
               boxShadow: `0 0 6px ${conf.nightColor}`,
             }} />
             <span style={{
-              fontFamily: "'Rajdhani', sans-serif",
+              fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.65rem',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
@@ -556,7 +555,7 @@ export default function Achievements({ theme }) {
           style={{ textAlign: 'center', marginBottom: '60px' }}
         >
           <p style={{
-            fontFamily: "'Rajdhani', sans-serif",
+            fontFamily: "var(--font-rajdhani), sans-serif",
             fontSize: '0.75rem',
             fontWeight: 700,
             letterSpacing: '0.28em',
@@ -568,13 +567,13 @@ export default function Achievements({ theme }) {
           </p>
 
           <h2 style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
             color: isDay ? '#ffffff' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0 2px 24px rgba(46,134,193,0.4)'
+              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>
@@ -582,7 +581,7 @@ export default function Achievements({ theme }) {
           </h2>
 
           <p style={{
-            fontFamily: "'Nunito', sans-serif",
+            fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '1rem',
             color: isDay ? 'rgba(255,255,255,0.72)' : 'rgba(200,210,240,0.62)',
             maxWidth: '460px',
@@ -597,6 +596,7 @@ export default function Achievements({ theme }) {
 
         {/* ── THEME-SPECIFIC VISUALISATION ─────────────── */}
         <motion.div
+          key={theme}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -608,16 +608,16 @@ export default function Achievements({ theme }) {
           }
         </motion.div>
 
-        {/* ── CLOSING LINE ─────────────────────────────── */}
+        {/* ── CLOSING LINE & DOCUMENT LINK ─────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          style={{ textAlign: 'center', marginTop: '60px' }}
+          style={{ textAlign: 'center', marginTop: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}
         >
           <p style={{
-            fontFamily: "'Rajdhani', sans-serif",
+            fontFamily: "var(--font-rajdhani), sans-serif",
             fontSize: '0.8rem',
             fontWeight: 600,
             letterSpacing: '0.18em',
@@ -626,6 +626,35 @@ export default function Achievements({ theme }) {
           }}>
             {isDay ? '— More clouds forming soon ☁️ —' : '— More stars being charted ★ —'}
           </p>
+          
+          <motion.a
+            href="[LINK_TO_PDF]"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '12px 32px',
+              borderRadius: '50px',
+              fontFamily: "var(--font-orbitron), sans-serif",
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              background: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(123,104,238,0.18)',
+              color: isDay ? '#2E86C1' : '#c8c0ff',
+              border: isDay ? '2px solid rgba(46,134,193,0.5)' : '2px solid rgba(123,104,238,0.45)',
+              boxShadow: isDay ? '0 8px 24px rgba(46,134,193,0.2)' : '0 8px 24px rgba(123,104,238,0.3)',
+              backdropFilter: 'blur(10px)',
+              transition: 'box-shadow 0.3s, background 0.3s',
+            }}
+          >
+            📄 Download Resume
+          </motion.a>
         </motion.div>
 
       </div>

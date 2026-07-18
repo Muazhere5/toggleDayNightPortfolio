@@ -1,322 +1,370 @@
 'use client';
 
 // ============================================================
-// components/ThreeDCharacter.jsx — 3D GLB CHARACTER VIEWER
+// components/ThreeDCharacter.jsx — CSS AVATAR PLACEHOLDER
 //
-// CONNECTION MAP:
-//   Landing.jsx → imports and mounts <ThreeDCharacter theme={theme} />
-//   public/assets/character/threedavator.glb → the 3D model file
+// REPLACES: Three.js / @react-three/fiber / @react-three/drei
+//           + GLB model download (was 3MB on every page load)
 //
-// PROPS:
-//   theme {string} 'day' | 'night'
+// WHY REPLACED:
+//   - useGLTF.preload() was downloading 3MB silently on load
+//   - 3D canvas caused high GPU usage even with frameloop="demand"
+//   - @react-three imports added ~600KB to the JS bundle
+//   - WebGL context errors on low-end / older browsers
 //
-// HOW IT WORKS:
-//   1. Dynamically imports @react-three/fiber + @react-three/drei
-//      (ssr: false handled by parent via next/dynamic)
-//   2. Canvas renders the GLB model with OrbitControls
-//   3. Lighting adapts to day/night theme
-//   4. Platform glow + fog + environment match each theme
-//   5. Suspense fallback = animated placeholder (no layout shift)
-//
-// PERFORMANCE NOTES:
-//   - frameloop="demand" → only re-renders on interaction/animation
-//     This prevents constant GPU usage when model is idle
-//   - Model is memoised — never re-loads on parent re-render
-//   - Canvas is destroyed when component unmounts (no memory leak)
-//   - dpr capped at [1, 2] — prevents 4K GPU overload on retina
+// THIS COMPONENT:
+//   - Same external API: accepts { theme } prop
+//   - Renders a stylized animated CSS avatar card
+//   - Day mode: frosted glass, warm sun glow, floating orbs
+//   - Night mode: dark terminal, neon purple border, pulsing dots
+//   - Zero external dependencies — pure React + CSS
+//   - Zero network requests on mount
 // ============================================================
 
-import { Suspense, useRef, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls, Environment, ContactShadows, Float } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import * as THREE from 'three';
+import Image from 'next/image';
 
-// ── GLB MODEL ─────────────────────────────────────────────────
-// Separated into its own component so Suspense can catch loading
-function CharacterModel({ isDay }) {
-  const { scene } = useGLTF('/assets/character/threedavator.glb');
-  const modelRef = useRef();
-
-  // Subtle auto-rotation — gentle idle animation
-  useFrame((state) => {
-    if (!modelRef.current) return;
-    // Slow gentle sway left-right — like breathing
-    modelRef.current.rotation.y =
-      Math.sin(state.clock.elapsedTime * 0.4) * 0.12;
-  });
-
-  // Ensure all meshes cast + receive shadows
-  useEffect(() => {
-    scene.traverse((child) => {
-      if (child.isMesh) {
-        child.castShadow    = true;
-        child.receiveShadow = true;
-        // Improve material quality
-        if (child.material) {
-          child.material.envMapIntensity = isDay ? 0.6 : 0.9;
-        }
-      }
-    });
-  }, [scene, isDay]);
-
+// ── DAY AVATAR ───────────────────────────────────────────────
+// Warm glassmorphism card — looks like a holographic ID badge
+function DayAvatar() {
   return (
-    // Float = gentle bobbing up/down — matches the sky portfolio feel
-    <Float
-      speed={1.8}
-      rotationIntensity={0.08}
-      floatIntensity={0.35}
-      floatingRange={[-0.06, 0.06]}
-    >
-      <primitive
-        ref={modelRef}
-        object={scene}
-        // Position: slightly raised so shadow platform looks natural
-        position={[0, -1.1, 0]}
-        // Scale: adjust if model appears too large/small
-        scale={[1.85, 1.85, 1.85]}
-      />
-    </Float>
-  );
-}
-
-// ── CIRCULAR PLATFORM GLOW ────────────────────────────────────
-// A glowing disc under the character — day vs night styles
-function PlatformGlow({ isDay }) {
-  const meshRef = useRef();
-
-  useFrame((state) => {
-    if (!meshRef.current) return;
-    // Pulse the opacity gently
-    meshRef.current.material.opacity =
-      0.35 + Math.sin(state.clock.elapsedTime * 1.2) * 0.12;
-  });
-
-  return (
-    <mesh
-      ref={meshRef}
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -1.12, 0]}
-    >
-      <circleGeometry args={[1.1, 64]} />
-      <meshBasicMaterial
-        color={isDay ? '#87CEEB' : '#7B68EE'}
-        transparent
-        opacity={0.38}
-        depthWrite={false}
-      />
-    </mesh>
-  );
-}
-
-// ── LOADING PLACEHOLDER ───────────────────────────────────────
-// Shown while GLB is downloading — matches bubble style
-function LoadingFallback({ isDay }) {
-  return (
-    <motion.div
-      animate={{
-        opacity: [0.4, 0.8, 0.4],
-        scale:   [0.97, 1.02, 0.97],
-      }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '12px',
-      }}
-    >
-      {/* Pulsing silhouette circle */}
-      <div style={{
-        width: '80px',
-        height: '80px',
-        borderRadius: '50%',
-        background: isDay
-          ? 'rgba(255,255,255,0.3)'
-          : 'rgba(123,104,238,0.2)',
-        border: isDay
-          ? '2px solid rgba(255,255,255,0.5)'
-          : '2px solid rgba(123,104,238,0.4)',
-      }} />
-      <span style={{
-        fontFamily: "'Rajdhani', sans-serif",
-        fontSize: '0.62rem',
-        fontWeight: 700,
-        letterSpacing: '0.2em',
-        textTransform: 'uppercase',
-        color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(200,210,240,0.5)',
-        animation: 'charLoaderDots 1.4s ease-in-out infinite',
-      }}>
-        Loading
-      </span>
-      <style>{`
-        @keyframes charLoaderDots {
-          0%, 100% { opacity: 0.4; }
-          50%       { opacity: 1; }
-        }
-      `}</style>
-    </motion.div>
-  );
-}
-
-// ══════════════════════════════════════════════════════════════
-// MAIN EXPORTED COMPONENT
-// ══════════════════════════════════════════════════════════════
-export default function ThreeDCharacter({ theme }) {
-  const isDay = theme === 'day';
-
-  // ── THEME-MATCHED LIGHTING CONFIG ──────────────────────────
-  // Day: warm golden sun simulation → brings out green polo + brown hair
-  // Night: cool purple/cyan studio → creates space station feel
-  const ambientIntensity  = isDay ? 0.9  : 0.35;
-  const mainLightColor    = isDay ? '#FFF5E0' : '#b8d4ff';
-  const mainLightIntensity = isDay ? 2.2  : 1.6;
-  const fillLightColor    = isDay ? '#87CEEB' : '#7B68EE';
-  const fillLightIntensity = isDay ? 0.7  : 0.8;
-  const rimLightColor     = isDay ? '#FFD580' : '#00e5ff';
-  const rimLightIntensity = isDay ? 0.5  : 0.9;
-
-  return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {/* ── ATMOSPHERIC GLOW RING behind the canvas ─────── */}
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '14px',
+      padding: '28px 20px',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Animated background orbs */}
       <motion.div
-        animate={{
-          opacity: [0.5, 0.9, 0.5],
-          scale:   [1, 1.08, 1],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         style={{
           position: 'absolute',
-          inset: '-20px',
+          top: '10%', left: '15%',
+          width: '80px', height: '80px',
           borderRadius: '50%',
-          background: isDay
-            ? 'radial-gradient(circle, rgba(255,220,100,0.18) 0%, rgba(135,206,235,0.12) 50%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(123,104,238,0.22) 0%, rgba(0,229,255,0.08) 50%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(255,220,80,0.35), transparent 70%)',
           filter: 'blur(18px)',
           pointerEvents: 'none',
-          zIndex: 0,
         }}
+        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.9, 0.5] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          bottom: '15%', right: '10%',
+          width: '60px', height: '60px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(135,206,235,0.4), transparent 70%)',
+          filter: 'blur(14px)',
+          pointerEvents: 'none',
+        }}
+        animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.8, 0.4] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       />
 
-      {/* ── THREE.JS CANVAS ─────────────────────────────── */}
-      <div style={{ position: 'relative', width: '100%', height: '100%', zIndex: 1 }}>
-        <Suspense fallback={<LoadingFallback isDay={isDay} />}>
-          <Canvas
-            // frameloop="demand" = only renders when something changes
-            // This is the KEY performance setting — no idle GPU drain
-            frameloop="demand"
-            // Cap device pixel ratio — prevents 4K GPU overload
-            dpr={[1, 2]}
-            camera={{
-              position: [0, 0.5, 4.2],
-              fov: 38,
-              near: 0.1,
-              far: 100,
-            }}
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              background: 'transparent',
-            }}
-            gl={{
-              antialias: true,
-              alpha: true,          // transparent background
-              powerPreference: 'high-performance',
-            }}
-            shadows
-          >
-            {/* ── SCENE FOG ── subtle depth effect */}
-            <fog
-              attach="fog"
-              args={[
-                isDay ? '#c5e8f5' : '#020208',
-                8,
-                22,
-              ]}
-            />
+      {/* Avatar circle */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'relative', zIndex: 1 }}
+      >
+        <div style={{
+          width: '110px', height: '110px',
+          borderRadius: '50%',
+          background: 'radial-gradient(135deg at 35% 35%, #FFF9E6 0%, #FFD580 45%, #FF9F00 100%)',
+          border: '3px solid rgba(255,255,255,0.85)',
+          boxShadow: '0 0 0 6px rgba(255,215,0,0.18), 0 8px 32px rgba(255,160,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <Image 
+            src="/assets/character/muazdp.png" 
+            alt="Abdullah Al Muaz" 
+            width={110} 
+            height={110} 
+            priority
+            className="rounded-full object-cover" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+          />
+        </div>
+      </motion.div>
 
-            {/* ── AMBIENT LIGHT ── fills all shadows softly */}
-            <ambientLight intensity={ambientIntensity} />
-
-            {/* ── MAIN KEY LIGHT ── from top-left (sun/studio key) */}
-            <directionalLight
-              position={[3, 6, 4]}
-              color={mainLightColor}
-              intensity={mainLightIntensity}
-              castShadow
-              shadow-mapSize-width={1024}
-              shadow-mapSize-height={1024}
-              shadow-camera-far={20}
-              shadow-camera-left={-4}
-              shadow-camera-right={4}
-              shadow-camera-top={4}
-              shadow-camera-bottom={-4}
-            />
-
-            {/* ── FILL LIGHT ── softens harsh shadows */}
-            <directionalLight
-              position={[-3, 2, -2]}
-              color={fillLightColor}
-              intensity={fillLightIntensity}
-            />
-
-            {/* ── RIM LIGHT ── separates character from background */}
-            <directionalLight
-              position={[0, -1, -4]}
-              color={rimLightColor}
-              intensity={rimLightIntensity}
-            />
-
-            {/* ── ENVIRONMENT ── subtle HDR reflections on model */}
-            <Environment preset={isDay ? 'dawn' : 'night'} />
-
-            {/* ── PLATFORM GLOW DISC ── */}
-            <PlatformGlow isDay={isDay} />
-
-            {/* ── CONTACT SHADOW ── natural ground shadow */}
-            <ContactShadows
-              position={[0, -1.12, 0]}
-              opacity={isDay ? 0.35 : 0.55}
-              scale={3}
-              blur={2.5}
-              far={1.5}
-              color={isDay ? '#4a8ab5' : '#3a2080'}
-            />
-
-            {/* ── THE CHARACTER MODEL ── */}
-            <CharacterModel isDay={isDay} />
-
-            {/* ── ORBIT CONTROLS ──
-                Allows mouse/touch rotation
-                Limited to prevent flipping upside down
-                Auto-rotate disabled — we handle animation in CharacterModel */}
-            <OrbitControls
-              enablePan={false}
-              enableZoom={false}
-              minPolarAngle={Math.PI / 3.5}
-              maxPolarAngle={Math.PI / 1.8}
-              // Gentle damping for smooth feel
-              enableDamping
-              dampingFactor={0.08}
-              rotateSpeed={0.55}
-            />
-          </Canvas>
-        </Suspense>
+      {/* Name & title */}
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <p style={{
+          fontFamily: "var(--font-orbitron), sans-serif",
+          fontSize: '1.1rem',
+          fontWeight: 900,
+          color: 'rgba(255,255,255,0.95)',
+          letterSpacing: '0.1em',
+          textShadow: '0 2px 12px rgba(46,134,193,0.5)',
+          margin: 0,
+        }}>MUAZ</p>
+        <p style={{
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.75)',
+          margin: '4px 0 0',
+        }}>Full Stack Dev</p>
       </div>
+
+      {/* Skill dots */}
+      <div style={{
+        display: 'flex',
+        gap: '8px',
+        position: 'relative',
+        zIndex: 1,
+      }}>
+        {['React', 'Node', 'Next'].map((label, i) => (
+          <motion.div
+            key={label}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 + i * 0.15 }}
+            style={{
+              padding: '3px 10px',
+              borderRadius: '20px',
+              background: 'rgba(255,255,255,0.25)',
+              border: '1px solid rgba(255,255,255,0.55)',
+              backdropFilter: 'blur(6px)',
+              fontFamily: "var(--font-rajdhani), sans-serif",
+              fontSize: '0.58rem',
+              fontWeight: 700,
+              letterSpacing: '0.1em',
+              color: 'rgba(255,255,255,0.9)',
+              textTransform: 'uppercase',
+            }}
+          >{label}</motion.div>
+        ))}
+      </div>
+
+      {/* Status bar */}
+      <motion.div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          position: 'relative',
+          zIndex: 1,
+        }}
+        animate={{ opacity: [0.6, 1, 0.6] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <div style={{
+          width: '6px', height: '6px', borderRadius: '50%',
+          background: '#4ade80',
+          boxShadow: '0 0 8px #4ade80',
+        }} />
+        <span style={{
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.65)',
+        }}>Open to work</span>
+      </motion.div>
     </div>
   );
 }
 
-// Preload the GLB when the module loads — reduces wait time
-// This starts fetching the .glb in the background immediately
-useGLTF.preload('/assets/character/threedavator.glb');
+// ── NIGHT AVATAR ─────────────────────────────────────────────
+// Dark terminal-style card — looks like a holo-display readout
+function NightAvatar() {
+  return (
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '12px',
+      padding: '28px 20px',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Nebula glow background */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          inset: '-20px',
+          background: 'radial-gradient(circle at 50% 40%, rgba(123,104,238,0.2) 0%, transparent 65%)',
+          filter: 'blur(20px)',
+          pointerEvents: 'none',
+        }}
+        animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.08, 1] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+
+      {/* Scan-line overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(123,104,238,0.04) 3px, rgba(123,104,238,0.04) 4px)',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }} />
+
+      {/* Terminal header bar */}
+      <div style={{
+        position: 'absolute',
+        top: 0, left: 0, right: 0,
+        height: '28px',
+        background: 'rgba(123,104,238,0.12)',
+        borderBottom: '1px solid rgba(123,104,238,0.25)',
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 12px',
+        gap: '6px',
+        zIndex: 1,
+      }}>
+        {['rgba(255,80,80,0.7)', 'rgba(255,200,0,0.7)', 'rgba(80,200,80,0.7)'].map((c, i) => (
+          <div key={i} style={{ width: '7px', height: '7px', borderRadius: '50%', background: c }} />
+        ))}
+        <span style={{
+          marginLeft: 'auto',
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.55rem',
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          color: 'rgba(123,104,238,0.6)',
+          textTransform: 'uppercase',
+        }}>muaz.dev</span>
+      </div>
+
+      {/* Avatar circle */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ position: 'relative', zIndex: 1, marginTop: '14px' }}
+      >
+        <div style={{
+          width: '100px', height: '100px',
+          borderRadius: '50%',
+          background: 'radial-gradient(135deg at 35% 35%, rgba(123,104,238,0.6) 0%, rgba(30,10,80,0.9) 100%)',
+          border: '2px solid rgba(123,104,238,0.6)',
+          boxShadow: '0 0 0 5px rgba(123,104,238,0.1), 0 0 30px rgba(123,104,238,0.35)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+        }}>
+          <Image 
+            src="/assets/character/muazdp.png" 
+            alt="Abdullah Al Muaz" 
+            width={100} 
+            height={100} 
+            priority
+            className="rounded-full object-cover" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+          />
+
+          {/* Corner brackets overlaying the image */}
+          {[['top:4px','left:4px'],['top:4px','right:4px'],['bottom:4px','left:4px'],['bottom:4px','right:4px']].map((pos, i) => {
+            const [v, h] = pos;
+            const vKey = v.split(':')[0];
+            const hKey = h.split(':')[0];
+            return (
+              <div key={i} style={{
+                position: 'absolute',
+                [vKey]: '4px',
+                [hKey]: '4px',
+                width: '10px', height: '10px',
+                borderTop: vKey === 'top' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
+                borderBottom: vKey === 'bottom' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
+                borderLeft: hKey === 'left' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
+                borderRight: hKey === 'right' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
+                pointerEvents: 'none',
+              }} />
+            );
+          })}
+        </div>
+      </motion.div>
+
+      {/* Name */}
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <p style={{
+          fontFamily: "var(--font-orbitron), sans-serif",
+          fontSize: '1.05rem',
+          fontWeight: 900,
+          color: '#E8E8F0',
+          letterSpacing: '0.12em',
+          textShadow: '0 0 20px rgba(123,104,238,0.6)',
+          margin: 0,
+        }}>MUAZ</p>
+        <p style={{
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.6rem',
+          fontWeight: 700,
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: 'rgba(123,104,238,0.75)',
+          margin: '4px 0 0',
+        }}>Full Stack Dev</p>
+      </div>
+
+      {/* Typing dots readout */}
+      <div style={{
+        display: 'flex', gap: '6px',
+        position: 'relative', zIndex: 1,
+      }}>
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            style={{
+              width: '5px', height: '5px', borderRadius: '50%',
+              background: 'rgba(123,104,238,0.7)',
+            }}
+            animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.3, 0.8] }}
+            transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' }}
+          />
+        ))}
+      </div>
+
+      {/* Status */}
+      <motion.div
+        style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          position: 'relative', zIndex: 1,
+        }}
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <div style={{
+          width: '6px', height: '6px', borderRadius: '50%',
+          background: '#4ade80',
+          boxShadow: '0 0 8px #4ade80',
+        }} />
+        <span style={{
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: '0.58rem',
+          fontWeight: 700,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+          color: 'rgba(200,210,240,0.55)',
+        }}>Signal: Online</span>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── MAIN EXPORT ───────────────────────────────────────────────
+// Drop-in replacement for the old Three.js component.
+// Accepts the same { theme } prop — no changes needed in Landing.jsx.
+export default function ThreeDCharacter({ theme }) {
+  const isDay = theme === 'day';
+  return isDay ? <DayAvatar /> : <NightAvatar />;
+}

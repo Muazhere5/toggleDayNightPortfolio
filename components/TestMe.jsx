@@ -13,6 +13,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, doc, updateDoc, arrayUnion, increment, addDoc, deleteDoc } from 'firebase/firestore';
 
 const CATEGORIES = [
   { id: 'problem-solving', label: 'Problem Solving',      icon: '🧩', desc: 'Algorithms, logic, coding challenges'    },
@@ -24,123 +26,124 @@ const CATEGORIES = [
   { id: 'other',           label: 'Other',                icon: '📦', desc: 'Anything else you can think of'          },
 ];
 
-const SOLVED_CHALLENGES = [
-  {
-    id: 1, order: 1, category: 'problem-solving',
-    challengerName: 'Alex R.',
-    challenge: 'How would you build a real-time notification system without using WebSockets?',
-    solution: `Great challenge! I'd use Server-Sent Events (SSE) combined with a polling fallback.
-
-SSE keeps a long-lived HTTP connection open from server → client, perfect for one-way real-time updates. Here's the approach:
-
-1. Server opens an SSE endpoint (/api/notifications/stream)
-2. Client connects with EventSource API
-3. Server pushes events as they occur (new message, alert, etc.)
-4. For browsers that don't support SSE, fall back to long-polling every 3 seconds
-
-Why not WebSockets? SSE is simpler, works over standard HTTP/2, auto-reconnects, and is ideal when you only need server → client updates. WebSockets shine when you need bi-directional real-time (like chat).
-
-Stack: Node.js + Express for SSE endpoint, React useEffect + EventSource on frontend.`,
-    tags: ['Node.js', 'React', 'API Design'],
-    solvedAt: 'March 2025',
-  },
-  {
-    id: 2, order: 2, category: 'design-strategy',
-    challengerName: 'Priya M.',
-    challenge: 'Design a color system for an app that needs to work for both colorblind and non-colorblind users.',
-    solution: `Excellent UX challenge! Here's my strategy:
-
-1. Never rely on color alone — always pair color with shape, icon, or text label
-2. Use the WCAG 2.1 contrast ratio minimum (4.5:1 for normal text, 3:1 for large)
-3. Build a semantic color system: success/warning/error mapped to patterns + colors
-4. Test with Deuteranopia simulation (most common — red/green confusion)
-
-My palette approach:
-- Success: Green + checkmark icon + "Success" text
-- Warning: Orange + triangle icon + "Warning" text
-- Error: Red + X icon + "Error" text
-- Use blue/orange as primary accent pair (safe for all colorblind types)
-
-Tools: Figma's colorblind plugins, Chrome DevTools accessibility audit, Stark plugin.`,
-    tags: ['UI/UX', 'Design Strategy', 'Accessibility'],
-    solvedAt: 'April 2025',
-  },
-];
+// ── ADMIN UTILS (Hidden) ──────────────────────────────────────
+// You can uncomment and run these to manage your showcases programmatically:
+// const createProblem = async () => {
+//   await addDoc(collection(db, 'problems'), {
+//     order: 1, category: 'problem-solving', challengerName: 'Alex R.',
+//     challenge: 'How would you build a real-time notification system without WebSockets?',
+//     solution: 'Great challenge! I would use Server-Sent Events (SSE)...',
+//     tags: ['Node.js', 'React'], solvedAt: 'March 2025', stars: 0, comments: []
+//   });
+// };
+// const deleteProblem = async (id) => {
+//   await deleteDoc(doc(db, 'problems', id));
+// };
 
 // ── STAR RATING ───────────────────────────────────────────────
-function StarRating({ challengeId, isDay }) {
-  const storageKey = `rating_${challengeId}`;
-  const [userRating, setUserRating]   = useState(0);
-  const [hoverRating, setHoverRating] = useState(0);
-  const [allRatings, setAllRatings]   = useState([]);
+function StarRating({ challengeId, currentStars, isDay }) {
+  const [hasStarred, setHasStarred] = useState(false);
 
   useEffect(() => {
-    // Safe localStorage access — only runs on client
     try {
-      const saved = localStorage.getItem(`ratings_all_${challengeId}`);
-      setAllRatings(saved ? JSON.parse(saved) : []);
-      const mine = localStorage.getItem(storageKey);
-      setUserRating(mine ? parseInt(mine, 10) : 0);
-    } catch {
-      // localStorage unavailable — silently ignore
-    }
-  }, [challengeId, storageKey]);
-
-  const handleRate = (stars) => {
-    if (userRating > 0) return;
-    const newRatings = [...allRatings, stars];
-    setUserRating(stars);
-    setAllRatings(newRatings);
-    try {
-      localStorage.setItem(storageKey, stars.toString());
-      localStorage.setItem(`ratings_all_${challengeId}`, JSON.stringify(newRatings));
+      if (localStorage.getItem(`starred_${challengeId}`)) setHasStarred(true);
     } catch {}
+  }, [challengeId]);
+
+  const handleStar = async () => {
+    if (hasStarred) return;
+    setHasStarred(true);
+    try {
+      localStorage.setItem(`starred_${challengeId}`, 'true');
+      await updateDoc(doc(db, 'problems', challengeId), {
+        stars: increment(1)
+      });
+    } catch (err) {
+      console.error('Failed to star:', err);
+      setHasStarred(false); // Revert on failure
+    }
   };
 
-  const avgRating = allRatings.length > 0
-    ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
-    : '—';
-  const display = hoverRating || userRating;
-
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-      <div style={{ display: 'flex', gap: '3px' }}>
-        {[1, 2, 3, 4, 5].map(star => (
-          <motion.span
-            key={star}
-            onClick={() => handleRate(star)}
-            onMouseEnter={() => !userRating && setHoverRating(star)}
-            onMouseLeave={() => setHoverRating(0)}
-            whileHover={!userRating ? { scale: 1.3 } : {}}
-            whileTap={!userRating ? { scale: 0.9 } : {}}
-            style={{
-              fontSize: '1.1rem',
-              cursor: userRating ? 'default' : 'pointer',
-              color: star <= display
-                ? '#FFD700'
-                : isDay ? 'rgba(255,255,255,0.3)' : 'rgba(200,210,240,0.2)',
-              filter: star <= display ? 'drop-shadow(0 0 4px rgba(255,215,0,0.5))' : 'none',
-              transition: 'color 0.15s, filter 0.15s',
-            }}
-          >★</motion.span>
-        ))}
-      </div>
-      <span style={{
-        fontFamily: "'Rajdhani', sans-serif", fontSize: '0.72rem',
-        fontWeight: 600, letterSpacing: '0.08em',
-        color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(200,210,240,0.5)',
-      }}>
-        {avgRating !== '—'
-          ? `${avgRating} · ${allRatings.length} rating${allRatings.length !== 1 ? 's' : ''}`
-          : 'Be first to rate'}
-      </span>
-      {userRating > 0 && (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <motion.button
+        onClick={handleStar}
+        whileHover={!hasStarred ? { scale: 1.15 } : {}}
+        whileTap={!hasStarred ? { scale: 0.9 } : {}}
+        style={{
+          background: 'none', border: 'none', cursor: hasStarred ? 'default' : 'pointer',
+          fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '6px', padding: 0,
+          color: hasStarred || currentStars > 0 ? '#FFD700' : isDay ? 'rgba(255,255,255,0.3)' : 'rgba(200,210,240,0.2)',
+          filter: hasStarred || currentStars > 0 ? 'drop-shadow(0 0 4px rgba(255,215,0,0.5))' : 'none',
+          transition: 'color 0.2s, filter 0.2s',
+        }}
+      >
+        ★
         <span style={{
-          fontFamily: "'Rajdhani', sans-serif", fontSize: '0.68rem',
+          fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.85rem', fontWeight: 700,
+          color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(200,210,240,0.6)'
+        }}>
+          {currentStars || 0}
+        </span>
+      </motion.button>
+      {hasStarred && (
+        <span style={{
+          fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.68rem',
           color: isDay ? 'rgba(255,255,255,0.5)' : 'rgba(123,104,238,0.7)',
           letterSpacing: '0.06em',
-        }}>✓ Rated</span>
+        }}>✓ Starred</span>
       )}
+    </div>
+  );
+}
+
+// ── REPLIES / COMMENTS COMPONENT ──────────────────────────────
+function RepliesSection({ challengeId, comments = [], isDay }) {
+  const [replyText, setReplyText] = useState('');
+
+  const handleReply = async () => {
+    if (!replyText.trim()) return;
+    const newReply = { id: Date.now(), text: replyText, date: new Date().toLocaleDateString() };
+    setReplyText('');
+    try {
+      await updateDoc(doc(db, 'problems', challengeId), {
+        comments: arrayUnion(newReply)
+      });
+    } catch (err) {
+      console.error('Failed to post reply:', err);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: '20px', borderTop: isDay ? '1px solid rgba(255,255,255,0.15)' : '1px solid rgba(123,104,238,0.15)', paddingTop: '16px' }}>
+      <h4 style={{ fontFamily: "var(--font-rajdhani)", fontSize: '0.85rem', color: isDay ? '#c4b5fd' : '#a898ff', marginBottom: '12px' }}>
+        Comments & Replies ({comments.length})
+      </h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px', maxHeight: '200px', overflowY: 'auto', paddingRight: '4px' }}>
+        {comments.map(r => (
+          <div key={r.id} style={{ background: isDay ? 'rgba(0,0,0,0.25)' : 'rgba(0,0,0,0.3)', padding: '12px 14px', borderRadius: '10px', fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', border: isDay ? '1px solid rgba(139,92,246,0.2)' : '1px solid transparent' }}>
+            <span style={{ fontSize: '0.65rem', color: isDay ? '#a78bfa' : '#7b68ee', display: 'block', marginBottom: '6px', fontWeight: 600 }}>{r.date}</span>
+            {r.text}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <input 
+          type="text" 
+          value={replyText} 
+          onChange={(e) => setReplyText(e.target.value)} 
+          placeholder="Leave a comment..."
+          style={{ flex: 1, padding: '12px 16px', borderRadius: '10px', background: isDay ? 'rgba(255,255,255,0.1)' : 'rgba(123,104,238,0.08)', border: isDay ? '1px solid rgba(167,139,250,0.4)' : '1px solid rgba(123,104,238,0.2)', color: '#fff', fontSize: '0.9rem', outline: 'none' }}
+        />
+        <motion.button 
+          onClick={handleReply} 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          style={{ padding: '0 20px', borderRadius: '10px', background: isDay ? '#8b5cf6' : '#7b68ee', color: '#fff', border: 'none', cursor: 'pointer', fontWeight: 700, fontFamily: "var(--font-orbitron)" }}
+        >
+          POST
+        </motion.button>
+      </div>
     </div>
   );
 }
@@ -158,13 +161,13 @@ function SolvedCard({ challenge, isDay, index }) {
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       style={{
         borderRadius: '18px', overflow: 'hidden',
-        background: isDay ? 'rgba(255,255,255,0.42)' : 'rgba(6,6,20,0.75)',
+        background: isDay ? 'rgba(15,23,42,0.45)' : 'rgba(6,6,20,0.75)',
         border: isDay
-          ? '1.5px solid rgba(255,255,255,0.7)'
+          ? '1.5px solid rgba(167,139,250,0.4)'
           : '1.5px solid rgba(123,104,238,0.22)',
         backdropFilter: 'blur(16px)',
         boxShadow: isDay
-          ? '0 8px 32px rgba(46,134,193,0.12)'
+          ? '0 10px 40px rgba(76,29,149,0.3)'
           : '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
@@ -189,7 +192,7 @@ function SolvedCard({ challenge, isDay, index }) {
           <div style={{ display: 'flex', alignItems: 'center',
             gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
             <span style={{
-              fontFamily: "'Rajdhani', sans-serif", fontSize: '0.65rem',
+              fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.65rem',
               fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
               padding: '2px 10px', borderRadius: '20px',
               background: isDay ? 'rgba(46,134,193,0.12)' : 'rgba(123,104,238,0.15)',
@@ -199,24 +202,24 @@ function SolvedCard({ challenge, isDay, index }) {
                 : '1px solid rgba(123,104,238,0.3)',
             }}>{cat?.label}</span>
             <span style={{
-              fontFamily: "'Rajdhani', sans-serif", fontSize: '0.65rem',
+              fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.65rem',
               letterSpacing: '0.1em',
               color: isDay ? 'rgba(255,255,255,0.55)' : 'rgba(200,210,240,0.4)',
             }}>from {challenge.challengerName} · {challenge.solvedAt}</span>
             <span style={{
-              fontFamily: "'Orbitron', sans-serif", fontSize: '0.58rem',
+              fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.58rem',
               color: isDay ? 'rgba(255,215,0,0.8)' : 'rgba(255,215,0,0.6)',
             }}>#{String(challenge.id).padStart(3, '0')}</span>
           </div>
 
           <p style={{
-            fontFamily: "'Nunito', sans-serif", fontSize: '0.92rem',
+            fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.92rem',
             fontWeight: 700,
             color: isDay ? '#ffffff' : '#E8E8F0',
             lineHeight: 1.5, marginBottom: '10px',
-          }}>"{challenge.challenge}"</p>
+          }}>&quot;{challenge.challenge}&quot;</p>
 
-          <StarRating challengeId={challenge.id} isDay={isDay} />
+          <StarRating challengeId={challenge.id} currentStars={challenge.stars} isDay={isDay} />
         </div>
 
         <motion.div
@@ -251,7 +254,7 @@ function SolvedCard({ challenge, isDay, index }) {
                 gap: '8px', marginBottom: '12px' }}>
                 <span style={{ fontSize: '1rem' }}>{isDay ? '✈' : '🚀'}</span>
                 <span style={{
-                  fontFamily: "'Rajdhani', sans-serif", fontSize: '0.72rem',
+                  fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.72rem',
                   fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase',
                   color: isDay ? 'rgba(46,134,193,0.9)' : 'rgba(123,104,238,0.85)',
                 }}>
@@ -260,7 +263,7 @@ function SolvedCard({ challenge, isDay, index }) {
               </div>
 
               <div style={{
-                fontFamily: "'Nunito', sans-serif", fontSize: '0.9rem',
+                fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.9rem',
                 lineHeight: 1.75,
                 color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.8)',
                 whiteSpace: 'pre-line',
@@ -278,7 +281,7 @@ function SolvedCard({ challenge, isDay, index }) {
                   gap: '7px', marginTop: '14px' }}>
                   {challenge.tags.map(tag => (
                     <span key={tag} style={{
-                      fontFamily: "'Rajdhani', sans-serif", fontSize: '0.68rem',
+                      fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.68rem',
                       fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
                       padding: '3px 11px', borderRadius: '20px',
                       background: isDay ? 'rgba(46,134,193,0.1)' : 'rgba(123,104,238,0.1)',
@@ -290,6 +293,8 @@ function SolvedCard({ challenge, isDay, index }) {
                   ))}
                 </div>
               )}
+
+              <RepliesSection challengeId={challenge.id} comments={challenge.comments} isDay={isDay} />
             </div>
           </motion.div>
         )}
@@ -309,7 +314,7 @@ function ChallengeForm({ isDay }) {
 
   const inputBase = {
     width: '100%', padding: '13px 16px', borderRadius: '12px',
-    fontFamily: "'Nunito', sans-serif", fontSize: '0.95rem',
+    fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.95rem',
     outline: 'none', transition: 'border 0.25s, box-shadow 0.25s',
     background: isDay ? 'rgba(255,255,255,0.35)' : 'rgba(6,6,20,0.6)',
     color: isDay ? '#ffffff' : '#E8E8F0',
@@ -362,7 +367,7 @@ function ChallengeForm({ isDay }) {
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
               style={{
                 padding: '18px 44px', borderRadius: '50px',
-                fontFamily: "'Orbitron', sans-serif", fontSize: '0.88rem',
+                fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.88rem',
                 fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
                 cursor: 'pointer',
                 border: isDay
@@ -396,7 +401,7 @@ function ChallengeForm({ isDay }) {
             exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.4 }}
           >
             <p style={{
-              fontFamily: "'Rajdhani', sans-serif", fontSize: '0.75rem',
+              fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.75rem',
               fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase',
               textAlign: 'center', marginBottom: '20px',
               color: isDay ? 'rgba(255,255,255,0.75)' : 'rgba(200,210,240,0.6)',
@@ -424,12 +429,12 @@ function ChallengeForm({ isDay }) {
                 >
                   <div style={{ fontSize: '1.4rem', marginBottom: '5px' }}>{cat.icon}</div>
                   <div style={{
-                    fontFamily: "'Rajdhani', sans-serif", fontSize: '0.82rem',
+                    fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.82rem',
                     fontWeight: 700, letterSpacing: '0.06em',
                     color: isDay ? '#ffffff' : '#E8E8F0', marginBottom: '3px',
                   }}>{cat.label}</div>
                   <div style={{
-                    fontFamily: "'Nunito', sans-serif", fontSize: '0.72rem',
+                    fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.72rem',
                     color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(200,210,240,0.5)',
                     lineHeight: 1.4,
                   }}>{cat.desc}</div>
@@ -440,7 +445,7 @@ function ChallengeForm({ isDay }) {
             <div style={{ textAlign: 'center', marginTop: '16px' }}>
               <button onClick={reset} style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontFamily: "'Rajdhani', sans-serif", fontSize: '0.75rem',
+                fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.75rem',
                 color: isDay ? 'rgba(255,255,255,0.5)' : 'rgba(200,210,240,0.4)',
               }}>← Back</button>
             </div>
@@ -467,7 +472,7 @@ function ChallengeForm({ isDay }) {
                 {CATEGORIES.find(c => c.id === selectedCat)?.icon}
               </span>
               <span style={{
-                fontFamily: "'Rajdhani', sans-serif", fontSize: '0.75rem',
+                fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.75rem',
                 fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
                 color: isDay ? 'rgba(255,255,255,0.8)' : 'rgba(160,150,255,0.85)',
               }}>
@@ -475,7 +480,7 @@ function ChallengeForm({ isDay }) {
               </span>
               <button onClick={() => setStep('category')} style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontFamily: "'Rajdhani', sans-serif", fontSize: '0.68rem',
+                fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.68rem',
                 color: isDay ? 'rgba(255,255,255,0.45)' : 'rgba(200,210,240,0.35)',
                 marginLeft: 'auto',
               }}>change ↩</button>
@@ -483,7 +488,7 @@ function ChallengeForm({ isDay }) {
 
             <div style={{ marginBottom: '16px' }}>
               <label style={{
-                display: 'block', fontFamily: "'Rajdhani', sans-serif",
+                display: 'block', fontFamily: "var(--font-rajdhani), sans-serif",
                 fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.16em',
                 textTransform: 'uppercase', marginBottom: '8px',
                 color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(200,210,240,0.6)',
@@ -498,7 +503,7 @@ function ChallengeForm({ isDay }) {
 
             <div style={{ marginBottom: '22px' }}>
               <label style={{
-                display: 'block', fontFamily: "'Rajdhani', sans-serif",
+                display: 'block', fontFamily: "var(--font-rajdhani), sans-serif",
                 fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.16em',
                 textTransform: 'uppercase', marginBottom: '8px',
                 color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(200,210,240,0.6)',
@@ -515,7 +520,7 @@ function ChallengeForm({ isDay }) {
                 style={{ ...inputBase, resize: 'vertical', minHeight: '120px' }}
               />
               <div style={{
-                textAlign: 'right', fontFamily: "'Rajdhani', sans-serif",
+                textAlign: 'right', fontFamily: "var(--font-rajdhani), sans-serif",
                 fontSize: '0.65rem', marginTop: '4px', letterSpacing: '0.06em',
                 color: isDay ? 'rgba(255,255,255,0.4)' : 'rgba(200,210,240,0.35)',
               }}>{challenge.length}/800</div>
@@ -528,7 +533,7 @@ function ChallengeForm({ isDay }) {
               whileTap={!sending && name && challenge ? { scale: 0.97 } : {}}
               style={{
                 width: '100%', padding: '14px', borderRadius: '50px',
-                fontFamily: "'Orbitron', sans-serif", fontSize: '0.82rem',
+                fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.82rem',
                 fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
                 cursor: sending || !name.trim() || !challenge.trim() ? 'not-allowed' : 'pointer',
                 opacity: !name.trim() || !challenge.trim() ? 0.5 : 1,
@@ -570,7 +575,7 @@ function ChallengeForm({ isDay }) {
               {result === 'success' ? (isDay ? '☁️✈️' : '🚀✨') : '⚠️'}
             </div>
             <h3 style={{
-              fontFamily: "'Orbitron', sans-serif", fontSize: '1.1rem',
+              fontFamily: "var(--font-orbitron), sans-serif", fontSize: '1.1rem',
               fontWeight: 700, color: isDay ? '#ffffff' : '#E8E8F0',
               marginBottom: '10px', letterSpacing: '0.04em',
             }}>
@@ -579,7 +584,7 @@ function ChallengeForm({ isDay }) {
                 : 'Launch Failed'}
             </h3>
             <p style={{
-              fontFamily: "'Nunito', sans-serif", fontSize: '0.9rem',
+              fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.9rem',
               color: isDay ? 'rgba(255,255,255,0.75)' : 'rgba(200,210,240,0.65)',
               lineHeight: 1.6, marginBottom: '24px',
             }}>
@@ -592,7 +597,7 @@ function ChallengeForm({ isDay }) {
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
               style={{
                 padding: '10px 28px', borderRadius: '50px',
-                fontFamily: "'Rajdhani', sans-serif", fontSize: '0.78rem',
+                fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.78rem',
                 fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
                 cursor: 'pointer',
                 border: isDay
@@ -613,37 +618,40 @@ function ChallengeForm({ isDay }) {
 
 // ══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
-// BUG FIX: sortedChallenges moved to useState + useEffect
-// so localStorage is never called during SSR
 // ══════════════════════════════════════════════════════════════
 export default function TestMe({ theme }) {
   const isDay = theme === 'day';
 
-  // ✅ FIX: start with original order, sort after mount on client
-  const [sortedChallenges, setSortedChallenges] = useState(
-    [...SOLVED_CHALLENGES].sort((a, b) => a.order - b.order)
-  );
+  const [challenges, setChallenges] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Safe — runs only on client after mount
-    const getRatingCount = (id) => {
-      try {
-        const r = localStorage.getItem(`ratings_all_${id}`);
-        return r ? JSON.parse(r).length : 0;
-      } catch { return 0; }
-    };
-
-    const sorted = [...SOLVED_CHALLENGES].sort((a, b) => {
-      const diff = getRatingCount(b.id) - getRatingCount(a.id);
-      return diff !== 0 ? diff : a.order - b.order;
+    const unsub = onSnapshot(collection(db, 'problems'), (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      // Sort by stars first, then order
+      data.sort((a, b) => (b.stars || 0) - (a.stars || 0) || (a.order || 0) - (b.order || 0));
+      setChallenges(data);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching problems:", error);
+      setLoading(false);
     });
-    setSortedChallenges(sorted);
+    return () => unsub();
   }, []);
 
   return (
     <section id="testme" style={{
       width: '100%', padding: '100px 24px 110px',
       position: 'relative', zIndex: 1,
+      ...(isDay ? {
+        background: 'linear-gradient(135deg, rgba(30,27,75,0.9) 0%, rgba(49,46,129,0.95) 50%, rgba(88,28,135,0.9) 100%)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.2), inset 0 2px 20px rgba(167,139,250,0.2)',
+        borderTop: '1px solid rgba(167,139,250,0.3)',
+        borderBottom: '1px solid rgba(167,139,250,0.3)',
+      } : {})
     }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
@@ -655,7 +663,7 @@ export default function TestMe({ theme }) {
           style={{ textAlign: 'center', marginBottom: '56px' }}
         >
           <p style={{
-            fontFamily: "'Rajdhani', sans-serif", fontSize: '0.75rem',
+            fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.75rem',
             fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase',
             color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(123,104,238,0.8)',
             marginBottom: '10px',
@@ -663,16 +671,16 @@ export default function TestMe({ theme }) {
             {isDay ? '⚔️ Sky Dojo' : '🛸 Mission Control'}
           </p>
           <h2 style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)', fontWeight: 900,
             color: isDay ? '#ffffff' : '#E8E8F0', letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0 2px 24px rgba(46,134,193,0.4)'
+              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>Test Me</h2>
           <p style={{
-            fontFamily: "'Nunito', sans-serif", fontSize: '1rem',
+            fontFamily: "var(--font-nunito), sans-serif", fontSize: '1rem',
             color: isDay ? 'rgba(255,255,255,0.72)' : 'rgba(200,210,240,0.62)',
             maxWidth: '500px', margin: '0 auto', lineHeight: 1.65,
           }}>
@@ -692,7 +700,20 @@ export default function TestMe({ theme }) {
           <ChallengeForm isDay={isDay} />
         </motion.div>
 
-        {SOLVED_CHALLENGES.length > 0 && (
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+              style={{
+                width: '44px', height: '44px',
+                border: isDay ? '3px solid rgba(255,255,255,0.2)' : '3px solid rgba(123,104,238,0.2)',
+                borderTopColor: isDay ? '#fff' : '#7b68ee',
+                borderRadius: '50%'
+              }}
+            />
+          </div>
+        ) : challenges.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -704,7 +725,7 @@ export default function TestMe({ theme }) {
               <div style={{ flex: 1, height: '1px',
                 background: isDay ? 'rgba(255,255,255,0.2)' : 'rgba(123,104,238,0.15)' }} />
               <p style={{
-                fontFamily: "'Rajdhani', sans-serif", fontSize: '0.72rem',
+                fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.72rem',
                 fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase',
                 color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(200,210,240,0.45)',
                 whiteSpace: 'nowrap',
@@ -716,7 +737,7 @@ export default function TestMe({ theme }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {sortedChallenges.map((ch, i) => (
+              {challenges.map((ch, i) => (
                 <SolvedCard key={ch.id} challenge={ch} isDay={isDay} index={i} />
               ))}
             </div>

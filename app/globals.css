@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700&display=swap');
+
 
 /* ============================================================
    CSS VARIABLES — DAY & NIGHT DESIGN TOKENS
@@ -10,38 +10,38 @@
 /* --- DAY VISION TOKENS --- */
 .day-mode {
   /* Backgrounds */
-  --bg-primary: #87CEEB;
-  --bg-gradient: linear-gradient(180deg, #b8e4f7 0%, #87CEEB 40%, #d4f1ff 100%);
-  --bg-card: rgba(255, 255, 255, 0.55);
-  --bg-card-hover: rgba(255, 255, 255, 0.75);
-  --bg-glass: rgba(255, 255, 255, 0.35);
+  --bg-primary: #e6f4f8;
+  --bg-gradient: linear-gradient(180deg, #1d72b4 0%, #4ea8de 25%, #87CEEB 60%, #b8e4f7 85%, #d5f0ff 100%);
+  --bg-card: rgba(255, 255, 255, 0.82);
+  --bg-card-hover: rgba(255, 255, 255, 0.94);
+  --bg-glass: rgba(255, 255, 255, 0.6);
 
-  /* Text */
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.85);
-  --text-muted: rgba(255, 255, 255, 0.65);
-  --text-accent: #2E86C1;
+  /* Text - Changed from white to deep dark navy/slate for readability */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-accent: #1d72b4;
 
   /* Buttons */
   --btn-bg: #ffffff;
-  --btn-text: #2E86C1;
-  --btn-border: rgba(255, 255, 255, 0.9);
-  --btn-hover-bg: #2E86C1;
+  --btn-text: #1d72b4;
+  --btn-border: #1d72b4;
+  --btn-hover-bg: #1d72b4;
   --btn-hover-text: #ffffff;
 
   /* Borders & Shadows */
-  --card-border: rgba(255, 255, 255, 0.6);
-  --card-shadow: 0 8px 32px rgba(46, 134, 193, 0.18), 0 2px 8px rgba(135, 206, 235, 0.3);
-  --card-shadow-hover: 0 24px 60px rgba(46, 134, 193, 0.28), 0 8px 24px rgba(135, 206, 235, 0.4);
-  --glow: rgba(255, 255, 255, 0.5);
+  --card-border: rgba(29, 114, 180, 0.15);
+  --card-shadow: 0 8px 32px rgba(29, 114, 180, 0.08), 0 2px 8px rgba(135, 206, 235, 0.15);
+  --card-shadow-hover: 0 24px 60px rgba(29, 114, 180, 0.18), 0 8px 24px rgba(135, 206, 235, 0.22);
+  --glow: rgba(29, 114, 180, 0.2);
 
   /* Decorative */
-  --cloud-color: rgba(255, 255, 255, 0.9);
+  --cloud-color: rgba(255, 255, 255, 0.95);
   --sun-color: #FFD700;
-  --accent-color: #4FA8D5;
-  --tag-bg: rgba(46, 134, 193, 0.15);
-  --tag-text: #1a6fa3;
-  --tag-border: rgba(46, 134, 193, 0.3);
+  --accent-color: #4ea8de;
+  --tag-bg: rgba(29, 114, 180, 0.08);
+  --tag-text: #1d72b4;
+  --tag-border: rgba(29, 114, 180, 0.18);
 
   /* Toggle */
   --toggle-track: linear-gradient(90deg, #FFD700 0%, #87CEEB 100%);
@@ -50,11 +50,12 @@
 
   /* Scrollbar */
   --scrollbar-bg: #b8e4f7;
-  --scrollbar-thumb: #4FA8D5;
+  --scrollbar-thumb: #4ea8de;
 }
 
 /* --- NIGHT VISION TOKENS --- */
 .night-mode {
+  background-color: #000000;
   /* Backgrounds */
   --bg-primary: #000000;
   --bg-gradient: linear-gradient(180deg, #000000 0%, #050510 40%, #0a0a1a 100%);
@@ -115,7 +116,7 @@ html {
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-nunito), sans-serif;
   font-weight: 400;
   line-height: 1.6;
   overflow-x: hidden;
@@ -132,7 +133,7 @@ body {
    Nunito    → body text (friendly and readable)
    ============================================================ */
 h1, h2, h3 {
-  font-family: 'Orbitron', sans-serif;
+  font-family: var(--font-orbitron), sans-serif;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: 0.04em;
@@ -140,7 +141,7 @@ h1, h2, h3 {
 }
 
 h4, h5, h6, label, .label {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani), sans-serif;
   font-weight: 600;
   color: var(--text-secondary);
   letter-spacing: 0.06em;
@@ -148,26 +149,52 @@ h4, h5, h6, label, .label {
 }
 
 p, span, li {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-nunito), sans-serif;
   color: var(--text-secondary);
 }
 
 /* ============================================================
    THEME TRANSITION — smooth cinematic switch
-   All elements fade gracefully when theme toggles
+
+   IMPORTANT: We do NOT apply transitions to all (*) elements.
+   Doing so causes two serious problems:
+     1. Framer-motion owns transform/opacity — a blanket
+        transition rule overrides spring physics with CSS easing
+     2. Every animated element (star, cloud, card) inherits an
+        extra transition, doubling composited layer cost
+
+   Instead, we only transition semantic theme tokens:
+   background-color, color, border-color, and box-shadow.
+   These are the CSS variables that flip on theme toggle.
+   Framer-motion's own transition prop handles everything else.
    ============================================================ */
-*, *::before, *::after {
+body,
+body *:not([data-framer-component-type]):not([style*="transform"]) {
   transition:
-    background-color 0.8s ease,
-    color 0.6s ease,
-    border-color 0.6s ease,
-    box-shadow 0.6s ease;
+    background-color 0.75s ease,
+    color 0.55s ease,
+    border-color 0.55s ease,
+    box-shadow 0.55s ease;
 }
 
-/* Exclude motion-sensitive transitions from the above */
-.no-transition {
+/* Escape hatch for elements that must not transition at all */
+.no-transition,
+.no-transition * {
   transition: none !important;
 }
+
+/* ── FOUC GUARD ─────────────────────────────────────────────
+   The inline script in layout.jsx adds .no-transitions
+   before the first paint. ThemeContext removes it after 150ms.
+   This block ensures zero animated flash on initial load.
+   ────────────────────────────────────────────────────────── */
+.no-transitions,
+.no-transitions *,
+.no-transitions *::before,
+.no-transitions *::after {
+  transition: none !important;
+}
+
 
 /* ============================================================
    MAIN BACKGROUND — full viewport gradient
@@ -207,7 +234,7 @@ p, span, li {
    BUTTONS — base style
    ============================================================ */
 .btn {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani), sans-serif;
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.08em;
@@ -239,7 +266,7 @@ p, span, li {
    TECH / SKILL TAGS
    ============================================================ */
 .tag {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani), sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -271,7 +298,7 @@ p, span, li {
 }
 
 .section-subtitle {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--font-rajdhani), sans-serif;
   font-size: 1rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;

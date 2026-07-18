@@ -25,7 +25,7 @@
 // ============================================================
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/app/ThemeContext';
 // ── SUN ICON (inline SVG) ────────────────────────────────────
 const SunIcon = () => (
@@ -110,9 +110,43 @@ export default function ThemeToggle() {
 
   const isDay  = theme === 'day';
   const [bursting, setBursting] = useState(false);
+  
+  // Phase 1: Localized State Tracking
+  const [showNudge, setShowNudge] = useState(false);
+  const [hasCalibratedTheme, setHasCalibratedTheme] = useState(true); // default true to prevent hydration flash
+
+  useEffect(() => {
+    // Check if the user has already calibrated the theme
+    const calibrated = localStorage.getItem('hasCalibratedTheme') === 'true';
+    setHasCalibratedTheme(calibrated);
+    
+    if (calibrated) return;
+
+    const handleScroll = () => {
+      // If user scrolls past 300px and hasn't calibrated, show the nudge
+      if (window.scrollY > 300) {
+        setShowNudge(true);
+      } else {
+        setShowNudge(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Initial check in case they loaded halfway down the page
+    handleScroll();
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fire burst animation + call the actual toggle
   const handleToggle = () => {
+    // Phase 4: Resolution
+    if (!hasCalibratedTheme || showNudge) {
+      setShowNudge(false);
+      setHasCalibratedTheme(true);
+      localStorage.setItem('hasCalibratedTheme', 'true');
+    }
+
     setBursting(false);
     // tiny timeout so AnimatePresence re-mounts the burst
     setTimeout(() => {
@@ -133,11 +167,12 @@ export default function ThemeToggle() {
         zIndex: 9999,
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
+        alignItems: 'flex-end', // Aligned to right to match right positioning
         gap: '6px',
         pointerEvents: 'auto',
       }}
     >
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
       {/* ── MODE LABEL ──────────────────────────────────────
           Shows current mode above the toggle button          */}
       <motion.div
@@ -146,7 +181,7 @@ export default function ThemeToggle() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         style={{
-          fontFamily: "'Rajdhani', sans-serif",
+          fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.65rem',
           fontWeight: 700,
           letterSpacing: '0.18em',
@@ -188,6 +223,26 @@ export default function ThemeToggle() {
           transition: 'background 0.8s ease, box-shadow 0.6s ease',
         }}
       >
+        {/* ── PHASE 2: SONAR BEACON EFFECT ──────────────── */}
+        <AnimatePresence>
+          {showNudge && (
+            <motion.div
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{ opacity: [0, 0.8, 0], scale: [1, 1.4, 1.8] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '999px',
+                border: isDay ? '2px solid #FF8C00' : '2px solid #00FFFF',
+                boxShadow: isDay ? '0 0 15px #FF8C00' : '0 0 15px #00FFFF',
+                pointerEvents: 'none',
+                zIndex: -1,
+              }}
+            />
+          )}
+        </AnimatePresence>
+
         {/* ── TRACK INNER BORDER ────────────────────────── */}
         <div style={{
           position: 'absolute',
@@ -206,7 +261,7 @@ export default function ThemeToggle() {
           top: '50%',
           transform: 'translateY(-50%)',
           fontSize: '0.5rem',
-          fontFamily: "'Rajdhani', sans-serif",
+          fontFamily: "var(--font-rajdhani), sans-serif",
           fontWeight: 700,
           letterSpacing: '0.05em',
           color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)',
@@ -224,7 +279,7 @@ export default function ThemeToggle() {
           top: '50%',
           transform: 'translateY(-50%)',
           fontSize: '0.5rem',
-          fontFamily: "'Rajdhani', sans-serif",
+          fontFamily: "var(--font-rajdhani), sans-serif",
           fontWeight: 700,
           letterSpacing: '0.05em',
           color: isDay ? 'rgba(255,255,255,0.3)' : 'rgba(200,210,240,0.9)',
@@ -307,7 +362,7 @@ export default function ThemeToggle() {
         initial={{ opacity: 0.7 }}
         animate={{ opacity: 0.7 }}
         style={{
-          fontFamily: "'Nunito', sans-serif",
+          fontFamily: "var(--font-nunito), sans-serif",
           fontSize: '0.58rem',
           color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(180,190,220,0.5)',
           letterSpacing: '0.06em',
@@ -316,6 +371,46 @@ export default function ThemeToggle() {
       >
         {isDay ? 'switch to space →' : '← switch to sky'}
       </motion.div>
+      </div>
+
+      {/* ── PHASE 3: ELEGANT TOOLTIP ─────────────────────── */}
+      <AnimatePresence>
+        {showNudge && (
+          <motion.div
+            initial={{ opacity: 0, y: -5, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -5, scale: 0.95 }}
+            transition={{ duration: 0.4, type: "spring", bounce: 0.4 }}
+            style={{
+              position: 'absolute',
+              top: '100%',
+              right: 0,
+              marginTop: '10px',
+              width: 'max-content',
+              maxWidth: 'calc(100vw - 40px)', // Ensures it doesn't overflow left edge on mobile
+              padding: '10px 14px',
+              borderRadius: '12px',
+              background: isDay ? 'rgba(255, 245, 230, 0.75)' : 'rgba(10, 15, 30, 0.75)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: isDay ? '1px solid rgba(255, 140, 0, 0.3)' : '1px solid rgba(0, 255, 255, 0.3)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
+              color: isDay ? '#b35900' : '#80ffff',
+              fontFamily: "var(--font-rajdhani), sans-serif",
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              lineHeight: 1.4,
+              textAlign: 'right',
+              pointerEvents: 'none',
+              zIndex: 10,
+            }}
+          >
+            {isDay 
+              ? "⚠️ High solar radiation. Calibrate environment →" 
+              : "⚠️ Critical temperature drop. Ignite sequence →"}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

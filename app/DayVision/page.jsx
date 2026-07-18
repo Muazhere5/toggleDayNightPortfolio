@@ -16,66 +16,136 @@
 // Zero external image files required for the background itself.
 // ============================================================
 
-import { useEffect, useRef } from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+// ── CLOUD FILTER & GRADIENTS DEFINITION ────────────────────────
+const CloudFilters = () => (
+  <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
+    <defs>
+      <linearGradient id="cloud-grad-large" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="65%" stopColor="#f5f8fa" />
+        <stop offset="100%" stopColor="#d2e0ed" />
+      </linearGradient>
+      <linearGradient id="cloud-grad-medium" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="70%" stopColor="#f0f5fa" />
+        <stop offset="100%" stopColor="#c5d6e6" />
+      </linearGradient>
+      <linearGradient id="cloud-grad-small" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="75%" stopColor="#eef4fa" />
+        <stop offset="100%" stopColor="#b9cbdc" />
+      </linearGradient>
+      <filter id="realistic-cloud-filter">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.015"
+          numOctaves="4"
+          result="noise"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="noise"
+          scale="35"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </defs>
+  </svg>
+);
 
 // ── CLOUD SVG SHAPES ─────────────────────────────────────────
-// Three sizes, all pure SVG — no image files needed
+// Multi-layered shapes warped with feTurbulence filter applied at container level
 const CloudLarge = ({ opacity = 0.82 }) => (
-  <svg width="320" height="100" viewBox="0 0 320 100" fill="none">
-    <ellipse cx="160" cy="75" rx="145" ry="38" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="100" cy="58" rx="72" ry="42" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="175" cy="48" rx="88" ry="52" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="245" cy="60" rx="65" ry="38" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="55"  cy="68" rx="48" ry="28" fill={`rgba(255,255,255,${opacity * 0.9})`} />
+  <svg
+    width="450"
+    height="180"
+    viewBox="0 0 450 180"
+    fill="none"
+    style={{
+      opacity: opacity,
+      overflow: 'visible',
+    }}
+  >
+    <ellipse cx="225" cy="115" rx="190" ry="50" fill="url(#cloud-grad-large)" />
+    <ellipse cx="140" cy="90" rx="100" ry="60" fill="url(#cloud-grad-large)" />
+    <ellipse cx="240" cy="70" rx="120" ry="70" fill="url(#cloud-grad-large)" />
+    <ellipse cx="320" cy="90" rx="90" ry="55" fill="url(#cloud-grad-large)" />
+    <ellipse cx="80"  cy="110" rx="60" ry="40" fill="url(#cloud-grad-large)" />
   </svg>
 );
 
 const CloudMedium = ({ opacity = 0.75 }) => (
-  <svg width="210" height="70" viewBox="0 0 210 70" fill="none">
-    <ellipse cx="105" cy="52" rx="95"  ry="26" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="70"  cy="40" rx="52"  ry="32" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="118" cy="33" rx="62"  ry="38" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="168" cy="44" rx="44"  ry="26" fill={`rgba(255,255,255,${opacity})`} />
+  <svg
+    width="320"
+    height="130"
+    viewBox="0 0 320 130"
+    fill="none"
+    style={{
+      opacity: opacity,
+      overflow: 'visible',
+    }}
+  >
+    <ellipse cx="160" cy="85" rx="140" ry="38" fill="url(#cloud-grad-medium)" />
+    <ellipse cx="105" cy="65" rx="75"  ry="45" fill="url(#cloud-grad-medium)" />
+    <ellipse cx="180" cy="55" rx="90"  ry="55" fill="url(#cloud-grad-medium)" />
+    <ellipse cx="240" cy="70" rx="70"  ry="40" fill="url(#cloud-grad-medium)" />
   </svg>
 );
 
 const CloudSmall = ({ opacity = 0.62 }) => (
-  <svg width="130" height="46" viewBox="0 0 130 46" fill="none">
-    <ellipse cx="65"  cy="34" rx="58"  ry="18" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="42"  cy="26" rx="32"  ry="22" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="78"  cy="22" rx="38"  ry="24" fill={`rgba(255,255,255,${opacity})`} />
-    <ellipse cx="108" cy="30" rx="26"  ry="16" fill={`rgba(255,255,255,${opacity})`} />
+  <svg
+    width="200"
+    height="90"
+    viewBox="0 0 200 90"
+    fill="none"
+    style={{
+      opacity: opacity,
+      overflow: 'visible',
+    }}
+  >
+    <ellipse cx="100" cy="60" rx="85"  ry="25" fill="url(#cloud-grad-small)" />
+    <ellipse cx="65"  cy="48" rx="45"  ry="30" fill="url(#cloud-grad-small)" />
+    <ellipse cx="115" cy="40" rx="55"  ry="35" fill="url(#cloud-grad-small)" />
+    <ellipse cx="155" cy="50" rx="40"  ry="24" fill="url(#cloud-grad-small)" />
   </svg>
 );
 
-// ── SUN ───────────────────────────────────────────────────────
+// ── SUN WITH LIGHT FLARE ───────────────────────────────────────
 const Sun = () => (
   <motion.div
-    style={{ position: 'absolute', top: '5%', left: '6%', zIndex: 1 }}
-    animate={{ scale: [1, 1.06, 1], opacity: [0.92, 1, 0.92] }}
-    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+    style={{
+      position: 'absolute',
+      top: '-80px',
+      left: '-80px',
+      width: '45vw',
+      height: '45vw',
+      maxWidth: '600px',
+      maxHeight: '600px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(255, 248, 200, 0.4) 0%, rgba(255, 220, 50, 0.15) 30%, rgba(135, 206, 235, 0) 70%)',
+      zIndex: 1,
+      pointerEvents: 'none',
+    }}
+    animate={{ scale: [1, 1.05, 1] }}
+    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
   >
-    <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
-      {/* Outer glow rays */}
-      {[0,30,60,90,120,150,180,210,240,270,300,330].map((angle, i) => (
-        <line
-          key={i}
-          x1="44" y1="44"
-          x2={44 + 38 * Math.cos((angle * Math.PI) / 180)}
-          y2={44 + 38 * Math.sin((angle * Math.PI) / 180)}
-          stroke="rgba(255,215,0,0.45)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      ))}
-      {/* Sun body */}
-      <circle cx="44" cy="44" r="22" fill="#FFD700" opacity="0.95" />
-      <circle cx="44" cy="44" r="17" fill="#FFEC6E" opacity="0.9" />
-      {/* Inner glow */}
-      <circle cx="44" cy="44" r="28" fill="rgba(255,215,0,0.15)" />
-      <circle cx="44" cy="44" r="34" fill="rgba(255,215,0,0.07)" />
-    </svg>
+    <motion.div
+      style={{
+        position: 'absolute',
+        top: '32%',
+        left: '32%',
+        width: '100px',
+        height: '100px',
+        borderRadius: '50%',
+        background: 'radial-gradient(circle, #FFFFFF 0%, #FFF4B0 30%, #FFD700 70%, #FF9F00 100%)',
+        boxShadow: '0 0 50px 20px rgba(255, 215, 0, 0.6), 0 0 100px 45px rgba(255, 159, 0, 0.35)',
+      }}
+      animate={{ rotate: 360 }}
+      transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+    />
   </motion.div>
 );
 
@@ -163,39 +233,37 @@ const PrivatePlane = () => (
   </svg>
 );
 
+// ── CLOUD CONFIGS ─────────────────────────────────────────
+const clouds = [
+  { id: 'c1', Type: CloudLarge,  top: '6%',  duration: 62, delay: 0,  opacity: 0.88, blur: 0, repeatDelay: 3 },
+  { id: 'c2', Type: CloudMedium, top: '14%', duration: 44, delay: 8,  opacity: 0.78, blur: 0, repeatDelay: 5 },
+  { id: 'c3', Type: CloudLarge,  top: '22%', duration: 70, delay: 18, opacity: 0.72, blur: 0.5, repeatDelay: 1 },
+  { id: 'c4', Type: CloudSmall,  top: '30%', duration: 35, delay: 5,  opacity: 0.65, blur: 0, repeatDelay: 4 },
+  { id: 'c5', Type: CloudMedium, top: '42%', duration: 52, delay: 22, opacity: 0.70, blur: 0.3, repeatDelay: 6 },
+  { id: 'c6', Type: CloudSmall,  top: '55%', duration: 30, delay: 12, opacity: 0.58, blur: 0, repeatDelay: 2 },
+  { id: 'c7', Type: CloudLarge,  top: '65%', duration: 66, delay: 30, opacity: 0.62, blur: 0.8, repeatDelay: 7 },
+  { id: 'c8', Type: CloudMedium, top: '78%', duration: 40, delay: 3,  opacity: 0.55, blur: 0, repeatDelay: 3 },
+  { id: 'c9', Type: CloudSmall,  top: '88%', duration: 28, delay: 16, opacity: 0.48, blur: 0, repeatDelay: 5 },
+];
+
+// ── BIRD FLOCK CONFIGS ────────────────────────────────────
+const birdFlocks = [
+  { id: 'b1', top: '12%', duration: 32, delay: 4,  scale: 1.0 },
+  { id: 'b2', top: '28%', duration: 42, delay: 18, scale: 0.8 },
+  { id: 'b3', top: '50%', duration: 38, delay: 28, scale: 0.7 },
+];
+
+// ── PLANE CONFIGS ─────────────────────────────────────────
+const planes = [
+  { id: 'p1', top: '4%',  type: 'fighter',  duration: 48, delay: 10, direction: 1  },
+  { id: 'p2', top: '18%', type: 'private',  duration: 72, delay: 35, direction: -1 },
+  { id: 'p3', top: '8%',  type: 'fighter',  duration: 55, delay: 55, direction: 1  },
+];
+
 // ══════════════════════════════════════════════════════════════
 // MAIN DAY BACKGROUND COMPONENT
 // ══════════════════════════════════════════════════════════════
 export default function DayBackground() {
-
-  // ── CLOUD CONFIGS ─────────────────────────────────────────
-  // Each cloud: type, vertical position, animation duration, delay, opacity, blur
-  const clouds = [
-    { id: 'c1', Type: CloudLarge,  top: '6%',  duration: 62, delay: 0,  opacity: 0.88, blur: 0 },
-    { id: 'c2', Type: CloudMedium, top: '14%', duration: 44, delay: 8,  opacity: 0.78, blur: 0 },
-    { id: 'c3', Type: CloudLarge,  top: '22%', duration: 70, delay: 18, opacity: 0.72, blur: 0.5 },
-    { id: 'c4', Type: CloudSmall,  top: '30%', duration: 35, delay: 5,  opacity: 0.65, blur: 0 },
-    { id: 'c5', Type: CloudMedium, top: '42%', duration: 52, delay: 22, opacity: 0.70, blur: 0.3 },
-    { id: 'c6', Type: CloudSmall,  top: '55%', duration: 30, delay: 12, opacity: 0.58, blur: 0 },
-    { id: 'c7', Type: CloudLarge,  top: '65%', duration: 66, delay: 30, opacity: 0.62, blur: 0.8 },
-    { id: 'c8', Type: CloudMedium, top: '78%', duration: 40, delay: 3,  opacity: 0.55, blur: 0 },
-    { id: 'c9', Type: CloudSmall,  top: '88%', duration: 28, delay: 16, opacity: 0.48, blur: 0 },
-  ];
-
-  // ── BIRD FLOCK CONFIGS ────────────────────────────────────
-  const birdFlocks = [
-    { id: 'b1', top: '12%', duration: 32, delay: 4,  scale: 1.0 },
-    { id: 'b2', top: '28%', duration: 42, delay: 18, scale: 0.8 },
-    { id: 'b3', top: '50%', duration: 38, delay: 28, scale: 0.7 },
-  ];
-
-  // ── PLANE CONFIGS ─────────────────────────────────────────
-  const planes = [
-    { id: 'p1', top: '4%',  type: 'fighter',  duration: 48, delay: 10, direction: 1  },
-    { id: 'p2', top: '18%', type: 'private',  duration: 72, delay: 35, direction: -1 },
-    { id: 'p3', top: '8%',  type: 'fighter',  duration: 55, delay: 55, direction: 1  },
-  ];
-
   return (
     <div
       style={{
@@ -204,20 +272,29 @@ export default function DayBackground() {
         zIndex: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
-        // Multi-layer sky gradient — deep blue at top, lighter at horizon
+        // Rich sky-blue gradient — deeper blue at top for text readability, transitioning to soft haze
         background: `
           linear-gradient(
             180deg,
-            #5BB8E8 0%,
-            #87CEEB 25%,
-            #A8DCEE 50%,
-            #C5E8F5 72%,
-            #D8F0FA 88%,
-            #E8F6FC 100%
+            #1d72b4 0%,
+            #4ea8de 25%,
+            #87CEEB 60%,
+            #b8e4f7 85%,
+            #d5f0ff 100%
           )
         `,
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .mobile-hidden {
+            display: none !important;
+          }
+        }
+      `}</style>
+      {/* ── SVG FILTERS & GRADIENTS FOR REALISTIC CLOUDS ───── */}
+      <CloudFilters />
+
       {/* ── ATMOSPHERIC DEPTH OVERLAY ──────────────────────
           Subtle radial gradient gives depth — brighter center
           fades to slightly deeper blue at edges               */}
@@ -244,24 +321,24 @@ export default function DayBackground() {
       <HotAirBalloon />
 
       {/* ── CLOUDS ───────────────────────────────────────── */}
-      {clouds.map(({ id, Type, top, duration, delay, opacity, blur }) => (
+      {clouds.map(({ id, Type, top, duration, delay, opacity, blur, repeatDelay }, index) => (
         <motion.div
           key={id}
+          className={index % 2 !== 0 ? 'mobile-hidden' : ''}
           style={{
             position: 'absolute',
             top,
-            filter: blur > 0 ? `blur(${blur}px)` : 'none',
+            filter: `url(#realistic-cloud-filter)${blur > 0 ? ` blur(${blur}px)` : ''}`,
             pointerEvents: 'none',
           }}
-          initial={{ x: '-300px' }}
+          initial={{ x: '-450px' }}
           animate={{ x: '110vw' }}
           transition={{
             duration,
             delay,
             repeat: Infinity,
             ease: 'linear',
-            // Randomise restart so clouds don't bunch up
-            repeatDelay: Math.random() * 8,
+            repeatDelay,
           }}
         >
           <Type opacity={opacity} />
