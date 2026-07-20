@@ -23,7 +23,7 @@ The portfolio utilizes a custom-built Day/Night theme engine designed to complet
 ### Skills & Socials (`Skills.jsx`)
 * **Day Mode (The "Kite String"):** Skills are presented as badges hanging from a kite string, swaying gently with a CSS animation to simulate wind.
 * **Night Mode (The "Satellite Orbit"):** Skills orbit around a central user hub at different radial distances and speeds, resembling a planetary system or satellite network.
-* **Socials:** Integrated professional links (GitHub, LinkedIn, Codeforces, LeetCode, etc.) use `react-icons` and feature distinct hover states and color profiles depending on the active theme.
+* **Socials:** Integrated professional links (GitHub, LinkedIn, etc.) use `react-icons` and feature distinct hover states and color profiles depending on the active theme.
 
 ### Project Showcase (`Projects.jsx`)
 * **Structure:** Highlights three core projects (StyleDecor, Habit Tracker, HERO.IO). 

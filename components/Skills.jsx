@@ -21,8 +21,6 @@ import {
   SiFirebase,
   SiSupabase,
   SiVercel,
-  SiCodeforces,
-  SiLeetcode,
 } from 'react-icons/si';
 import {
   FaReact,
@@ -51,8 +49,6 @@ const SKILLS = [
 const SOCIALS = [
   { id: 1, name: 'GitHub',   Icon: FaGithub,   href: 'https://github.com/Muazhere5',    color: '#ffffff' },
   { id: 2, name: 'LinkedIn', Icon: FaLinkedin, href: 'https://www.linkedin.com/in/abdullah-al-muaz-bb97a3370', color: '#0A66C2' },
-  { id: 3, name: 'Codeforces', Icon: SiCodeforces, href: 'https://codeforces.com/profile/muaz_here555', color: '#1F8ACB' },
-  { id: 4, name: 'LeetCode', Icon: SiLeetcode, href: 'https://leetcode.com/u/muaz_here', color: '#FFA116' },
   { id: 5, name: 'Facebook', Icon: FaFacebook, href: 'https://www.facebook.com/abdullah.almuaz.7',    color: '#1877F2' },
   { id: 6, name: 'Email',    Icon: FaEnvelope, href: 'mailto:muazctg07@gmail.com',               color: '#EA4335' },
 ];

@@ -50,6 +50,10 @@ const nunito = Nunito({
 
 
 export const metadata = {
+  metadataBase: new URL('https://muazheretoggledaynightmode.vercel.app'),
+  alternates: {
+    canonical: '/',
+  },
   title: 'YOU TECH BD — Portfolio',
   description: 'Full Stack Developer Portfolio — Sky & Space Edition by Muaz',
   keywords: [
