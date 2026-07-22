@@ -1,91 +1,80 @@
 'use client';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
-
 import { useTheme } from './ThemeContext';
 
-import ThemeToggle   from '@/components/ThemeToggle';
-import Landing       from '@/components/Landing';
-import WhatsAppFooter from '@/components/WhatsAppFooter';
-import EmailObject   from '@/components/EmailObject';
-import Skills        from '@/components/Skills';
-import Projects      from '@/components/Projects';
-import Achievements  from '@/components/Achievements';
-import TestMe        from '@/components/TestMe';
+// ─── Fixed backgrounds: client-only, no SSR ─────────────────────────────────
+// Loaded once, both stay in DOM — theme visibility controlled via CSS opacity.
+// This ELIMINATES the AnimatePresence dual-background compositor overload.
+const DayBackground = dynamic(() => import('./DayVision/page'), {
+  ssr: false,
+  loading: () => null,
+});
+const NightBackground = dynamic(() => import('./NightVision/page'), {
+  ssr: false,
+  loading: () => null,
+});
 
-
-
-
-const DayBackground = dynamic(
-  () => import('./DayVision/page'),
-  { ssr: false, loading: () => null }
-);
-
-const NightBackground = dynamic(
-  () => import('./NightVision/page'),
-  { ssr: false, loading: () => null }
-);
+// ─── Page sections: dynamically imported to split the initial bundle ─────────
+const ThemeToggle   = dynamic(() => import('@/components/ThemeToggle'),   { ssr: false });
+const Landing       = dynamic(() => import('@/components/Landing'),       { ssr: false });
+const Skills        = dynamic(() => import('@/components/Skills'),        { ssr: false });
+const Projects      = dynamic(() => import('@/components/Projects'),      { ssr: false });
+const Achievements  = dynamic(() => import('@/components/Achievements'),  { ssr: false });
+const TestMe        = dynamic(() => import('@/components/TestMe'),        { ssr: false });
+const WhatsAppFooter= dynamic(() => import('@/components/WhatsAppFooter'),{ ssr: false });
+const EmailObject   = dynamic(() => import('@/components/EmailObject'),   { ssr: false });
 
 
 export default function HomePage() {
   const { theme } = useTheme();
+  const isDay = theme === 'day';
 
   return (
     <main className="relative overflow-x-hidden">
 
-      
-      <div
-        className="fixed inset-0 z-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        <AnimatePresence mode="sync">
-          {theme === 'day' ? (
-            <motion.div
-              key="day-bg"
-              style={{ position: 'absolute', inset: 0 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.0, ease: 'easeInOut' }}
-            >
-              <DayBackground />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="night-bg"
-              style={{ position: 'absolute', inset: 0 }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.0, ease: 'easeInOut' }}
-            >
-              <NightBackground />
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/*
+        ── Background Layer ────────────────────────────────────────────────────
+        PERF FIX: Both backgrounds are always mounted (avoids re-mount cost).
+        Visibility is controlled by CSS opacity transition only — zero JS,
+        zero Framer Motion, zero AnimatePresence compositor thrashing.
+        The `will-change: opacity` + `contain: strict` on `.bg-panel` ensures
+        each background lives on its own GPU compositing layer.
+      */}
+      <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+        {/* Day background — visible when day-mode, fades out when night-mode */}
+        <div
+          className="bg-panel"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: isDay ? 1 : 0,
+            transition: 'opacity 1.0s ease-in-out',
+            pointerEvents: 'none',
+          }}
+        >
+          <DayBackground />
+        </div>
+
+        {/* Night background — visible when night-mode, fades out when day-mode */}
+        <div
+          className="bg-panel"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            opacity: isDay ? 0 : 1,
+            transition: 'opacity 1.0s ease-in-out',
+            pointerEvents: 'none',
+          }}
+        >
+          <NightBackground />
+        </div>
       </div>
 
-      
+      {/* Theme toggle — fixed position, always visible */}
       <ThemeToggle />
 
-      
+      {/* Content sections */}
       <div className="relative z-10">
         <Landing      theme={theme} />
         <Skills       theme={theme} />
@@ -95,8 +84,8 @@ export default function HomePage() {
         <WhatsAppFooter theme={theme} />
       </div>
 
-      
-      <EmailObject    theme={theme} />
+      {/* Floating email widget */}
+      <EmailObject theme={theme} />
 
     </main>
   );

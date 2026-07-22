@@ -11,10 +11,10 @@
 
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, doc, updateDoc, arrayUnion, increment, addDoc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, updateDoc, arrayUnion, increment, addDoc } from 'firebase/firestore';
 
 const CATEGORIES = [
   { id: 'problem-solving', label: 'Problem Solving',      icon: '🧩', desc: 'Algorithms, logic, coding challenges'    },
@@ -658,26 +658,56 @@ export default function TestMe({ theme }) {
 
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
+  // PERF FIX: ref for IntersectionObserver — only open the Firestore WebSocket
+  // when this section actually enters the viewport. Eliminates the always-on
+  // real-time listener that was holding a connection from page load.
+  const sectionRef = useRef(null);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'problems'), (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      data.sort((a, b) => (b.stars || 0) - (a.stars || 0) || (a.order || 0) - (b.order || 0));
-      setChallenges(data);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching problems:", error);
-      setLoading(false);
-    });
-    return () => unsub();
+    let unsub = null;
+
+    const subscribe = () => {
+      if (unsub) return; // already subscribed
+      unsub = onSnapshot(collection(db, 'problems'), (snapshot) => {
+        const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        data.sort((a, b) => (b.stars || 0) - (a.stars || 0) || (a.order || 0) - (b.order || 0));
+        setChallenges(data);
+        setLoading(false);
+      }, (error) => {
+        console.error('Error fetching problems:', error);
+        setLoading(false);
+      });
+    };
+
+    const unsubscribe = () => {
+      if (unsub) { unsub(); unsub = null; }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            subscribe();
+          }
+          // keep subscription alive once opened — don't disconnect on scroll out
+          // (user may scroll back; Firebase charges per connection not per query)
+        });
+      },
+      { rootMargin: '200px' } // pre-load 200px before section enters view
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+
+    return () => {
+      observer.disconnect();
+      unsubscribe();
+    };
   }, []);
 
   return (
-    <section id="testme" style={{
+    <section
+      id="testme"
+      ref={sectionRef} style={{
       width: '100%', padding: '100px 24px 110px',
       position: 'relative', zIndex: 1,
       ...(isDay ? {

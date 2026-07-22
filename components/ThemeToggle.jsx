@@ -140,21 +140,22 @@ export default function ThemeToggle() {
 
   
   const handleToggle = () => {
-    
+    // Dismiss nudge
     if (!hasCalibratedTheme || showNudge) {
       setShowNudge(false);
       setHasCalibratedTheme(true);
       localStorage.setItem('hasCalibratedTheme', 'true');
     }
 
+    // Burst animation
     setBursting(false);
-    
-    setTimeout(() => {
+    const t1 = setTimeout(() => {
       setBursting(true);
       toggleTheme();
-      
-      setTimeout(() => setBursting(false), 600);
+      const t2 = setTimeout(() => setBursting(false), 600);
+      return () => clearTimeout(t2);
     }, 10);
+    return () => clearTimeout(t1);
   };
 
   return (
@@ -174,11 +175,8 @@ export default function ThemeToggle() {
     >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
       
-      <motion.div
-        key={theme}
-        initial={{ opacity: 0, y: -6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+      {/* Theme label — plain div, CSS transition, no Framer instance */}
+      <div
         style={{
           fontFamily: "var(--font-rajdhani), sans-serif",
           fontSize: '0.65rem',
@@ -189,10 +187,11 @@ export default function ThemeToggle() {
           textShadow: isDay
             ? '0 1px 8px rgba(46,134,193,0.6)'
             : '0 1px 8px rgba(123,104,238,0.6)',
+          transition: 'color 0.4s ease, text-shadow 0.4s ease',
         }}
       >
         {isDay ? '☀ Day Vision' : '🌙 Night Vision'}
-      </motion.div>
+      </div>
 
       
       <motion.button
@@ -354,19 +353,19 @@ export default function ThemeToggle() {
       </motion.button>
 
       
-      <motion.div
-        initial={{ opacity: 0.7 }}
-        animate={{ opacity: 0.7 }}
+      {/* Hint text — plain div, no Framer instance needed */}
+      <div
         style={{
           fontFamily: "var(--font-nunito), sans-serif",
           fontSize: '0.58rem',
           color: isDay ? 'rgba(255,255,255,0.6)' : 'rgba(180,190,220,0.5)',
           letterSpacing: '0.06em',
           textAlign: 'center',
+          opacity: 0.7,
         }}
       >
         {isDay ? 'switch to space →' : '← switch to sky'}
-      </motion.div>
+      </div>
       </div>
 
       

@@ -172,55 +172,85 @@ function KiteStringLayout({ isDay }) {
 
 
 
+/*
+  PERF FIX: OrbitIcon — replaced 3-level nested Framer Motion (2 infinite
+  rotation animations per icon × 10 icons = 20 Framer instances) with pure
+  CSS animations via inline styles. The outer div rotates around the centre;
+  the inner div counter-rotates to keep the badge upright. Both animations
+  run on the GPU compositor thread with zero JS scheduler overhead.
+  Hover effects are preserved via React state + CSS transitions.
+*/
 function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
   const [hovered, setHovered] = useState(false);
 
+  const outerAnimName = `orbit-cw-${skill.id}`;
+  const innerAnimName = `orbit-ccw-${skill.id}`;
+
+  // Inline <style> per icon injects a named @keyframes with the correct
+  // startAngle baked in — avoids the need for Framer's JS-driven transform.
+  const css = `
+    @keyframes ${outerAnimName} {
+      from { transform: rotate(${startAngle}deg) translateX(${orbitRadius}px); }
+      to   { transform: rotate(${startAngle + 360}deg) translateX(${orbitRadius}px); }
+    }
+    @keyframes ${innerAnimName} {
+      from { transform: rotate(${-startAngle}deg); }
+      to   { transform: rotate(${-(startAngle + 360)}deg); }
+    }
+  `;
+
   return (
-    <motion.div
-      style={{
-        position: 'absolute', top: '50%', left: '50%',
-        width: size, height: size,
-        marginTop: -size / 2, marginLeft: -size / 2,
-      }}
-      animate={{ rotate: [startAngle, startAngle + 360] }}
-      transition={{ duration, repeat: Infinity, ease: 'linear' }}
-    >
-      <motion.div
-        style={{ width: size, height: size, position: 'relative', x: orbitRadius }}
-        animate={{ rotate: [-startAngle, -(startAngle + 360)] }}
-        transition={{ duration, repeat: Infinity, ease: 'linear' }}
-        onHoverStart={() => setHovered(true)}
-        onHoverEnd={() => setHovered(false)}
+    <>
+      <style>{css}</style>
+      {/* Outer — orbits around the centre */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%', left: '50%',
+          width: size, height: size,
+          marginTop: -size / 2, marginLeft: -size / 2,
+          animation: `${outerAnimName} ${duration}s linear infinite`,
+          willChange: 'transform',
+        }}
       >
-        <motion.div
+        {/* Inner — counter-rotates so badge stays upright */}
+        <div
           style={{
-            width: size, height: size, borderRadius: '50%',
-            display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '2px',
-            background: hovered ? 'rgba(123,104,238,0.28)' : 'rgba(8,8,28,0.7)',
-            border: `1.5px solid ${hovered ? skill.color : 'rgba(123,104,238,0.3)'}`,
-            backdropFilter: 'blur(10px)',
-            boxShadow: hovered
-              ? `0 0 20px ${skill.color}55`
-              : '0 2px 12px rgba(0,0,0,0.5)',
-            cursor: 'default',
-            transition: 'background 0.3s, border 0.3s, box-shadow 0.3s',
+            width: size, height: size,
+            animation: `${innerAnimName} ${duration}s linear infinite`,
+            willChange: 'transform',
           }}
-          whileHover={{ scale: 1.2 }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
         >
-          <span style={{ fontSize: '1.25rem', color: skill.color }}>
-            <skill.Icon />
-          </span>
-          <span style={{
-            fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.45rem',
-            fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'rgba(200,210,240,0.75)', whiteSpace: 'nowrap',
-          }}>
-            {skill.name}
-          </span>
-        </motion.div>
-      </motion.div>
-    </motion.div>
+          <div
+            style={{
+              width: size, height: size, borderRadius: '50%',
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: '2px',
+              background: hovered ? 'rgba(123,104,238,0.28)' : 'rgba(8,8,28,0.7)',
+              border: `1.5px solid ${hovered ? skill.color : 'rgba(123,104,238,0.3)'}`,
+              backdropFilter: 'blur(10px)',
+              boxShadow: hovered ? `0 0 20px ${skill.color}55` : '0 2px 12px rgba(0,0,0,0.5)',
+              cursor: 'default',
+              transform: hovered ? 'scale(1.2)' : 'scale(1)',
+              transition: 'background 0.3s, border 0.3s, box-shadow 0.3s, transform 0.2s',
+            }}
+          >
+            <span style={{ fontSize: '1.25rem', color: skill.color }}>
+              <skill.Icon />
+            </span>
+            <span style={{
+              fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.45rem',
+              fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+              color: 'rgba(200,210,240,0.75)', whiteSpace: 'nowrap',
+            }}>
+              {skill.name}
+            </span>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -278,7 +308,14 @@ function SatelliteOrbitLayout() {
       <OrbitRing radius={MID_R}   opacity={0.17} />
       <OrbitRing radius={OUTER_R} opacity={0.13} />
 
-      <motion.div
+      {/* Centre MUAZ hub — CSS pulse replaces Framer boxShadow animation */}
+      <style>{`
+        @keyframes orbitHubPulse {
+          0%, 100% { box-shadow: 0 0 0 6px rgba(123,104,238,0.06), 0 0 30px rgba(123,104,238,0.15); }
+          50%       { box-shadow: 0 0 0 10px rgba(123,104,238,0.04), 0 0 50px rgba(123,104,238,0.28); }
+        }
+      `}</style>
+      <div
         style={{
           position: 'absolute', top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -286,20 +323,15 @@ function SatelliteOrbitLayout() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           background: 'radial-gradient(circle, rgba(123,104,238,0.25) 0%, rgba(5,5,20,0.85) 70%)',
           border: '2px solid rgba(123,104,238,0.5)', zIndex: 10,
+          animation: 'orbitHubPulse 3s ease-in-out infinite',
         }}
-        animate={{ boxShadow: [
-          '0 0 0 6px rgba(123,104,238,0.06), 0 0 30px rgba(123,104,238,0.15)',
-          '0 0 0 10px rgba(123,104,238,0.04), 0 0 50px rgba(123,104,238,0.28)',
-          '0 0 0 6px rgba(123,104,238,0.06), 0 0 30px rgba(123,104,238,0.15)',
-        ]}}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       >
         <span style={{
           fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.75rem',
           fontWeight: 900, color: 'rgba(200,210,255,0.9)',
           letterSpacing: '0.06em', textAlign: 'center', lineHeight: 1.2,
         }}>MUAZ</span>
-      </motion.div>
+      </div>
 
       {innerSkills.map((s, i) => (
         <OrbitIcon key={s.id} skill={s} orbitRadius={INNER_R} duration={14}

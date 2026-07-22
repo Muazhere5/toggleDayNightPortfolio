@@ -104,7 +104,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior is handled by Lenis — removed to prevent conflict */
   font-size: 16px;
 }
 
@@ -142,13 +142,25 @@ p, span, li {
 }
 
 
-body,
-body *:not([data-framer-component-type]):not([style*="transform"]) {
+/*
+  PERF FIX: Removed the blanket 'body *' transition rule.
+  It was forcing the browser to recalculate transitions on every single DOM
+  node during theme toggles, causing massive layout/paint thrashing.
+  Transitions are now applied only to specific, targeted elements.
+*/
+body {
+  transition: background 0.8s ease, color 0.55s ease;
+}
+
+/* Only the elements that visibly change on theme toggle get transitions */
+.glass-card,
+.btn,
+.tag {
   transition:
-    background-color 0.75s ease,
-    color 0.55s ease,
-    border-color 0.55s ease,
-    box-shadow 0.55s ease;
+    background-color 0.55s ease,
+    color 0.45s ease,
+    border-color 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
 
@@ -359,6 +371,24 @@ body *:not([data-framer-component-type]):not([style*="transform"]) {
   animation: nebulaGlow 6s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
+}
+
+/* GPU-compositing hint for the fixed background panels */
+.bg-panel {
+  will-change: opacity;
+  contain: strict;
+}
+
+/* CSS-driven cloud drift — replaces Framer Motion for clouds */
+@keyframes cloudDriftCSS {
+  0%   { transform: translateX(-450px); }
+  100% { transform: translateX(110vw); }
+}
+
+/* CSS orbit animation for skills — replaces nested Framer Motion */
+@keyframes orbitSpin {
+  from { transform: rotate(0deg) translateX(var(--orbit-r, 100px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-r, 100px)) rotate(-360deg); }
 }
 
 
