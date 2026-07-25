@@ -115,10 +115,8 @@ body {
   overflow-x: hidden;
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: background 0.8s ease, color 0.8s ease;
   min-height: 100vh;
 }
-
 
 h1, h2, h3 {
   font-family: var(--font-orbitron), sans-serif;
@@ -147,6 +145,7 @@ p, span, li {
   It was forcing the browser to recalculate transitions on every single DOM
   node during theme toggles, causing massive layout/paint thrashing.
   Transitions are now applied only to specific, targeted elements.
+  body gets a single targeted transition here — not duplicated above.
 */
 body {
   transition: background 0.8s ease, color 0.55s ease;
@@ -376,7 +375,10 @@ body {
 /* GPU-compositing hint for the fixed background panels */
 .bg-panel {
   will-change: opacity;
-  contain: strict;
+  /* layout + style containment: scopes layout and style recalcs to this subtree
+     without the paint-clipping side-effect of 'strict' that would clip
+     cloud/plane/satellite animations that travel beyond the panel edge. */
+  contain: layout style;
 }
 
 /* CSS-driven cloud drift — replaces Framer Motion for clouds */

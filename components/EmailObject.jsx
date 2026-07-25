@@ -15,6 +15,8 @@ export default function EmailObject({ theme }) {
   return (
     <motion.a
       href="mailto:muazctg07@gmail.com"
+      aria-hidden="true"
+      tabIndex={-1}
       style={{
         position: 'fixed',
         zIndex: 50,

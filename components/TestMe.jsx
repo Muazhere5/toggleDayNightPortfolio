@@ -16,6 +16,17 @@ import emailjs from '@emailjs/browser';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, doc, updateDoc, arrayUnion, increment, addDoc } from 'firebase/firestore';
 
+// Helper to enforce strict timeouts on async operations
+const withTimeout = (promise, ms, operationName = 'Operation') => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${operationName} timed out after ${ms}ms`)), ms)
+    )
+  ]);
+};
+
+
 const CATEGORIES = [
   { id: 'problem-solving', label: 'Problem Solving',      icon: '🧩', desc: 'Algorithms, logic, coding challenges'    },
   { id: 'design-strategy', label: 'Design Strategy',      icon: '🎨', desc: 'UI/UX decisions, design systems'         },
@@ -331,7 +342,7 @@ function ChallengeForm({ isDay }) {
     let firestoreSuccess = false;
 
     try {
-      // 1. Write to Firestore first (The "Sky" Standard)
+      // 1. Write to Firestore first (The "Sky" Standard) with 8s timeout
       const newProblem = {
         challengerName: name.trim(),
         category: selectedCat,
@@ -344,10 +355,14 @@ function ChallengeForm({ isDay }) {
         order: Date.now()
       };
       
-      await addDoc(collection(db, 'problems'), newProblem);
+      await withTimeout(
+        addDoc(collection(db, 'problems'), newProblem), 
+        8000, 
+        'Firestore write'
+      );
       firestoreSuccess = true;
 
-      // 2. Trigger EmailJS Notification
+      // 2. Trigger EmailJS Notification with 8s timeout
       const emailPayload = {
         from_name: name.trim(),
         category: CATEGORIES.find(c => c.id === selectedCat)?.label || selectedCat,
@@ -355,13 +370,15 @@ function ChallengeForm({ isDay }) {
         sent_at: new Date().toLocaleString(),
       };
       
-      console.log('Attempting EmailJS send with payload:', emailPayload);
-
-      await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-        emailPayload,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+      await withTimeout(
+        emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+          emailPayload,
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        ),
+        8000,
+        'EmailJS send'
       );
       
       setResult('success');

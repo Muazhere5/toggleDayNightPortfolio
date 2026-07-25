@@ -302,16 +302,24 @@ function StarMapAchievements() {
           preserveAspectRatio="xMidYMid meet"
         >
           
+          {/* Background stars — pure CSS twinkle (no Framer instances) */}
           {Array.from({ length: 60 }, (_, i) => {
             const x = ((i * 17 + 3) % 97) + 1.5;
             const y = ((i * 13 + 7) % 72) + 1.5;
+            const brightness = 0.3 + (i % 3) * 0.2;
+            const groupClass = ['star-slow', 'star-mid', 'star-fast'][i % 3];
+            const delay = (i * 0.08) % 6;
             return (
-              <motion.circle
+              <circle
                 key={`bg-${i}`}
                 cx={x} cy={y} r={0.25}
-                fill="rgba(255,255,255,0.45)"
-                animate={{ opacity: [0.3, 0.9, 0.3] }}
-                transition={{ duration: 2 + (i % 3), delay: i * 0.08, repeat: Infinity }}
+                fill={`rgba(255,255,255,${brightness})`}
+                className={groupClass}
+                style={{
+                  '--star-max': brightness,
+                  '--star-min': brightness * 0.15,
+                  animationDelay: `${delay}s`,
+                }}
               />
             );
           })}

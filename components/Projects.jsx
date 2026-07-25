@@ -644,7 +644,7 @@ export default function Projects({ theme }) {
             {isDay ? 'More projects flying in soon ✈' : 'More missions launching soon 🚀'}
           </p>
           <motion.a
-            href="https://github.com/yourusername"
+            href="https://github.com/Muazhere5"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.05, y: -2 }}

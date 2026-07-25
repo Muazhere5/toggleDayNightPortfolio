@@ -6,11 +6,14 @@ export default function LenisProvider({ children }) {
   useEffect(() => {
     let lenis = null;
     let rafId = null;
+    let destroyed = false;
 
     const initLenis = async () => {
       try {
         const LenisModule = await import('lenis');
         const Lenis = LenisModule.default;
+
+        if (destroyed) return; // component unmounted before dynamic import resolved
 
         lenis = new Lenis({
           duration: 1.2,
@@ -27,14 +30,18 @@ export default function LenisProvider({ children }) {
           rafId = requestAnimationFrame(raf);
         };
 
+        const startRaf = () => {
+          // Guard: if component unmounted while idle callback was queued, bail out
+          if (destroyed) return;
+          rafId = requestAnimationFrame(raf);
+        };
+
         // PERF FIX: Use requestIdleCallback to defer Lenis init until after
         // the first paint, so it doesn't compete with critical rendering.
         if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-          window.requestIdleCallback(() => {
-            rafId = requestAnimationFrame(raf);
-          });
+          window.requestIdleCallback(startRaf);
         } else {
-          rafId = requestAnimationFrame(raf);
+          startRaf();
         }
       } catch (err) {
         console.warn('[LenisProvider] Smooth scroll init failed:', err);
@@ -44,6 +51,7 @@ export default function LenisProvider({ children }) {
     initLenis();
 
     return () => {
+      destroyed = true;
       if (rafId) cancelAnimationFrame(rafId);
       if (lenis)  lenis.destroy();
     };
