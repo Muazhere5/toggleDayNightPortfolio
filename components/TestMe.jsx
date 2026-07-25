@@ -385,8 +385,12 @@ function ChallengeForm({ isDay }) {
     } catch (error) {
       console.error('Submission Error:', error);
       
+      // Handle Firebase Permission Errors specifically
+      if (error.code === 'permission-denied' || (error.message && error.message.includes('permission'))) {
+        setResult('permission-error');
+      }
       // Fallback: If Firestore succeeded but EmailJS failed, the submission is still valid
-      if (firestoreSuccess) {
+      else if (firestoreSuccess) {
         console.warn('EmailJS notification failed, but Firestore submission succeeded.');
         setResult('success'); // Allow the user to proceed anyway
       } else {
@@ -632,7 +636,7 @@ function ChallengeForm({ isDay }) {
             }}>
               {result === 'success'
                 ? (isDay ? 'Challenge Launched!' : 'Transmission Received!')
-                : 'Launch Failed'}
+                : result === 'permission-error' ? 'Permission Denied' : 'Launch Failed'}
             </h3>
             <p style={{
               fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.9rem',
@@ -641,6 +645,8 @@ function ChallengeForm({ isDay }) {
             }}>
               {result === 'success'
                 ? "I've received your challenge! I'll solve it and post the solution here soon."
+                : result === 'permission-error'
+                ? 'Your submission was blocked by Firebase security rules. Please check database permissions.'
                 : 'Something went wrong. Please try again in a moment.'}
             </p>
             <motion.button
@@ -675,6 +681,7 @@ export default function TestMe({ theme }) {
 
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   // PERF FIX: ref for IntersectionObserver — only open the Firestore WebSocket
   // when this section actually enters the viewport. Eliminates the always-on
   // real-time listener that was holding a connection from page load.
@@ -689,9 +696,15 @@ export default function TestMe({ theme }) {
         const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         data.sort((a, b) => (b.stars || 0) - (a.stars || 0) || (a.order || 0) - (b.order || 0));
         setChallenges(data);
+        setFetchError(null);
         setLoading(false);
       }, (error) => {
         console.error('Error fetching problems:', error);
+        if (error.code === 'permission-denied' || (error.message && error.message.includes('permission'))) {
+          setFetchError('Access Denied: Firebase security rules are blocking read access.');
+        } else {
+          setFetchError('Failed to load challenges. Please try again later.');
+        }
         setLoading(false);
       });
     };
@@ -794,6 +807,13 @@ export default function TestMe({ theme }) {
               }}
             />
           </div>
+        ) : fetchError ? (
+          <motion.div
+            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+            style={{ textAlign: 'center', padding: '40px', color: isDay ? '#ff6b6b' : '#ff8787', fontFamily: "var(--font-nunito)" }}
+          >
+            <p>⚠️ {fetchError}</p>
+          </motion.div>
         ) : challenges.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
