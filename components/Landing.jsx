@@ -206,7 +206,8 @@ export default function Landing({ theme }) {
   
   const bubbleWrapStyle = {
     position: 'relative',
-    width: '320px',
+    width: '100%',
+    maxWidth: '320px',
     height: '380px',
     flexShrink: 0,
     display: 'flex',
@@ -216,7 +217,8 @@ export default function Landing({ theme }) {
 
   
   const canvasContainerStyle = {
-    width: '300px',
+    width: '100%',
+    maxWidth: '300px',
     height: '360px',
     borderRadius: '24px',
     overflow: 'hidden',
@@ -548,7 +550,8 @@ export default function Landing({ theme }) {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '300px',
+              width: '100%',
+              maxWidth: '300px',
               height: '360px',
               borderRadius: '24px',
               border: '1px solid rgba(255,255,255,0.18)',
