@@ -226,7 +226,7 @@ function SolvedCard({ challenge, isDay, index }) {
           <p style={{
             fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.92rem',
             fontWeight: 700,
-            color: isDay ? '#ffffff' : '#E8E8F0',
+            color: isDay ? '#1e293b' : '#E8E8F0',
             lineHeight: 1.5, marginBottom: '10px',
           }}>&quot;{challenge.challenge}&quot;</p>
 
@@ -328,7 +328,7 @@ function ChallengeForm({ isDay }) {
     fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.95rem',
     outline: 'none', transition: 'border 0.25s, box-shadow 0.25s',
     background: isDay ? 'rgba(255,255,255,0.35)' : 'rgba(6,6,20,0.6)',
-    color: isDay ? '#ffffff' : '#E8E8F0',
+    color: isDay ? '#1e293b' : '#E8E8F0',
     border: isDay
       ? '1.5px solid rgba(255,255,255,0.55)'
       : '1.5px solid rgba(123,104,238,0.3)',
@@ -429,7 +429,7 @@ function ChallengeForm({ isDay }) {
                   ? '2px solid rgba(255,255,255,0.85)'
                   : '2px solid rgba(123,104,238,0.6)',
                 background: isDay ? 'rgba(255,255,255,0.2)' : 'rgba(123,104,238,0.14)',
-                color: isDay ? '#ffffff' : '#c8c0ff',
+                color: isDay ? '#1e293b' : '#c8c0ff',
                 backdropFilter: 'blur(12px)',
                 display: 'inline-flex', alignItems: 'center', gap: '12px',
                 position: 'relative', overflow: 'hidden',
@@ -486,7 +486,7 @@ function ChallengeForm({ isDay }) {
                   <div style={{
                     fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.82rem',
                     fontWeight: 700, letterSpacing: '0.06em',
-                    color: isDay ? '#ffffff' : '#E8E8F0', marginBottom: '3px',
+                    color: isDay ? '#1e293b' : '#E8E8F0', marginBottom: '3px',
                   }}>{cat.label}</div>
                   <div style={{
                     fontFamily: "var(--font-nunito), sans-serif", fontSize: '0.72rem',
@@ -596,7 +596,7 @@ function ChallengeForm({ isDay }) {
                   ? '2px solid rgba(255,255,255,0.8)'
                   : '2px solid rgba(123,104,238,0.55)',
                 background: isDay ? 'rgba(255,255,255,0.22)' : 'rgba(123,104,238,0.16)',
-                color: isDay ? '#ffffff' : '#c8c0ff',
+                color: isDay ? '#1e293b' : '#c8c0ff',
                 backdropFilter: 'blur(10px)',
                 display: 'flex', alignItems: 'center',
                 justifyContent: 'center', gap: '10px',
@@ -631,7 +631,7 @@ function ChallengeForm({ isDay }) {
             </div>
             <h3 style={{
               fontFamily: "var(--font-orbitron), sans-serif", fontSize: '1.1rem',
-              fontWeight: 700, color: isDay ? '#ffffff' : '#E8E8F0',
+              fontWeight: 700, color: isDay ? '#1e293b' : '#E8E8F0',
               marginBottom: '10px', letterSpacing: '0.04em',
             }}>
               {result === 'success'
@@ -767,7 +767,7 @@ export default function TestMe({ theme }) {
           <h2 style={{
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)', fontWeight: 900,
-            color: isDay ? '#ffffff' : '#E8E8F0', letterSpacing: '0.04em',
+            color: isDay ? '#1e293b' : '#E8E8F0', letterSpacing: '0.04em',
             textShadow: isDay
               ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
               : '0 2px 24px rgba(123,104,238,0.5)',

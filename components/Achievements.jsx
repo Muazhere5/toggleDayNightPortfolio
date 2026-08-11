@@ -578,7 +578,7 @@ export default function Achievements({ theme }) {
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
-            color: isDay ? '#ffffff' : '#E8E8F0',
+            color: isDay ? '#1e293b' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
               ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'

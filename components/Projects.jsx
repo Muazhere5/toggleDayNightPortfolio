@@ -262,6 +262,9 @@ function ProjectCard({ project, isDay, index }) {
 
   const cardStyle = {
     position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
     borderRadius: '20px',
     overflow: 'visible',
     background: isDay
@@ -329,7 +332,7 @@ function ProjectCard({ project, isDay, index }) {
       <ProjectPreview project={project} isDay={isDay} hovered={hovered} />
 
       
-      <div style={{ padding: '20px 22px 22px' }}>
+      <div style={{ padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
 
         
         <p style={{
@@ -349,7 +352,7 @@ function ProjectCard({ project, isDay, index }) {
           fontFamily: "var(--font-orbitron), sans-serif",
           fontSize: '1.18rem',
           fontWeight: 700,
-          color: isDay ? '#ffffff' : '#E8E8F0',
+          color: isDay ? '#1e293b' : '#E8E8F0',
           marginBottom: '10px',
           letterSpacing: '0.03em',
           textShadow: isDay
@@ -399,7 +402,7 @@ function ProjectCard({ project, isDay, index }) {
         </div>
 
         
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
 
           
           <motion.a
@@ -579,7 +582,7 @@ export default function Projects({ theme }) {
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
-            color: isDay ? '#ffffff' : '#E8E8F0',
+            color: isDay ? '#1e293b' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
               ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
@@ -615,7 +618,7 @@ export default function Projects({ theme }) {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: isDay ? '48px 32px' : '36px 28px',
-          alignItems: 'start',
+          alignItems: 'stretch',
         }}>
           {PROJECTS.map((project, index) => (
             <ProjectCard

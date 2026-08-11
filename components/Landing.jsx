@@ -238,7 +238,7 @@ export default function Landing({ theme }) {
     display: 'inline-block',
     width: '3px',
     height: '0.85em',
-    background: isDay ? '#ffffff' : '#a898ff',
+    background: isDay ? '#1e293b' : '#a898ff',
     marginLeft: '4px',
     verticalAlign: 'middle',
     borderRadius: '2px',
@@ -285,7 +285,7 @@ export default function Landing({ theme }) {
     background: isDay
       ? 'rgba(255,255,255,0.18)'
       : 'rgba(123,104,238,0.12)',
-    color: isDay ? '#ffffff' : '#c8c0ff',
+    color: isDay ? '#1e293b' : '#c8c0ff',
     cursor: 'pointer',
     backdropFilter: 'blur(10px)',
     display: 'flex',
@@ -359,7 +359,7 @@ export default function Landing({ theme }) {
               fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
               fontWeight: 900,
               lineHeight: 1.05,
-              color: isDay ? '#ffffff' : '#E8E8F0',
+              color: isDay ? '#1e293b' : '#E8E8F0',
               textShadow: isDay
                 ? '0px 1px 3px rgba(0,0,0,0.7), 0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
                 : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
