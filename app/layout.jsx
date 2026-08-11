@@ -86,7 +86,7 @@ export default function RootLayout({ children }) {
               (function() {
                 try {
                   var saved = window.localStorage.getItem('portfolio-theme');
-                  var theme = saved === 'night' ? 'night' : 'day';
+                  var theme = saved === 'day' ? 'day' : 'night';
                   var html  = document.documentElement;
                   html.classList.add(theme + '-mode');
                   html.classList.add('no-transitions');

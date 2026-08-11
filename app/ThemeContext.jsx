@@ -43,7 +43,7 @@ export function ThemeProvider({ children }) {
   
   
   
-  const [theme, setTheme] = useState('day');
+  const [theme, setTheme] = useState('night');
 
   
   useEffect(() => {
