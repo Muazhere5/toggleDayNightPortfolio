@@ -636,8 +636,8 @@ export default function Achievements({ theme }) {
           </p>
           
           <motion.a
-            href="/MuazResume.pdf"
-            download="Abdullah_Al_Muaz_Resume.pdf"
+            href="/My_Resume.pdf"
+            download="My_Resume.pdf"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             style={{

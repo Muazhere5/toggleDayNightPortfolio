@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Abdullah Al Muaz - Portfolio Application
 
-## Getting Started
+Welcome to the interactive portfolio of Abdullah Al Muaz. This project is a highly dynamic, dual-themed web application built with the **MERN stack**, **Next.js**, and **Framer Motion**. It is designed to act as a live demonstration of advanced front-end capabilities, prioritizing both performance and visual storytelling.
 
-First, run the development server:
+## 🚀 Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[View Live Portfolio](#) *(Replace with Vercel URL upon deployment)*
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features & Architecture
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This application goes beyond a standard resume, featuring a robust **"Day/Night" thematic architecture** that fundamentally transforms the user interface, animations, and data visualization based on the selected mode.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Theme Engine
+- **FOUC Prevention:** An inline script runs synchronously before React hydration to read `localStorage` preferences and apply the correct theme instantly, eliminating the "Flash of Unstyled Content".
+- **The "Horizon Switch":** A dynamic `<ThemeToggle>` component featuring a continuous sky-to-space gradient track and a spring-physics sliding thumb.
+- **Optimized Dynamic Backgrounds:** Selectively mounts active background components (`DayVision` or `NightVision`) using `AnimatePresence` to crossfade gracefully, ensuring heavy animations are processed only when visible to optimize GPU performance.
 
-## Learn More
+### Interactive Components
 
-To learn more about Next.js, take a look at the following resources:
+#### Hero & Biography
+- **Typing Effect:** A custom `useTypingEffect` hook types out the developer's name organically with a blinking cursor.
+- **Thematic Avatar:** A CSS-only `ThreeDCharacter` placeholder system that transitions from a frosted glass card in Day mode to a dark terminal display in Night mode.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Skills (`Skills.jsx`)
+- **Day Mode ("Kite String"):** Skills sway gently as badges hanging from a kite string.
+- **Night Mode ("Satellite Orbit"):** Skills orbit dynamically around a central hub, resembling a planetary system.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Project Showcase (`Projects.jsx`)
+- **Mock UI Previews:** Pure CSS-based UI preview windows replacing static images. Frosted glass terminals for Day mode and deep-space monitors with scan lines for Night mode.
 
-## Deploy on Vercel
+#### Achievements (`Achievements.jsx`)
+- **Day Mode ("Hall of Clouds"):** Elegant banners hanging from stylized clouds, drifting in on scroll.
+- **Night Mode ("Star Map"):** An interactive SVG constellation map where clicking glowing star nodes reveals achievement details.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠️ Technology Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Frontend:** React 19
+- **Styling:** Tailwind CSS 4, Custom CSS
+- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+- **Smooth Scrolling:** [Lenis](https://lenis.darkroom.engineering/)
+- **Icons:** React Icons
+
+## ⚙️ Local Development Setup
+
+To run this project locally on your machine:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Muazhere5/toggleDayNightPortfolio.git
+   cd toggleDayNightPortfolio
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000) to view the application.
+
+## 📦 Build and Deployment
+
+This project is configured and optimized for automatic deployment on **Vercel**. 
+
+- Standard `npm run build` and `npm start` commands are supported.
+- Push changes to the `main` branch to trigger automatic redeployments if connected to Vercel.
+
+## 📄 License
+
+This project is open-source and available under the [MIT License](LICENSE).
