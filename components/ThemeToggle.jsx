@@ -193,20 +193,28 @@ export default function ThemeToggle() {
   };
 
   return (
-    
-    <div
-      style={{
-        position: 'fixed',
-        top: '20px',
-        right: '20px',
-        zIndex: 9999,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end', 
-        gap: '6px',
-        pointerEvents: 'auto',
-      }}
-    >
+    <>
+      <style>{`
+        @media (max-width: 767px) {
+          .desktop-theme-toggle {
+            display: none !important;
+          }
+        }
+      `}</style>
+      <div
+        className="desktop-theme-toggle"
+        style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '6px',
+          pointerEvents: 'auto',
+        }}
+      >
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
       
       {/* Theme label — plain div, CSS transition, no Framer instance */}
@@ -439,6 +447,7 @@ export default function ThemeToggle() {
           </m.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </>
   );
 }

@@ -13,11 +13,20 @@ export default function EmailObject({ theme }) {
   const isDay = theme === 'day';
 
   return (
-    <m.a
-      href="mailto:muazctg07@gmail.com"
-      aria-hidden="true"
-      tabIndex={-1}
-      style={{
+    <>
+      <style>{`
+        @media (max-width: 767px) {
+          .email-object-widget {
+            display: none !important;
+          }
+        }
+      `}</style>
+      <m.a
+        href="mailto:muazctg07@gmail.com"
+        aria-hidden="true"
+        tabIndex={-1}
+        className="email-object-widget"
+        style={{
         position: 'fixed',
         zIndex: 50,
         textDecoration: 'none',
@@ -83,6 +92,7 @@ export default function EmailObject({ theme }) {
       }}>
         Direct Mail
       </div>
-    </m.a>
+      </m.a>
+    </>
   );
 }

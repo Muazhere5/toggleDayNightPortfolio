@@ -123,6 +123,7 @@ function CloudBannerCard({ achievement, index }) {
 
   return (
     <m.div
+      className="cloud-banner-item"
       initial={{ opacity: 0, x: isLeft ? -60 : 60 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -144,6 +145,7 @@ function CloudBannerCard({ achievement, index }) {
 
       
       <m.div
+        className="cloud-banner-card"
         whileHover={{ y: -6, rotate: isLeft ? -1 : 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 22 }}
         style={{
@@ -238,22 +240,36 @@ function CloudBannerCard({ achievement, index }) {
 
 function DayAchievements() {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '32px',
-      width: '100%',
-      maxWidth: '780px',
-      margin: '0 auto',
-    }}>
-      {ACHIEVEMENTS.map((achievement, index) => (
-        <CloudBannerCard
-          key={achievement.id}
-          achievement={achievement}
-          index={index}
-        />
-      ))}
-    </div>
+    <>
+      <style>{`
+        @media (max-width: 639px) {
+          .cloud-banner-item {
+            margin: 0 auto !important;
+            max-width: 340px !important;
+            width: 100% !important;
+          }
+          .cloud-banner-card {
+            width: 100% !important;
+          }
+        }
+      `}</style>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '32px',
+        width: '100%',
+        maxWidth: '780px',
+        margin: '0 auto',
+      }}>
+        {ACHIEVEMENTS.map((achievement, index) => (
+          <CloudBannerCard
+            key={achievement.id}
+            achievement={achievement}
+            index={index}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -357,10 +373,22 @@ function StarMapAchievements() {
             return (
               <g
                 key={pos.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Milestone #${pos.id}: ${ach?.title || ''}`}
+                aria-pressed={isActive}
                 onClick={() => setActiveId(isActive ? null : pos.id)}
-                style={{ cursor: 'pointer' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveId(isActive ? null : pos.id);
+                  }
+                }}
+                style={{ cursor: 'pointer', outline: 'none' }}
               >
-                
+                {/* Invisible generous hit target for touch/pointer precision */}
+                <circle cx={pos.x} cy={pos.y} r={8} fill="transparent" />
+
                 <m.circle
                   cx={pos.x} cy={pos.y} r={isActive ? 4.5 : 3}
                   fill={`rgba(${typeConf.nightRgb}, 0.14)`}
@@ -411,11 +439,63 @@ function StarMapAchievements() {
           fontSize: '0.62rem',
           letterSpacing: '0.14em',
           textTransform: 'uppercase',
-          color: 'rgba(200,210,240,0.38)',
+          color: 'rgba(200,210,240,0.48)',
           pointerEvents: 'none',
         }}>
-          ↑ Tap a star to reveal
+          ↑ Tap a star or select below
         </div>
+      </div>
+
+      {/* Touch-friendly #01-#05 milestone selector row (44px+ tap targets) */}
+      <div
+        role="tablist"
+        aria-label="Achievement milestones"
+        style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: 'auto',
+          paddingBottom: '6px',
+          marginBottom: '18px',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {ACHIEVEMENTS.map((ach) => {
+          const isSelected = activeId === ach.id;
+          const conf = TYPE_CONFIG[ach.type] || TYPE_CONFIG.personal;
+          return (
+            <button
+              key={ach.id}
+              type="button"
+              role="tab"
+              aria-selected={isSelected}
+              onClick={() => setActiveId(ach.id)}
+              style={{
+                minHeight: '44px',
+                padding: '0 14px',
+                borderRadius: '999px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px',
+                flexShrink: 0,
+                cursor: 'pointer',
+                background: isSelected ? `rgba(${conf.nightRgb}, 0.22)` : 'rgba(8, 10, 28, 0.72)',
+                border: isSelected
+                  ? `1.5px solid rgba(${conf.nightRgb}, 0.75)`
+                  : '1px solid rgba(123, 104, 238, 0.28)',
+                color: isSelected ? '#ffffff' : 'rgba(200, 210, 240, 0.78)',
+                fontFamily: "var(--font-rajdhani), sans-serif",
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                transition: 'background 0.2s ease, border-color 0.2s ease, color 0.2s ease',
+              }}
+            >
+              <span style={{ color: conf.nightColor }}>#{String(ach.id).padStart(2, '0')}</span>
+              <span>{ach.icon}</span>
+              <span style={{ whiteSpace: 'nowrap' }}>{conf.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       

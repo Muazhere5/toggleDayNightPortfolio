@@ -294,7 +294,9 @@ export default function Landing({ theme }) {
     backdropFilter: 'blur(10px)',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '10px',
+    minHeight: '44px',
     marginTop: '8px',
     position: 'relative',
     overflow: 'hidden',
@@ -316,6 +318,14 @@ export default function Landing({ theme }) {
           }
           .landing-text {
             align-items: center !important;
+          }
+          .landing-ctas {
+            justify-content: center !important;
+          }
+        }
+        @media (max-width: 420px) {
+          .orbit-star-ring {
+            transform: scale(0.8);
           }
         }
       `}</style>
@@ -415,7 +425,7 @@ export default function Landing({ theme }) {
             </m.div>
 
             
-            <m.div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.1)}>
+            <m.div className="landing-ctas" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.1)}>
               
               <m.button
                 style={buttonStyle}
@@ -524,7 +534,7 @@ export default function Landing({ theme }) {
 
             
             {!isDay && (
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
+              <div className="orbit-star-ring" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
                 <OrbitStar radius={152} duration={8}  delay={0}   size={5} />
                 <OrbitStar radius={162} duration={12} delay={2}   size={3.5} />
                 <OrbitStar radius={145} duration={6}  delay={1}   size={4} />

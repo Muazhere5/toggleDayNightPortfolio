@@ -407,17 +407,19 @@ function ProjectCard({ project, isDay, index }) {
         </div>
 
         
-        <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
+        <div className="project-actions" style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
 
           
           <m.a
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
+            className="project-btn-primary"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.97 }}
             style={{
               flex: 1,
+              minHeight: '44px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -456,10 +458,12 @@ function ProjectCard({ project, isDay, index }) {
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
+              className="project-btn-secondary"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.97 }}
               style={{
                 flex: 1,
+                minHeight: '44px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -491,10 +495,12 @@ function ProjectCard({ project, isDay, index }) {
               href={project.githubServerUrl}
               target="_blank"
               rel="noopener noreferrer"
+              className="project-btn-secondary"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.97 }}
               style={{
                 flex: 1,
+                minHeight: '44px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -550,8 +556,22 @@ export default function Projects({ theme }) {
   const isDay = theme === 'day';
 
   return (
-    <section
-      id="projects"
+    <>
+      <style>{`
+        @media (max-width: 419px) {
+          .project-actions {
+            flex-wrap: wrap !important;
+          }
+          .project-btn-primary {
+            flex: 1 1 100% !important;
+          }
+          .project-btn-secondary {
+            flex: 1 1 calc(50% - 6px) !important;
+          }
+        }
+      `}</style>
+      <section
+        id="projects"
       style={{
         width: '100%',
         padding: '100px 24px 120px',
@@ -685,5 +705,6 @@ export default function Projects({ theme }) {
 
       </div>
     </section>
+    </>
   );
 }

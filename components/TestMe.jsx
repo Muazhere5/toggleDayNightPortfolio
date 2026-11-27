@@ -173,6 +173,7 @@ function RepliesSection({ challengeId, comments = [], isDay }) {
       <form onSubmit={handleReply} style={{ display: 'flex', gap: '10px' }}>
         <input 
           type="text" 
+          className="testme-input"
           value={replyText} 
           onChange={(e) => setReplyText(e.target.value)} 
           placeholder="Leave a comment..."
@@ -185,7 +186,7 @@ function RepliesSection({ challengeId, comments = [], isDay }) {
           disabled={posting || !replyText.trim()}
           whileHover={!posting && replyText.trim() ? { scale: 1.05 } : {}}
           whileTap={!posting && replyText.trim() ? { scale: 0.95 } : {}}
-          style={{ padding: '0 20px', borderRadius: '10px', background: isDay ? '#8b5cf6' : '#7b68ee', color: '#ffffff', border: 'none', cursor: posting || !replyText.trim() ? 'not-allowed' : 'pointer', opacity: posting || !replyText.trim() ? 0.6 : 1, fontWeight: 700, fontFamily: "var(--font-orbitron)" }}
+          style={{ minHeight: '44px', padding: '0 20px', borderRadius: '10px', background: isDay ? '#8b5cf6' : '#7b68ee', color: '#ffffff', border: 'none', cursor: posting || !replyText.trim() ? 'not-allowed' : 'pointer', opacity: posting || !replyText.trim() ? 0.6 : 1, fontWeight: 700, fontFamily: "var(--font-orbitron)" }}
         >
           {posting ? '...' : 'POST'}
         </m.button>
@@ -509,7 +510,7 @@ function ChallengeForm({ isDay }) {
             }}>Select Challenge Type</p>
 
             <div style={{ display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
+              gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '10px' }}>
               {CATEGORIES.map((cat, i) => (
                 <m.button
                   key={cat.id}
@@ -596,6 +597,7 @@ function ChallengeForm({ isDay }) {
               }}>Your Name</label>
               <input
                 type="text" value={name}
+                className="testme-input"
                 onChange={e => setName(e.target.value)}
                 placeholder={isDay ? 'Enter your name...' : 'Identify yourself...'}
                 maxLength={50} style={inputBase}
@@ -613,6 +615,7 @@ function ChallengeForm({ isDay }) {
               </label>
               <textarea
                 value={challenge}
+                className="testme-input"
                 onChange={e => setChallenge(e.target.value)}
                 placeholder={isDay
                   ? 'Describe your challenge in plain English...'
@@ -786,9 +789,17 @@ export default function TestMe({ theme }) {
   }, []);
 
   return (
-    <section
-      id="testme"
-      ref={sectionRef} style={{
+    <>
+      <style>{`
+        @media (max-width: 767px) {
+          .testme-input {
+            font-size: 16px !important;
+          }
+        }
+      `}</style>
+      <section
+        id="testme"
+        ref={sectionRef} style={{
       width: '100%', padding: '100px 24px 110px',
       position: 'relative', zIndex: 1,
       ...(isDay ? {
@@ -926,5 +937,6 @@ export default function TestMe({ theme }) {
 
       </div>
     </section>
+    </>
   );
 }

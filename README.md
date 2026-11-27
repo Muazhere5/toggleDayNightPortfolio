@@ -4,7 +4,7 @@ Welcome to the interactive portfolio of Abdullah Al Muaz. This project is a high
 
 ## 🚀 Live Demo
 
-[View Live Portfolio](#) *(Replace with Vercel URL upon deployment)*
+[View Live Portfolio](https://muazheretoggledaynightmode.vercel.app/)
 
 ## ✨ Key Features & Architecture
 
@@ -12,8 +12,8 @@ This application goes beyond a standard resume, featuring a robust **"Day/Night"
 
 ### Theme Engine
 - **FOUC Prevention:** An inline script runs synchronously before React hydration to read `localStorage` preferences and apply the correct theme instantly, eliminating the "Flash of Unstyled Content".
-- **The "Horizon Switch":** A dynamic `<ThemeToggle>` component featuring a continuous sky-to-space gradient track and a spring-physics sliding thumb.
-- **Optimized Dynamic Backgrounds:** Selectively mounts active background components (`DayVision` or `NightVision`) using `AnimatePresence` to crossfade gracefully, ensuring heavy animations are processed only when visible to optimize GPU performance.
+- **The "Horizon Switch":** A dynamic `<ThemeToggle>` component featuring a continuous sky-to-space gradient track and a spring-physics sliding thumb (plus a mobile thumb-zone navigation dock).
+- **Optimized Dual-Plane Backgrounds:** Both `DayBackground` and `NightBackground` crossfade smoothly via GPU-composited opacity with inactive layer pausing and deferred idle mounting.
 
 ### Interactive Components
 
@@ -47,8 +47,7 @@ To run this project locally on your machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Muazhere5/toggleDayNightPortfolio.git
-   cd toggleDayNightPortfolio
+   git clone https://github.com/Muazhere5/toggleDayNightPortfolio.git && cd toggleDayNightPortfolio
    ```
 
 2. **Install dependencies:**

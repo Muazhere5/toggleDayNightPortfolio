@@ -17,6 +17,7 @@ const NightBackground = dynamic(() => import('@/components/backgrounds/NightBack
 
 // ─── Page sections: below-the-fold client widgets dynamically split ───────────
 const ThemeToggle    = dynamic(() => import('@/components/ThemeToggle'),    { ssr: false });
+const MobileNavDock  = dynamic(() => import('@/components/MobileNavDock'),  { ssr: false });
 const Skills         = dynamic(() => import('@/components/Skills'),         { ssr: false });
 const Projects       = dynamic(() => import('@/components/Projects'),       { ssr: false });
 const Achievements   = dynamic(() => import('@/components/Achievements'),   { ssr: false });
@@ -150,6 +151,9 @@ export default function HomePage() {
 
       {/* Floating email widget */}
       <EmailObject theme={theme} />
+
+      {/* Mobile thumb-zone navigation dock (< 768px) */}
+      <MobileNavDock onIntent={() => { if (!idleReady) setIdleReady(true); }} />
 
     </main>
   );

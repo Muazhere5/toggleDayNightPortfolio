@@ -77,18 +77,29 @@ const KiteTop = () => (
   </svg>
 );
 
-function KiteSkillBadge({ skill, index }) {
+function KiteSkillBadge({ skill, index, compact = false }) {
   const [hovered, setHovered] = useState(false);
   const swayDelay = index * 0.18;
 
   return (
     <m.div
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'default' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: 'default',
+        width: compact ? '100%' : 'auto',
+      }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
     >
       <m.div
-        style={{ width: '2px', height: '28px', background: 'rgba(150,100,50,0.5)', borderRadius: '2px' }}
+        style={{
+          width: '2px',
+          height: compact ? '18px' : '28px',
+          background: 'rgba(150,100,50,0.5)',
+          borderRadius: '2px',
+        }}
         animate={{ scaleY: [1, 0.95, 1], skewX: ['-2deg', '2deg', '-2deg'] }}
         transition={{ duration: 2.4, delay: swayDelay, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -103,26 +114,38 @@ function KiteSkillBadge({ skill, index }) {
             : { duration: 2.4, delay: swayDelay, repeat: Infinity, ease: 'easeInOut' }
         }
         style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: '6px', padding: '12px 16px', borderRadius: '14px',
-          background: hovered ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.55)',
-          border: '1.5px solid rgba(255,255,255,0.8)',
+          display: 'flex',
+          flexDirection: compact ? 'row' : 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: compact ? '8px' : '6px',
+          padding: compact ? '10px 12px' : '12px 16px',
+          borderRadius: '14px',
+          minHeight: '44px',
+          width: compact ? '100%' : 'auto',
+          background: hovered ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.68)',
+          border: '1.5px solid rgba(255,255,255,0.88)',
           backdropFilter: 'blur(10px)',
           boxShadow: hovered
             ? '0 8px 24px rgba(46,134,193,0.25)'
             : '0 4px 14px rgba(46,134,193,0.12)',
-          minWidth: '72px',
+          minWidth: compact ? '0' : '72px',
           transition: 'background 0.25s, box-shadow 0.25s',
         }}
       >
-        <span style={{ fontSize: '1.6rem', color: skill.color,
+        <span style={{ fontSize: compact ? '1.35rem' : '1.6rem', color: skill.color,
+          display: 'inline-flex', alignItems: 'center',
           filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.15))' }}>
           <skill.Icon />
         </span>
         <span style={{
-          fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.62rem',
-          fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-          color: 'rgba(30,80,120,0.9)', whiteSpace: 'nowrap',
+          fontFamily: "var(--font-rajdhani), sans-serif",
+          fontSize: compact ? '0.78rem' : '0.62rem',
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          color: '#0f172a',
+          whiteSpace: 'nowrap',
         }}>
           {skill.name}
         </span>
@@ -135,36 +158,95 @@ function KiteStringLayout({ isDay }) {
   const rows = [SKILLS.slice(0, 3), SKILLS.slice(3, 7), SKILLS.slice(7, 12)];
 
   return (
-    <div style={{ width: '100%', maxWidth: '780px', margin: '0 auto' }}>
-      {rows.map((row, rowIndex) => (
-        <m.div
-          key={rowIndex}
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: rowIndex * 0.15 }}
-          style={{ display: 'flex', justifyContent: 'center',
-            gap: '20px', marginBottom: '8px', flexWrap: 'wrap' }}
+    <>
+      <style>{`
+        .kite-desktop-only { display: block; }
+        .kite-mobile-only  { display: none; }
+        @media (max-width: 639px) {
+          .kite-desktop-only { display: none; }
+          .kite-mobile-only  { display: flex; }
+        }
+      `}</style>
+
+      {/* Desktop Kite String (>= 640px) */}
+      <div className="kite-desktop-only" style={{ width: '100%', maxWidth: '780px', margin: '0 auto' }}>
+        {rows.map((row, rowIndex) => (
+          <m.div
+            key={rowIndex}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: rowIndex * 0.15 }}
+            style={{ display: 'flex', justifyContent: 'center',
+              gap: '20px', marginBottom: '8px', flexWrap: 'wrap' }}
+          >
+            {rowIndex === 0 && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', marginRight: '4px' }}>
+                <KiteTop />
+              </div>
+            )}
+            {row.map((skill, i) => (
+              <m.div
+                key={skill.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: rowIndex * 0.12 + i * 0.07, duration: 0.5 }}
+              >
+                <KiteSkillBadge skill={skill} index={rowIndex * 4 + i} isDay={isDay} />
+              </m.div>
+            ))}
+          </m.div>
+        ))}
+      </div>
+
+      {/* Mobile Kite Spine + 2-Column Grid (< 640px) */}
+      <div
+        className="kite-mobile-only"
+        style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          position: 'relative',
+          width: '100%',
+          maxWidth: '380px',
+          margin: '0 auto',
+        }}
+      >
+        <div style={{ position: 'relative', zIndex: 2, marginBottom: '6px' }}>
+          <KiteTop />
+        </div>
+
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            top: '82px',
+            bottom: '18px',
+            left: '50%',
+            width: '2px',
+            transform: 'translateX(-50%)',
+            background: 'linear-gradient(180deg, rgba(255,107,107,0.55), rgba(29,114,180,0.28), transparent)',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: '12px',
+            width: '100%',
+            position: 'relative',
+            zIndex: 1,
+          }}
         >
-          {rowIndex === 0 && (
-            <div style={{ display: 'flex', alignItems: 'flex-start', marginRight: '4px' }}>
-              <KiteTop />
-            </div>
-          )}
-          {row.map((skill, i) => (
-            <m.div
-              key={skill.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: rowIndex * 0.12 + i * 0.07, duration: 0.5 }}
-            >
-              <KiteSkillBadge skill={skill} index={rowIndex * 4 + i} isDay={isDay} />
-            </m.div>
+          {SKILLS.map((skill, i) => (
+            <KiteSkillBadge key={skill.id} skill={skill} index={i} isDay={isDay} compact />
           ))}
-        </m.div>
-      ))}
-    </div>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -173,84 +255,62 @@ function KiteStringLayout({ isDay }) {
 
 
 /*
-  PERF FIX: OrbitIcon — replaced 3-level nested Framer Motion (2 infinite
-  rotation animations per icon × 10 icons = 20 Framer instances) with pure
-  CSS animations via inline styles. The outer div rotates around the centre;
-  the inner div counter-rotates to keep the badge upright. Both animations
-  run on the GPU compositor thread with zero JS scheduler overhead.
-  Hover effects are preserved via React state + CSS transitions.
+  PERF FIX: OrbitIcon — uses shared CSS @keyframes driven by CSS custom
+  properties (--start-angle, --orbit-r), eliminating per-icon <style> injection.
 */
 function OrbitIcon({ skill, orbitRadius, duration, startAngle, size = 46 }) {
   const [hovered, setHovered] = useState(false);
 
-  const outerAnimName = `orbit-cw-${skill.id}`;
-  const innerAnimName = `orbit-ccw-${skill.id}`;
-
-  // Inline <style> per icon injects a named @keyframes with the correct
-  // startAngle baked in — avoids the need for Framer's JS-driven transform.
-  const css = `
-    @keyframes ${outerAnimName} {
-      from { transform: rotate(${startAngle}deg) translateX(${orbitRadius}px); }
-      to   { transform: rotate(${startAngle + 360}deg) translateX(${orbitRadius}px); }
-    }
-    @keyframes ${innerAnimName} {
-      from { transform: rotate(${-startAngle}deg); }
-      to   { transform: rotate(${-(startAngle + 360)}deg); }
-    }
-  `;
-
   return (
-    <>
-      <style>{css}</style>
-      {/* Outer — orbits around the centre */}
+    <div
+      style={{
+        position: 'absolute',
+        top: '50%', left: '50%',
+        width: size, height: size,
+        marginTop: -size / 2, marginLeft: -size / 2,
+        '--start-angle': `${startAngle}deg`,
+        '--orbit-r': `${orbitRadius}px`,
+        animation: `skillOrbitCW ${duration}s linear infinite`,
+        willChange: 'transform',
+      }}
+    >
+      {/* Inner — counter-rotates so badge stays upright */}
       <div
         style={{
-          position: 'absolute',
-          top: '50%', left: '50%',
           width: size, height: size,
-          marginTop: -size / 2, marginLeft: -size / 2,
-          animation: `${outerAnimName} ${duration}s linear infinite`,
+          animation: `skillOrbitCCW ${duration}s linear infinite`,
           willChange: 'transform',
         }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        {/* Inner — counter-rotates so badge stays upright */}
         <div
           style={{
-            width: size, height: size,
-            animation: `${innerAnimName} ${duration}s linear infinite`,
-            willChange: 'transform',
+            width: size, height: size, borderRadius: '50%',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '2px',
+            background: hovered ? 'rgba(123,104,238,0.28)' : 'rgba(8,8,28,0.7)',
+            border: `1.5px solid ${hovered ? skill.color : 'rgba(123,104,238,0.3)'}`,
+            backdropFilter: 'blur(10px)',
+            boxShadow: hovered ? `0 0 20px ${skill.color}55` : '0 2px 12px rgba(0,0,0,0.5)',
+            cursor: 'default',
+            transform: hovered ? 'scale(1.2)' : 'scale(1)',
+            transition: 'background 0.3s, border 0.3s, box-shadow 0.3s, transform 0.2s',
           }}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
         >
-          <div
-            style={{
-              width: size, height: size, borderRadius: '50%',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: '2px',
-              background: hovered ? 'rgba(123,104,238,0.28)' : 'rgba(8,8,28,0.7)',
-              border: `1.5px solid ${hovered ? skill.color : 'rgba(123,104,238,0.3)'}`,
-              backdropFilter: 'blur(10px)',
-              boxShadow: hovered ? `0 0 20px ${skill.color}55` : '0 2px 12px rgba(0,0,0,0.5)',
-              cursor: 'default',
-              transform: hovered ? 'scale(1.2)' : 'scale(1)',
-              transition: 'background 0.3s, border 0.3s, box-shadow 0.3s, transform 0.2s',
-            }}
-          >
-            <span style={{ fontSize: '1.25rem', color: skill.color }}>
-              <skill.Icon />
-            </span>
-            <span style={{
-              fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.45rem',
-              fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-              color: 'rgba(200,210,240,0.75)', whiteSpace: 'nowrap',
-            }}>
-              {skill.name}
-            </span>
-          </div>
+          <span style={{ fontSize: '1.25rem', color: skill.color }}>
+            <skill.Icon />
+          </span>
+          <span style={{
+            fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.45rem',
+            fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: 'rgba(200,210,240,0.75)', whiteSpace: 'nowrap',
+          }}>
+            {skill.name}
+          </span>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -265,6 +325,12 @@ const OrbitRing = ({ radius, opacity = 0.18 }) => (
   }} />
 );
 
+const ORBIT_TIERS = [
+  { key: 'inner', label: 'Core Orbit',   accent: '#61DAFB', ring: '01' },
+  { key: 'mid',   label: 'Backend Ring', accent: '#47A248', ring: '02' },
+  { key: 'outer', label: 'Cloud & UI',   accent: '#a898ff', ring: '03' },
+];
+
 function SatelliteOrbitLayout() {
   const innerSkills = SKILLS.filter(s => s.orbit === 'inner');
   const midSkills   = SKILLS.filter(s => s.orbit === 'mid');
@@ -276,7 +342,19 @@ function SatelliteOrbitLayout() {
   return (
     <>
       <style>{`
-        .orbit-container-wrapper {
+        @keyframes skillOrbitCW {
+          from { transform: rotate(var(--start-angle, 0deg)) translateX(var(--orbit-r, 100px)); }
+          to   { transform: rotate(calc(var(--start-angle, 0deg) + 360deg)) translateX(var(--orbit-r, 100px)); }
+        }
+        @keyframes skillOrbitCCW {
+          from { transform: rotate(calc(var(--start-angle, 0deg) * -1)); }
+          to   { transform: rotate(calc((var(--start-angle, 0deg) + 360deg) * -1)); }
+        }
+        @keyframes orbitHubPulse {
+          0%, 100% { box-shadow: 0 0 0 6px rgba(123,104,238,0.06), 0 0 30px rgba(123,104,238,0.15); }
+          50%       { box-shadow: 0 0 0 10px rgba(123,104,238,0.04), 0 0 50px rgba(123,104,238,0.28); }
+        }
+        .orbit-desktop-only {
           display: flex;
           justify-content: center;
           align-items: center;
@@ -284,68 +362,166 @@ function SatelliteOrbitLayout() {
           width: 100%;
           padding: 20px 0;
         }
-        .orbit-container {
-          transform: scale(1);
-          transform-origin: center center;
+        .orbit-mobile-only {
+          display: none;
         }
-        @media (max-width: 650px) {
-          .orbit-container {
-            transform: scale(0.7);
-            margin: -80px 0;
-          }
-        }
-        @media (max-width: 450px) {
-          .orbit-container {
-            transform: scale(0.55);
-            margin: -120px 0;
-          }
+        @media (max-width: 639px) {
+          .orbit-desktop-only { display: none; }
+          .orbit-mobile-only  { display: flex; }
         }
       `}</style>
-      <div className="orbit-container-wrapper">
-        <div className="orbit-container" style={{ position: 'relative', width: containerSize,
-          height: containerSize, margin: '0 auto', maxWidth: '100%', flexShrink: 0 }}>
-      <OrbitRing radius={INNER_R} opacity={0.22} />
-      <OrbitRing radius={MID_R}   opacity={0.17} />
-      <OrbitRing radius={OUTER_R} opacity={0.13} />
 
-      {/* Centre MUAZ hub — CSS pulse replaces Framer boxShadow animation */}
-      <style>{`
-        @keyframes orbitHubPulse {
-          0%, 100% { box-shadow: 0 0 0 6px rgba(123,104,238,0.06), 0 0 30px rgba(123,104,238,0.15); }
-          50%       { box-shadow: 0 0 0 10px rgba(123,104,238,0.04), 0 0 50px rgba(123,104,238,0.28); }
-        }
-      `}</style>
-      <div
-        style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90px', height: '90px', borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'radial-gradient(circle, rgba(123,104,238,0.25) 0%, rgba(5,5,20,0.85) 70%)',
-          border: '2px solid rgba(123,104,238,0.5)', zIndex: 10,
-          animation: 'orbitHubPulse 3s ease-in-out infinite',
-        }}
-      >
-        <span style={{
-          fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.75rem',
-          fontWeight: 900, color: 'rgba(200,210,255,0.9)',
-          letterSpacing: '0.06em', textAlign: 'center', lineHeight: 1.2,
-        }}>MUAZ</span>
+      {/* Desktop Satellite Orbit (>= 640px) */}
+      <div className="orbit-desktop-only">
+        <div
+          className="orbit-container"
+          style={{
+            position: 'relative',
+            width: containerSize,
+            height: containerSize,
+            margin: '0 auto',
+            flexShrink: 0,
+          }}
+        >
+          <OrbitRing radius={INNER_R} opacity={0.22} />
+          <OrbitRing radius={MID_R}   opacity={0.17} />
+          <OrbitRing radius={OUTER_R} opacity={0.13} />
+
+          <div
+            style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '90px', height: '90px', borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'radial-gradient(circle, rgba(123,104,238,0.25) 0%, rgba(5,5,20,0.85) 70%)',
+              border: '2px solid rgba(123,104,238,0.5)', zIndex: 10,
+              animation: 'orbitHubPulse 3s ease-in-out infinite',
+            }}
+          >
+            <span style={{
+              fontFamily: "var(--font-orbitron), sans-serif", fontSize: '0.75rem',
+              fontWeight: 900, color: 'rgba(200,210,255,0.9)',
+              letterSpacing: '0.06em', textAlign: 'center', lineHeight: 1.2,
+            }}>MUAZ</span>
+          </div>
+
+          {innerSkills.map((s, i) => (
+            <OrbitIcon key={s.id} skill={s} orbitRadius={INNER_R} duration={14}
+              startAngle={(i / innerSkills.length) * 360} size={44} />
+          ))}
+          {midSkills.map((s, i) => (
+            <OrbitIcon key={s.id} skill={s} orbitRadius={MID_R} duration={22}
+              startAngle={(i / midSkills.length) * 360 + 30} size={44} />
+          ))}
+          {outerSkills.map((s, i) => (
+            <OrbitIcon key={s.id} skill={s} orbitRadius={OUTER_R} duration={32}
+              startAngle={(i / outerSkills.length) * 360 + 15} size={40} />
+          ))}
+        </div>
       </div>
 
-      {innerSkills.map((s, i) => (
-        <OrbitIcon key={s.id} skill={s} orbitRadius={INNER_R} duration={14}
-          startAngle={(i / innerSkills.length) * 360} size={44} />
-      ))}
-      {midSkills.map((s, i) => (
-        <OrbitIcon key={s.id} skill={s} orbitRadius={MID_R} duration={22}
-          startAngle={(i / midSkills.length) * 360 + 30} size={44} />
-      ))}
-      {outerSkills.map((s, i) => (
-        <OrbitIcon key={s.id} skill={s} orbitRadius={OUTER_R} duration={32}
-          startAngle={(i / outerSkills.length) * 360 + 15} size={40} />
-      ))}
-        </div>
+      {/* Mobile Mission Control Orbital List (< 640px) */}
+      <div
+        className="orbit-mobile-only"
+        style={{
+          flexDirection: 'column',
+          gap: '16px',
+          width: '100%',
+          maxWidth: '420px',
+          margin: '0 auto',
+        }}
+      >
+        {ORBIT_TIERS.map(({ key, label, accent, ring }) => {
+          const tierSkills = SKILLS.filter((s) => s.orbit === key);
+          return (
+            <div
+              key={key}
+              style={{
+                padding: '14px',
+                borderRadius: '18px',
+                background: 'rgba(8, 10, 28, 0.72)',
+                border: '1px solid rgba(123, 104, 238, 0.28)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+              }}
+            >
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                marginBottom: '12px',
+              }}>
+                <span style={{
+                  width: '9px',
+                  height: '9px',
+                  borderRadius: '50%',
+                  background: accent,
+                  boxShadow: `0 0 10px ${accent}`,
+                  flexShrink: 0,
+                }} />
+                <span style={{
+                  fontFamily: "var(--font-orbitron), sans-serif",
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  color: '#E8E8F0',
+                }}>
+                  {label}
+                </span>
+                <div style={{
+                  flex: 1,
+                  height: '1px',
+                  borderBottom: '1px dashed rgba(123, 104, 238, 0.35)',
+                }} />
+                <span style={{
+                  fontFamily: "var(--font-rajdhani), sans-serif",
+                  fontSize: '0.68rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.12em',
+                  color: 'rgba(168, 152, 255, 0.85)',
+                }}>
+                  ORBIT {ring}
+                </span>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+              }}>
+                {tierSkills.map((skill) => (
+                  <div
+                    key={skill.id}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      minHeight: '44px',
+                      padding: '8px 14px',
+                      borderRadius: '999px',
+                      background: 'rgba(123, 104, 238, 0.12)',
+                      border: `1px solid ${skill.color}55`,
+                    }}
+                  >
+                    <span style={{ fontSize: '1.15rem', color: skill.color, display: 'inline-flex' }}>
+                      <skill.Icon />
+                    </span>
+                    <span style={{
+                      fontFamily: "var(--font-rajdhani), sans-serif",
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: '#E8E8F0',
+                    }}>
+                      {skill.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </>
   );
@@ -378,12 +554,13 @@ function SocialsRow({ isDay }) {
           whileTap={{ scale: 0.95 }}
           style={{
             display: 'flex', alignItems: 'center', gap: '8px',
+            minHeight: '44px',
             padding: '10px 20px',
             borderRadius: isDay ? '50px' : '14px',
             textDecoration: 'none',
-            background: isDay ? 'rgba(255,255,255,0.62)' : 'rgba(8,8,28,0.7)',
+            background: isDay ? 'rgba(255,255,255,0.78)' : 'rgba(8,8,28,0.7)',
             border: isDay
-              ? '1.5px solid rgba(255,255,255,0.85)'
+              ? '1.5px solid rgba(29,114,180,0.28)'
               : `1.5px solid ${social.color}44`,
             backdropFilter: 'blur(12px)',
             boxShadow: isDay
@@ -393,13 +570,13 @@ function SocialsRow({ isDay }) {
           }}
         >
           <span style={{ fontSize: '1.1rem',
-            color: isDay ? 'rgba(30,80,130,0.9)' : social.color }}>
+            color: isDay ? '#1d72b4' : social.color }}>
             <social.Icon />
           </span>
           <span style={{
             fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.8rem',
             fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
-            color: isDay ? 'rgba(30,80,130,0.9)' : 'rgba(200,210,240,0.85)',
+            color: isDay ? '#0f172a' : 'rgba(200,210,240,0.85)',
           }}>
             {social.name}
           </span>
@@ -432,7 +609,7 @@ export default function Skills({ theme }) {
           <p style={{
             fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.75rem',
             fontWeight: 700, letterSpacing: '0.28em', textTransform: 'uppercase',
-            color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(123,104,238,0.8)',
+            color: isDay ? '#0f172a' : 'rgba(123,104,238,0.8)',
             marginBottom: '10px',
           }}>
             {isDay ? '🪁 My Tech Kite' : '🛸 My Tech Orbit'}
@@ -440,15 +617,16 @@ export default function Skills({ theme }) {
           <h2 style={{
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)', fontWeight: 900,
-            color: isDay ? '#ffffff' : '#E8E8F0', letterSpacing: '0.04em',
+            color: isDay ? '#0f172a' : '#E8E8F0', letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
+              ? '0 2px 18px rgba(255,255,255,0.6)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>Skills & Stack</h2>
           <p style={{
             fontFamily: "var(--font-nunito), sans-serif", fontSize: '1rem',
-            color: isDay ? 'rgba(255,255,255,0.72)' : 'rgba(200,210,240,0.62)',
+            fontWeight: 600,
+            color: isDay ? '#1e293b' : 'rgba(200,210,240,0.62)',
             maxWidth: '460px', margin: '0 auto', lineHeight: 1.6,
           }}>
             {isDay
@@ -481,7 +659,7 @@ export default function Skills({ theme }) {
               fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.72rem',
               fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase',
               textAlign: 'center',
-              color: isDay ? 'rgba(255,255,255,0.55)' : 'rgba(200,210,240,0.45)',
+              color: isDay ? '#1e293b' : 'rgba(200,210,240,0.45)',
               marginBottom: '4px',
             }}
           >
