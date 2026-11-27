@@ -14,9 +14,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["react-icons", "framer-motion"],
   },
-
-  // Silence the "ESM" framer-motion warning
-  transpilePackages: ["framer-motion"],
 };
 
 export default nextConfig;

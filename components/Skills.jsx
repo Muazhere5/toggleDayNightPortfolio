@@ -10,7 +10,7 @@
 
 
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useState } from 'react';
 import {
   SiNextdotjs,
@@ -82,17 +82,17 @@ function KiteSkillBadge({ skill, index }) {
   const swayDelay = index * 0.18;
 
   return (
-    <motion.div
+    <m.div
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'default' }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
     >
-      <motion.div
+      <m.div
         style={{ width: '2px', height: '28px', background: 'rgba(150,100,50,0.5)', borderRadius: '2px' }}
         animate={{ scaleY: [1, 0.95, 1], skewX: ['-2deg', '2deg', '-2deg'] }}
         transition={{ duration: 2.4, delay: swayDelay, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div
+      <m.div
         animate={{
           rotate: hovered ? [0, -4, 4, 0] : ['-3deg', '3deg', '-3deg'],
           y: hovered ? -4 : 0,
@@ -126,8 +126,8 @@ function KiteSkillBadge({ skill, index }) {
         }}>
           {skill.name}
         </span>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }
 
@@ -137,7 +137,7 @@ function KiteStringLayout({ isDay }) {
   return (
     <div style={{ width: '100%', maxWidth: '780px', margin: '0 auto' }}>
       {rows.map((row, rowIndex) => (
-        <motion.div
+        <m.div
           key={rowIndex}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -152,7 +152,7 @@ function KiteStringLayout({ isDay }) {
             </div>
           )}
           {row.map((skill, i) => (
-            <motion.div
+            <m.div
               key={skill.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -160,9 +160,9 @@ function KiteStringLayout({ isDay }) {
               transition={{ delay: rowIndex * 0.12 + i * 0.07, duration: 0.5 }}
             >
               <KiteSkillBadge skill={skill} index={rowIndex * 4 + i} isDay={isDay} />
-            </motion.div>
+            </m.div>
           ))}
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );
@@ -356,7 +356,7 @@ function SatelliteOrbitLayout() {
 
 function SocialsRow({ isDay }) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -365,7 +365,7 @@ function SocialsRow({ isDay }) {
         flexWrap: 'wrap', gap: '14px', marginTop: '56px' }}
     >
       {SOCIALS.map((social, i) => (
-        <motion.a
+        <m.a
           key={social.id}
           href={social.href}
           target="_blank"
@@ -403,9 +403,9 @@ function SocialsRow({ isDay }) {
           }}>
             {social.name}
           </span>
-        </motion.a>
+        </m.a>
       ))}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -422,7 +422,7 @@ export default function Skills({ theme }) {
     }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -455,9 +455,9 @@ export default function Skills({ theme }) {
               ? 'The tools flying in my kit — each one battle-tested in real projects.'
               : 'Technologies orbiting my development universe — each one mission-proven.'}
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           key={theme}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -465,7 +465,7 @@ export default function Skills({ theme }) {
           transition={{ duration: 0.8, delay: 0.2 }}
         >
           {isDay ? <KiteStringLayout isDay={isDay} /> : <SatelliteOrbitLayout />}
-        </motion.div>
+        </m.div>
 
         <div style={{
           marginTop: '24px', paddingTop: '40px',
@@ -473,7 +473,7 @@ export default function Skills({ theme }) {
             ? '1px solid rgba(255,255,255,0.2)'
             : '1px solid rgba(123,104,238,0.15)',
         }}>
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -486,7 +486,7 @@ export default function Skills({ theme }) {
             }}
           >
             {isDay ? '☁ Find me floating at' : '★ Locate me in the cosmos'}
-          </motion.p>
+          </m.p>
           <SocialsRow isDay={isDay} />
         </div>
       </div>

@@ -12,8 +12,9 @@
 
 
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useLenis } from '@/app/LenisProvider';
 
 import ThreeDCharacter from './ThreeDCharacter';
 
@@ -68,7 +69,7 @@ const MiniCloud = ({ style }) => (
 
 
 const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
-  <motion.div
+  <div
     style={{
       position: 'absolute',
       top: '50%',
@@ -78,12 +79,9 @@ const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
       marginTop: -size / 2,
       marginLeft: -size / 2,
       pointerEvents: 'none',
+      '--orbit-r': `${radius}px`,
+      animation: `orbitStarSpin ${duration}s linear ${-delay}s infinite`,
     }}
-    animate={{ rotate: [0, 360] }}
-    transition={{ duration, delay, repeat: Infinity, ease: 'linear' }}
-    transformTemplate={({ rotate }) =>
-      `rotate(${rotate}) translateX(${radius}px)`
-    }
   >
     <div style={{
       width: size,
@@ -92,15 +90,15 @@ const OrbitStar = ({ radius, duration, delay, size = 4 }) => (
       background: 'rgba(255,255,255,0.9)',
       boxShadow: `0 0 ${size * 2}px rgba(255,255,255,0.6)`,
     }} />
-  </motion.div>
+  </div>
 );
 
 
 const ScrollIndicator = ({ isDay }) => (
-  <motion.div
+  <m.div
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 2.2, duration: 0.6 }}
+    transition={{ delay: 1.4, duration: 0.6 }}
     style={{
       display: 'flex',
       flexDirection: 'column',
@@ -120,10 +118,7 @@ const ScrollIndicator = ({ isDay }) => (
       {isDay ? 'Explore Below' : 'Begin Mission'}
     </span>
 
-    <motion.div
-      animate={{ y: [0, 8, 0] }}
-      transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-    >
+    <div style={{ animation: 'scrollBounce 1.4s ease-in-out infinite' }}>
       {isDay ? (
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
           <path d="M11 2 L20 11 L11 8 L2 11 Z" fill="#0f172a" />
@@ -140,8 +135,8 @@ const ScrollIndicator = ({ isDay }) => (
           <ellipse cx="11" cy="17" rx="2.5" ry="3.5" fill="rgba(255,140,0,0.7)" />
         </svg>
       )}
-    </motion.div>
-  </motion.div>
+    </div>
+  </m.div>
 );
 
 
@@ -168,14 +163,19 @@ const scaleIn = (delay = 0) => ({
 
 export default function Landing({ theme }) {
   const isDay = theme === 'day';
+  const lenis = useLenis();
 
   const { displayed: typedName, done: typingDone } = useTypingEffect(
-    'Abdullah Al Muaz', 750, 90
+    'Abdullah Al Muaz', 150, 75
   );
 
   const handleExplore = () => {
     const el = document.getElementById('projects');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (lenis && el) {
+      lenis.scrollTo(el);
+    } else if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   
@@ -324,13 +324,13 @@ export default function Landing({ theme }) {
         <div style={innerStyle} className="landing-inner">
 
           
-          <motion.div
+          <m.div
             style={textBlockStyle}
             className="landing-text"
             {...fadeLeft(0.1)}
           >
             
-            <motion.p style={{
+            <m.p style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '1.05rem',
               fontWeight: 700,
@@ -338,12 +338,12 @@ export default function Landing({ theme }) {
               textTransform: 'uppercase',
               color: isDay ? '#0f172a' : 'rgba(200,210,240,0.85)',
               textShadow: isDay ? '0 1px 10px rgba(255,255,255,0.6)' : 'none',
-            }} {...fadeLeft(0.3)}>
+            }} {...fadeLeft(0.2)}>
               {isDay ? '✈ Welcome to my sky' : '🛸 Incoming transmission'}
-            </motion.p>
+            </m.p>
 
             
-            <motion.div {...fadeLeft(0.5)}>
+            <m.div {...fadeLeft(0.3)}>
               <span style={{
                 fontFamily: "var(--font-nunito), sans-serif",
                 fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
@@ -353,26 +353,36 @@ export default function Landing({ theme }) {
               }}>
                 Hey there! I&apos;m 👋
               </span>
-            </motion.div>
+            </m.div>
 
             
-            <motion.h1 style={{
+            <m.h1 style={{
+              position: 'relative',
               fontFamily: "var(--font-orbitron), sans-serif",
               fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
               fontWeight: 900,
               lineHeight: 1.05,
+              minHeight: '2.1em',
               color: isDay ? '#0f172a' : '#E8E8F0',
               textShadow: isDay
                 ? '0 2px 18px rgba(255,255,255,0.65), 0 4px 24px rgba(29,114,180,0.25)'
                 : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
               letterSpacing: '0.04em',
-            }} {...fadeLeft(0.6)}>
-              {typedName}
-              <span style={cursorStyle} />
-            </motion.h1>
+            }} {...fadeLeft(0.35)}>
+              <span aria-hidden="true" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
+                Abdullah Al Muaz
+              </span>
+              <span
+                aria-label="Abdullah Al Muaz"
+                style={{ position: 'absolute', inset: 0 }}
+              >
+                {typedName}
+                <span style={cursorStyle} />
+              </span>
+            </m.h1>
 
             
-            <motion.p style={{
+            <m.p style={{
               fontFamily: "var(--font-nunito), sans-serif",
               fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
               fontWeight: 700,
@@ -380,34 +390,34 @@ export default function Landing({ theme }) {
               textShadow: isDay ? '0 1px 12px rgba(255,255,255,0.75)' : 'none',
               lineHeight: 1.55,
               maxWidth: '360px',
-            }} {...fadeUp(1.0)}>
+            }} {...fadeUp(0.6)}>
               {isDay
                 ? 'By day: I architect clarity clean components, scalable systems, interfaces that feel like light.'
                 : 'By night: I chase the edge cases the world forgets debugging in the dark until the code holds.'}
-            </motion.p>
+            </m.p>
 
             
-            <motion.div style={{
+            <m.div style={{
               display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px',
-            }} {...fadeUp(1.2)}>
+            }} {...fadeUp(0.8)}>
               {TECH_TAGS.map((tag, i) => (
-                <motion.span
+                <m.span
                   key={tag}
                   style={tagStyle}
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.3 + i * 0.1, duration: 0.4, ease: 'easeOut' }}
+                  transition={{ delay: 0.85 + i * 0.06, duration: 0.35, ease: 'easeOut' }}
                   whileHover={{ scale: 1.08, y: -2 }}
                 >
                   {tag}
-                </motion.span>
+                </m.span>
               ))}
-            </motion.div>
+            </m.div>
 
             
-            <motion.div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.7)}>
+            <m.div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }} {...fadeUp(1.1)}>
               
-              <motion.button
+              <m.button
                 style={buttonStyle}
                 onClick={handleExplore}
                 whileHover={{
@@ -416,21 +426,20 @@ export default function Landing({ theme }) {
                     ? '0 0 30px rgba(255,255,255,0.4), 0 8px 24px rgba(46,134,193,0.3)'
                     : '0 0 30px rgba(123,104,238,0.5), 0 8px 24px rgba(0,0,0,0.4)',
                   background: isDay
-                    ? 'rgba(255,255,255,0.28)'
+                    ? 'rgba(255,255,255,0.92)'
                     : 'rgba(123,104,238,0.22)',
                 }}
                 whileTap={{ scale: 0.97 }}
               >
-                
-                <motion.div
+                <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%)',
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)',
                     borderRadius: '50px',
+                    animation: 'ctaShimmer 4s linear infinite',
+                    pointerEvents: 'none',
                   }}
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
                 />
                 <span style={{ fontSize: '1.1rem', position: 'relative' }}>
                   {isDay ? '✈' : '🚀'}
@@ -438,10 +447,10 @@ export default function Landing({ theme }) {
                 <span style={{ position: 'relative' }}>
                   {isDay ? 'Explore My Work' : 'Begin Mission'}
                 </span>
-              </motion.button>
+              </m.button>
 
               
-              <motion.a
+              <m.a
                 href="mailto:muazctg07@gmail.com"
                 style={{ ...buttonStyle, textDecoration: 'none' }}
                 whileHover={{
@@ -450,21 +459,20 @@ export default function Landing({ theme }) {
                     ? '0 0 30px rgba(255,255,255,0.4), 0 8px 24px rgba(46,134,193,0.3)'
                     : '0 0 30px rgba(123,104,238,0.5), 0 8px 24px rgba(0,0,0,0.4)',
                   background: isDay
-                    ? 'rgba(255,255,255,0.28)'
+                    ? 'rgba(255,255,255,0.92)'
                     : 'rgba(123,104,238,0.22)',
                 }}
                 whileTap={{ scale: 0.97 }}
               >
-                
-                <motion.div
+                <div
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%)',
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.16) 50%, transparent 100%)',
                     borderRadius: '50px',
+                    animation: 'ctaShimmer 4s linear 0.6s infinite',
+                    pointerEvents: 'none',
                   }}
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
                 />
                 <span style={{ fontSize: '1.1rem', position: 'relative' }}>
                   ✉️
@@ -472,43 +480,44 @@ export default function Landing({ theme }) {
                 <span style={{ position: 'relative' }}>
                   Direct Mail
                 </span>
-              </motion.a>
-            </motion.div>
-          </motion.div>
+              </m.a>
+            </m.div>
+          </m.div>
 
           
-          <motion.div style={bubbleWrapStyle} {...scaleIn(0.2)}>
+          <m.div style={bubbleWrapStyle} {...scaleIn(0.15)}>
 
             
             {isDay && (
               <>
-                <motion.div
-                  style={{ position: 'absolute', top: '-18px', left: '-10px', zIndex: 2, pointerEvents: 'none' }}
-                  animate={{ y: [0, -8, 0], x: [0, 4, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                <div
+                  style={{
+                    position: 'absolute', top: '-18px', left: '-10px', zIndex: 2,
+                    pointerEvents: 'none', animation: 'miniCloudFloat 4s ease-in-out infinite',
+                  }}
                 >
                   <MiniCloud style={{ opacity: 0.9 }} />
-                </motion.div>
-                <motion.div
-                  style={{ position: 'absolute', bottom: '-10px', right: '-12px', zIndex: 2, transform: 'scaleX(-1)', pointerEvents: 'none' }}
-                  animate={{ y: [0, -6, 0], x: [0, -4, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+                </div>
+                <div
+                  style={{
+                    position: 'absolute', bottom: '-10px', right: '-12px', zIndex: 2,
+                    pointerEvents: 'none', animation: 'miniCloudFloat 5s ease-in-out -1.5s infinite',
+                  }}
                 >
-                  <MiniCloud style={{ opacity: 0.75 }} />
-                </motion.div>
+                  <MiniCloud style={{ opacity: 0.75, transform: 'scaleX(-1)' }} />
+                </div>
 
                 
-                <motion.div
+                <div
                   style={{
                     position: 'absolute',
                     inset: '-16px',
                     borderRadius: '50%',
-                    background: 'radial-gradient(circle, rgba(255,220,80,0.12) 0%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(255,220,80,0.14) 0%, transparent 70%)',
                     pointerEvents: 'none',
                     zIndex: 0,
+                    animation: 'glowPulse 4s ease-in-out infinite',
                   }}
-                  animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.06, 1] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </>
             )}
@@ -525,18 +534,16 @@ export default function Landing({ theme }) {
 
             
             {!isDay && (
-              <motion.div
+              <div
                 style={{
                   position: 'absolute',
                   inset: '-30px',
                   borderRadius: '50%',
                   background: 'radial-gradient(circle, rgba(123,104,238,0.22) 0%, transparent 70%)',
-                  filter: 'blur(20px)',
                   zIndex: 0,
                   pointerEvents: 'none',
+                  animation: 'glowPulse 4s ease-in-out infinite',
                 }}
-                animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.1, 1] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               />
             )}
 
@@ -560,7 +567,7 @@ export default function Landing({ theme }) {
               zIndex: 3,
             }} />
 
-          </motion.div>
+          </m.div>
           
 
         </div>

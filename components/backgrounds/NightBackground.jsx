@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 // ─── Star generation (deterministic seeded random, SSR-safe) ─────────────────
 function generateStars(count, seed = 42) {
@@ -102,14 +102,14 @@ const NIGHT_CSS = `
   .star-fast { animation: twinkle-fast 1.8s ease-in-out infinite; }
 
   @keyframes nebulaGlowAnim {
-    0%, 100% { opacity: 0.06; transform: scale(1);    }
-    50%       { opacity: 0.15; transform: scale(1.08); }
+    0%, 100% { opacity: 0.45; }
+    50%       { opacity: 0.9;  }
   }
-  .nebula-ellipse {
+  .nebula-blob-static {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
     animation: nebulaGlowAnim ease-in-out infinite;
-    transform-origin: center center;
-    transform-box: fill-box;
-    filter: blur(60px);
   }
 
   /* Shooting stars — idle pause is baked into the 3%–100% range so they never freeze */
@@ -152,7 +152,7 @@ const NIGHT_CSS = `
 
 const GROUP_CLASS = ['star-slow', 'star-mid', 'star-fast'];
 
-export default function NightBackground() {
+export default function NightBackground({ isActive = true }) {
   const stars = useMemo(() => generateStars(120), []);
 
   return (
@@ -199,62 +199,87 @@ export default function NightBackground() {
         ))}
       </svg>
 
-      {/* ── Nebula blobs — pure CSS animation ────────────────────────────── */}
-      <svg
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-        preserveAspectRatio="none"
-      >
-        <ellipse className="nebula-ellipse" cx="15%" cy="20%" rx="280" ry="180"
-          fill="rgba(123,104,238,0.12)"
-          style={{ animationDuration: '8s',  animationDelay: '0s'  }} />
-        <ellipse className="nebula-ellipse night-mobile-hidden" cx="80%" cy="15%" rx="220" ry="150"
-          fill="rgba(80,140,255,0.09)"
-          style={{ animationDuration: '10s', animationDelay: '-2s'  }} />
-        <ellipse className="nebula-ellipse" cx="60%" cy="55%" rx="300" ry="200"
-          fill="rgba(160,80,220,0.08)"
-          style={{ animationDuration: '12s', animationDelay: '-4s'  }} />
-        <ellipse className="nebula-ellipse night-mobile-hidden" cx="20%" cy="75%" rx="250" ry="160"
-          fill="rgba(50,200,180,0.07)"
-          style={{ animationDuration: '9s',  animationDelay: '-1s'  }} />
-        <ellipse className="nebula-ellipse" cx="90%" cy="80%" rx="200" ry="140"
-          fill="rgba(123,104,238,0.10)"
-          style={{ animationDuration: '11s', animationDelay: '-3s'  }} />
-      </svg>
+      {/* ── Nebula glows — pre-feathered static radial gradients (zero blur filter) */}
+      <div
+        className="nebula-blob-static"
+        style={{
+          left: 'calc(15% - 280px)', top: 'calc(20% - 180px)',
+          width: '560px', height: '360px',
+          background: 'radial-gradient(ellipse at center, rgba(123,104,238,0.14) 0%, transparent 70%)',
+          animationDuration: '8s', animationDelay: '0s',
+        }}
+      />
+      <div
+        className="nebula-blob-static night-mobile-hidden"
+        style={{
+          left: 'calc(80% - 220px)', top: 'calc(15% - 150px)',
+          width: '440px', height: '300px',
+          background: 'radial-gradient(ellipse at center, rgba(80,140,255,0.11) 0%, transparent 70%)',
+          animationDuration: '10s', animationDelay: '-2s',
+        }}
+      />
+      <div
+        className="nebula-blob-static"
+        style={{
+          left: 'calc(60% - 300px)', top: 'calc(55% - 200px)',
+          width: '600px', height: '400px',
+          background: 'radial-gradient(ellipse at center, rgba(160,80,220,0.10) 0%, transparent 70%)',
+          animationDuration: '12s', animationDelay: '-4s',
+        }}
+      />
+      <div
+        className="nebula-blob-static night-mobile-hidden"
+        style={{
+          left: 'calc(20% - 250px)', top: 'calc(75% - 160px)',
+          width: '500px', height: '320px',
+          background: 'radial-gradient(ellipse at center, rgba(50,200,180,0.09) 0%, transparent 70%)',
+          animationDuration: '9s', animationDelay: '-1s',
+        }}
+      />
+      <div
+        className="nebula-blob-static"
+        style={{
+          left: 'calc(90% - 200px)', top: 'calc(80% - 140px)',
+          width: '400px', height: '280px',
+          background: 'radial-gradient(ellipse at center, rgba(123,104,238,0.12) 0%, transparent 70%)',
+          animationDuration: '11s', animationDelay: '-3s',
+        }}
+      />
 
-      {/* ── Ringed planet — 1 Framer float ───────────────────────────────── */}
-      <motion.div
+      {/* ── Ringed planet — paused when hidden ───────────────────────────── */}
+      <m.div
         style={{ position: 'absolute', top: '6%', right: '5%', pointerEvents: 'none' }}
-        animate={{ y: [0, -15, 0], rotate: [0, 2, 0] }}
+        animate={isActive ? { y: [0, -15, 0], rotate: [0, 2, 0] } : false}
         transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
       >
         <PlanetRinged r={38} />
-      </motion.div>
+      </m.div>
 
-      {/* ── Small planets — Framer floats ────────────────────────────────── */}
-      <motion.div
+      {/* ── Small planets — paused when hidden ───────────────────────────── */}
+      <m.div
         style={{ position: 'absolute', top: '40%', left: '2%', pointerEvents: 'none' }}
-        animate={{ y: [0, -20, 0] }}
+        animate={isActive ? { y: [0, -20, 0] } : false}
         transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
       >
         <PlanetSmall r={20} color="rgba(80,180,160,0.5)" />
-      </motion.div>
+      </m.div>
 
-      <motion.div
+      <m.div
         style={{ position: 'absolute', top: '68%', right: '3%', pointerEvents: 'none' }}
-        animate={{ y: [0, -12, 0] }}
+        animate={isActive ? { y: [0, -12, 0] } : false}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
       >
         <PlanetSmall r={14} color="rgba(220,120,80,0.45)" />
-      </motion.div>
+      </m.div>
 
-      {/* ── Rocket — 1 Framer float ──────────────────────────────────────── */}
-      <motion.div
+      {/* ── Rocket — paused when hidden ──────────────────────────────────── */}
+      <m.div
         style={{ position: 'absolute', top: '15%', right: '10%', pointerEvents: 'none' }}
-        animate={{ y: [0, -30, 0], rotate: [8, 12, 8] }}
+        animate={isActive ? { y: [0, -30, 0], rotate: [8, 12, 8] } : false}
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       >
         <Rocket />
-      </motion.div>
+      </m.div>
 
       {/* Satellite LTR */}
       <div

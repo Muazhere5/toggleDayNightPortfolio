@@ -1,13 +1,13 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { FaWhatsapp } from 'react-icons/fa';
 
 export default function WhatsAppFooter({ theme }) {
   const isDay = theme === 'day';
 
   return (
-    <div style={{
+    <footer style={{
       width: '100%',
       padding: '40px 24px',
       display: 'flex',
@@ -15,7 +15,7 @@ export default function WhatsAppFooter({ theme }) {
       position: 'relative',
       zIndex: 10,
     }}>
-      <motion.a
+      <m.a
         href="https://wa.me/8801890431258"
         target="_blank"
         rel="noopener noreferrer"
@@ -48,15 +48,14 @@ export default function WhatsAppFooter({ theme }) {
           transition: 'box-shadow 0.3s ease',
         }}
       >
-        
-        <motion.div
+        <div
           style={{
             position: 'absolute',
             inset: 0,
             background: 'linear-gradient(90deg, transparent 0%, rgba(37, 211, 102, 0.2) 50%, transparent 100%)',
+            animation: 'ctaShimmer 4s linear infinite',
+            pointerEvents: 'none',
           }}
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: 'linear', repeatDelay: 1.5 }}
         />
         
         <div style={{
@@ -84,7 +83,7 @@ export default function WhatsAppFooter({ theme }) {
         }}>
           Knock me on WhatsApp directly
         </span>
-      </motion.a>
-    </div>
+      </m.a>
+    </footer>
   );
 }

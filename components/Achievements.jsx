@@ -29,7 +29,7 @@
 
 
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
 
 
@@ -122,7 +122,7 @@ function CloudBannerCard({ achievement, index }) {
   const typeConf = TYPE_CONFIG[achievement.type] || TYPE_CONFIG.personal;
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: isLeft ? -60 : 60 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -143,7 +143,7 @@ function CloudBannerCard({ achievement, index }) {
       <BannerRopes width={280} />
 
       
-      <motion.div
+      <m.div
         whileHover={{ y: -6, rotate: isLeft ? -1 : 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 22 }}
         style={{
@@ -165,14 +165,17 @@ function CloudBannerCard({ achievement, index }) {
         <div style={{ padding: '16px 18px 18px' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <motion.span 
-              style={{ fontSize: '1.6rem', display: 'inline-block' }}
+            <m.span 
+              style={{
+                fontSize: '1.6rem',
+                display: 'inline-block',
+                textShadow: `0 2px 8px rgba(${typeConf.dayRgb}, 0.28)`,
+              }}
               whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
-              animate={{ filter: ['drop-shadow(0 0 0px rgba(0,0,0,0))', `drop-shadow(0 0 8px ${typeConf.dayColor})`, 'drop-shadow(0 0 0px rgba(0,0,0,0))'] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 0.4 }}
             >
               {achievement.icon}
-            </motion.span>
+            </m.span>
             <span style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.62rem',
@@ -228,8 +231,8 @@ function CloudBannerCard({ achievement, index }) {
             {achievement.description}
           </p>
         </div>
-      </motion.div>
-    </motion.div>
+      </m.div>
+    </m.div>
   );
 }
 
@@ -330,7 +333,7 @@ function StarMapAchievements() {
             const to   = STAR_POSITIONS.find(s => s.id === toId);
             if (!from || !to) return null;
             return (
-              <motion.line
+              <m.line
                 key={`line-${fromId}-${toId}`}
                 x1={from.x} y1={from.y}
                 x2={to.x}   y2={to.y}
@@ -358,34 +361,29 @@ function StarMapAchievements() {
                 style={{ cursor: 'pointer' }}
               >
                 
-                <motion.circle
+                <m.circle
                   cx={pos.x} cy={pos.y} r={isActive ? 4.5 : 3}
                   fill={`rgba(${typeConf.nightRgb}, 0.14)`}
                   animate={{ opacity: isActive ? [0.4, 0.9, 0.4] : [0.2, 0.5, 0.2] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 />
                 
-                <motion.circle
+                <m.circle
                   cx={pos.x} cy={pos.y}
                   r={isActive ? 2.2 : 1.5}
                   fill={typeConf.nightColor}
-                  style={{
-                    filter: `drop-shadow(0 0 2px ${typeConf.nightColor})`,
-                  }}
-                  animate={{ scale: isActive ? [1, 1.15, 1] : 1 }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  animate={{ scale: isActive ? 1.15 : 1 }}
+                  transition={{ duration: 0.25 }}
                 />
                 
-                <motion.text
+                <text
                   x={pos.x} y={pos.y - 3.5}
                   textAnchor="middle"
                   fontSize="3"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}
-                  animate={{ filter: ['drop-shadow(0 0 0px rgba(0,0,0,0))', `drop-shadow(0 0 6px ${typeConf.nightColor})`, 'drop-shadow(0 0 0px rgba(0,0,0,0))'] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   {ach?.icon}
-                </motion.text>
+                </text>
                 
                 <text
                   x={pos.x}
@@ -425,7 +423,7 @@ function StarMapAchievements() {
         {activeAchievement && (() => {
           const activeConf = TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal;
           return (
-          <motion.div
+          <m.div
             key={activeAchievement.id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -497,13 +495,13 @@ function StarMapAchievements() {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
           );
         })()}
       </AnimatePresence>
 
       
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -534,7 +532,7 @@ function StarMapAchievements() {
             }}>{conf.label}</span>
           </div>
         ))}
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -558,7 +556,7 @@ export default function Achievements({ theme }) {
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
         
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -604,10 +602,10 @@ export default function Achievements({ theme }) {
               ? 'Milestones floating in my sky — every cloud a story, every banner a win.'
               : 'Every star a milestone charted. Each one earned, each one permanent in the sky.'}
           </p>
-        </motion.div>
+        </m.div>
 
         
-        <motion.div
+        <m.div
           key={theme}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -618,10 +616,10 @@ export default function Achievements({ theme }) {
             ? <DayAchievements />
             : <StarMapAchievements />
           }
-        </motion.div>
+        </m.div>
 
         
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -639,7 +637,7 @@ export default function Achievements({ theme }) {
             {isDay ? '— More clouds forming soon ☁️ —' : '— More stars being charted ★ —'}
           </p>
           
-          <motion.a
+          <m.a
             href="/Abdullah_Al_Muaz_Resume.pdf"
             download="Abdullah_Al_Muaz_Resume.pdf"
             whileHover={{ scale: 1.05, y: -2 }}
@@ -665,8 +663,8 @@ export default function Achievements({ theme }) {
             }}
           >
             📄 Download Resume
-          </motion.a>
-        </motion.div>
+          </m.a>
+        </m.div>
 
       </div>
     </section>

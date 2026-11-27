@@ -1,61 +1,83 @@
 'use client';
 
-import { useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+
+const LenisContext = createContext(null);
+
+export function useLenis() {
+  return useContext(LenisContext);
+}
 
 export default function LenisProvider({ children }) {
+  const [lenisInstance, setLenisInstance] = useState(null);
+
   useEffect(() => {
     let lenis = null;
-    let rafId = null;
+    let idleId = null;
+    let fallbackTimer = null;
     let destroyed = false;
+
+    const onVisibilityChange = () => {
+      if (!lenis) return;
+      if (document.hidden) {
+        lenis.stop();
+      } else {
+        lenis.start();
+      }
+    };
 
     const initLenis = async () => {
       try {
         const LenisModule = await import('lenis');
         const Lenis = LenisModule.default;
 
-        if (destroyed) return; // component unmounted before dynamic import resolved
+        if (destroyed) return;
 
         lenis = new Lenis({
           duration: 1.2,
           smoothWheel: true,
-          smoothTouch: false,
-          // PERF FIX: wheel events are passive by default in modern browsers,
-          // but making it explicit prevents the browser from waiting to check
-          // if preventDefault() was called — removes scroll jank on mobile.
-          wheelEventsTarget: typeof window !== 'undefined' ? window : undefined,
+          autoRaf: true,
         });
 
-        const raf = (time) => {
-          lenis.raf(time);
-          rafId = requestAnimationFrame(raf);
-        };
-
-        const startRaf = () => {
-          // Guard: if component unmounted while idle callback was queued, bail out
-          if (destroyed) return;
-          rafId = requestAnimationFrame(raf);
-        };
-
-        // PERF FIX: Use requestIdleCallback to defer Lenis init until after
-        // the first paint, so it doesn't compete with critical rendering.
-        if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-          window.requestIdleCallback(startRaf);
-        } else {
-          startRaf();
+        if (document.hidden) {
+          lenis.stop();
         }
+
+        document.addEventListener('visibilitychange', onVisibilityChange);
+        setLenisInstance(lenis);
       } catch (err) {
         console.warn('[LenisProvider] Smooth scroll init failed:', err);
       }
     };
 
-    initLenis();
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      idleId = window.requestIdleCallback(() => {
+        if (!destroyed) initLenis();
+      });
+    } else {
+      fallbackTimer = setTimeout(() => {
+        if (!destroyed) initLenis();
+      }, 1);
+    }
 
     return () => {
       destroyed = true;
-      if (rafId) cancelAnimationFrame(rafId);
-      if (lenis)  lenis.destroy();
+      if (idleId !== null && typeof window !== 'undefined' && 'cancelIdleCallback' in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (fallbackTimer !== null) {
+        clearTimeout(fallbackTimer);
+      }
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      if (lenis) {
+        lenis.destroy();
+      }
     };
   }, []);
 
-  return children;
+  return (
+    <LenisContext.Provider value={lenisInstance}>
+      {children}
+    </LenisContext.Provider>
+  );
 }

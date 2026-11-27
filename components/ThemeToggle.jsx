@@ -24,7 +24,7 @@
 
 
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useTheme } from '@/app/ThemeContext';
 
@@ -77,7 +77,7 @@ const Burst = ({ isDay }) => (
       const tx  = Math.cos(rad) * 28;
       const ty  = Math.sin(rad) * 28;
       return (
-        <motion.div
+        <m.div
           key={id}
           style={{
             position: 'absolute',
@@ -228,7 +228,7 @@ export default function ThemeToggle() {
       </div>
 
       
-      <motion.button
+      <m.button
         onClick={handleToggle}
         aria-label={`Switch to ${isDay ? 'Night' : 'Day'} Vision`}
         whileHover={{ scale: 1.06 }}
@@ -257,7 +257,7 @@ export default function ThemeToggle() {
         
         <AnimatePresence>
           {showNudge && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 1 }}
               animate={{ opacity: [0, 0.8, 0], scale: [1, 1.4, 1.8] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
@@ -322,8 +322,7 @@ export default function ThemeToggle() {
         </span>
 
         
-        <motion.div
-          layout
+        <m.div
           animate={{ x: isDay ? 2 : 42 }}
           transition={{ type: 'spring', stiffness: 500, damping: 32, mass: 0.8 }}
           style={{
@@ -349,7 +348,7 @@ export default function ThemeToggle() {
         >
           
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={theme}
               initial={{ opacity: 0, rotate: -30, scale: 0.6 }}
               animate={{ opacity: 1, rotate: 0, scale: 1 }}
@@ -357,17 +356,17 @@ export default function ThemeToggle() {
               transition={{ duration: 0.3 }}
             >
               {isDay ? <SunIcon /> : <MoonIcon />}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
 
           
           {bursting && <Burst isDay={isDay} />}
-        </motion.div>
+        </m.div>
 
         
         <AnimatePresence>
           {bursting && (
-            <motion.div
+            <m.div
               key="ripple"
               style={{
                 position: 'absolute',
@@ -384,7 +383,7 @@ export default function ThemeToggle() {
           )}
         </AnimatePresence>
 
-      </motion.button>
+      </m.button>
 
       
       {/* Hint text — plain div, no Framer instance needed */}
@@ -405,7 +404,7 @@ export default function ThemeToggle() {
       
       <AnimatePresence>
         {showNudge && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -5, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.95 }}
@@ -437,7 +436,7 @@ export default function ThemeToggle() {
             {isDay 
               ? "⚠️ High solar radiation. Calibrate environment →" 
               : "⚠️ Critical temperature drop. Ignite sequence →"}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

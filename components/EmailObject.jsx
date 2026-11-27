@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const PaperAirplane = () => (
   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -13,7 +13,7 @@ export default function EmailObject({ theme }) {
   const isDay = theme === 'day';
 
   return (
-    <motion.a
+    <m.a
       href="mailto:muazctg07@gmail.com"
       aria-hidden="true"
       tabIndex={-1}
@@ -38,7 +38,7 @@ export default function EmailObject({ theme }) {
       }}
       whileHover={{ scale: 1.15 }}
     >
-      <motion.div 
+      <m.div 
         style={{
           fontSize: '3rem',
           color: isDay ? '#1E64A0' : '#c8c0ff',
@@ -66,7 +66,7 @@ export default function EmailObject({ theme }) {
             🌠
           </div>
         )}
-      </motion.div>
+      </m.div>
       <div style={{
         marginTop: '2px',
         whiteSpace: 'nowrap',
@@ -83,6 +83,6 @@ export default function EmailObject({ theme }) {
       }}>
         Direct Mail
       </div>
-    </motion.a>
+    </m.a>
   );
 }

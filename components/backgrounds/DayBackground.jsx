@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 // ─── Cloud SVG shapes ────────────────────────────────────────────────────────
 // PERF FIX: Removed `filter: url(#realistic-cloud-filter)` (SVG feTurbulence +
@@ -68,9 +68,9 @@ const CloudGradDefs = () => (
   </svg>
 );
 
-// ─── Sun (lightweight Framer — just 1 scale pulse, no heavy filter) ───────────
-const Sun = () => (
-  <motion.div
+// ─── Sun (lightweight Framer — paused when background is hidden) ────────────
+const Sun = ({ isActive }) => (
+  <m.div
     style={{
       position: 'absolute',
       top: '-80px', left: '-80px',
@@ -81,7 +81,7 @@ const Sun = () => (
       zIndex: 1,
       pointerEvents: 'none',
     }}
-    animate={{ scale: [1, 1.05, 1] }}
+    animate={isActive ? { scale: [1, 1.05, 1] } : false}
     transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
   >
     <div
@@ -95,14 +95,14 @@ const Sun = () => (
         animation: 'sunRotate 60s linear infinite',
       }}
     />
-  </motion.div>
+  </m.div>
 );
 
-// ─── Kite (lightweight Framer — small element, acceptable) ────────────────────
-const Kite = () => (
-  <motion.div
+// ─── Kite (lightweight Framer — paused when background is hidden) ───────────
+const Kite = ({ isActive }) => (
+  <m.div
     style={{ position: 'absolute', top: '7%', right: '7%', zIndex: 1 }}
-    animate={{ y: [0, -18, 0], rotate: [-4, 4, -4] }}
+    animate={isActive ? { y: [0, -18, 0], rotate: [-4, 4, -4] } : false}
     transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
   >
     <svg width="60" height="120" viewBox="0 0 60 120" fill="none">
@@ -115,14 +115,14 @@ const Kite = () => (
         <ellipse key={i} cx="30" cy={y} rx="5" ry="3" fill="#FFD700" opacity="0.8" />
       ))}
     </svg>
-  </motion.div>
+  </m.div>
 );
 
-// ─── Hot Air Balloon (lightweight Framer) ─────────────────────────────────────
-const HotAirBalloon = () => (
-  <motion.div
+// ─── Hot Air Balloon (lightweight Framer — paused when background is hidden) ─
+const HotAirBalloon = ({ isActive }) => (
+  <m.div
     style={{ position: 'absolute', left: '3%', top: '38%', zIndex: 1 }}
-    animate={{ y: [0, -25, 0] }}
+    animate={isActive ? { y: [0, -25, 0] } : false}
     transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
   >
     <svg width="55" height="80" viewBox="0 0 55 80" fill="none">
@@ -136,7 +136,7 @@ const HotAirBalloon = () => (
       <rect x="17" y="62" width="21" height="12" rx="3" fill="rgba(180,130,70,0.8)" />
       <rect x="17" y="62" width="21" height="12" rx="3" fill="none" stroke="rgba(150,100,50,0.5)" strokeWidth="1" />
     </svg>
-  </motion.div>
+  </m.div>
 );
 
 // ─── Aircraft SVGs (static, no animation — wrapped in CSS animated divs) ───────
@@ -224,7 +224,7 @@ const DAY_CSS = `
   }
 `;
 
-export default function DayBackground() {
+export default function DayBackground({ isActive = true }) {
   return (
     <div
       style={{
@@ -262,9 +262,9 @@ export default function DayBackground() {
         pointerEvents: 'none',
       }} />
 
-      <Sun />
-      <Kite />
-      <HotAirBalloon />
+      <Sun isActive={isActive} />
+      <Kite isActive={isActive} />
+      <HotAirBalloon isActive={isActive} />
 
       {/* Clouds — pure CSS animation with negative delay + both fill mode */}
       {clouds.map(({ id, Type, top, duration, delay, opacity }) => (

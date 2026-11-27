@@ -1,30 +1,6 @@
 'use client';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-
 
 function DayAvatar() {
   return (
@@ -40,39 +16,36 @@ function DayAvatar() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      
-      <motion.div
+
+      <div
         style={{
           position: 'absolute',
-          top: '10%', left: '15%',
-          width: '80px', height: '80px',
+          top: '4%', left: '8%',
+          width: '120px', height: '120px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,220,80,0.35), transparent 70%)',
-          filter: 'blur(18px)',
+          background: 'radial-gradient(circle, rgba(255,220,80,0.38) 0%, transparent 70%)',
           pointerEvents: 'none',
+          animation: 'glowPulse 4s ease-in-out infinite',
         }}
-        animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.9, 0.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
-      <motion.div
+      <div
         style={{
           position: 'absolute',
-          bottom: '15%', right: '10%',
-          width: '60px', height: '60px',
+          bottom: '8%', right: '4%',
+          width: '100px', height: '100px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(135,206,235,0.4), transparent 70%)',
-          filter: 'blur(14px)',
+          background: 'radial-gradient(circle, rgba(135,206,235,0.42) 0%, transparent 70%)',
           pointerEvents: 'none',
+          animation: 'glowPulse 5s ease-in-out -1.5s infinite',
         }}
-        animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.8, 0.4] }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
       />
 
-      
-      <motion.div
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'relative', zIndex: 1 }}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          animation: 'avatarBob 4s ease-in-out infinite',
+        }}
       >
         <div style={{
           width: '110px', height: '110px',
@@ -86,101 +59,93 @@ function DayAvatar() {
           position: 'relative',
           overflow: 'hidden',
         }}>
-          <Image 
-            src="/assets/character/muazdp.png" 
-            alt="Abdullah Al Muaz" 
-            width={110} 
-            height={110} 
-            priority
-            className="rounded-full object-cover" 
+          <Image
+            src="/assets/character/muazdp.png"
+            alt="Abdullah Al Muaz"
+            width={110}
+            height={110}
+            sizes="(max-width: 768px) 100px, 110px"
+            preload
+            fetchPriority="high"
+            className="rounded-full object-cover"
             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
           />
         </div>
-      </motion.div>
+      </div>
 
-      
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <p style={{
           fontFamily: "var(--font-orbitron), sans-serif",
           fontSize: '1.1rem',
           fontWeight: 900,
-          color: 'rgba(255,255,255,0.95)',
+          color: '#0f172a',
           letterSpacing: '0.1em',
-          textShadow: '0 2px 12px rgba(46,134,193,0.5)',
+          textShadow: '0 2px 10px rgba(255,255,255,0.7)',
           margin: 0,
         }}>MUAZ</p>
         <p style={{
           fontFamily: "var(--font-rajdhani), sans-serif",
-          fontSize: '0.65rem',
+          fontSize: '0.68rem',
           fontWeight: 700,
           letterSpacing: '0.22em',
           textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.75)',
+          color: '#1e293b',
           margin: '4px 0 0',
         }}>Full Stack Dev</p>
       </div>
 
-      
       <div style={{
         display: 'flex',
         gap: '8px',
         position: 'relative',
         zIndex: 1,
       }}>
-        {['React', 'Node', 'Next'].map((label, i) => (
-          <motion.div
+        {['React', 'Node', 'Next'].map((label) => (
+          <div
             key={label}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + i * 0.15 }}
             style={{
               padding: '3px 10px',
               borderRadius: '20px',
-              background: 'rgba(255,255,255,0.25)',
-              border: '1px solid rgba(255,255,255,0.55)',
-              backdropFilter: 'blur(6px)',
+              background: 'rgba(255,255,255,0.65)',
+              border: '1px solid rgba(29,114,180,0.28)',
               fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '0.58rem',
               fontWeight: 700,
               letterSpacing: '0.1em',
-              color: 'rgba(255,255,255,0.9)',
+              color: '#0f172a',
               textTransform: 'uppercase',
             }}
-          >{label}</motion.div>
+          >{label}</div>
         ))}
       </div>
 
-      
-      <motion.div
+      <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
           position: 'relative',
           zIndex: 1,
+          animation: 'statusPulse 2.5s ease-in-out infinite',
         }}
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div style={{
           width: '6px', height: '6px', borderRadius: '50%',
-          background: '#4ade80',
-          boxShadow: '0 0 8px #4ade80',
+          background: '#16a34a',
+          boxShadow: '0 0 8px #22c55e',
         }} />
         <span style={{
           fontFamily: "var(--font-rajdhani), sans-serif",
-          fontSize: '0.6rem',
+          fontSize: '0.62rem',
           fontWeight: 700,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.65)',
+          color: '#0f172a',
         }}>Open to work</span>
-      </motion.div>
+      </div>
     </div>
   );
 }
-
-
 
 function NightAvatar() {
   return (
@@ -196,20 +161,17 @@ function NightAvatar() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      
-      <motion.div
+
+      <div
         style={{
           position: 'absolute',
           inset: '-20px',
-          background: 'radial-gradient(circle at 50% 40%, rgba(123,104,238,0.2) 0%, transparent 65%)',
-          filter: 'blur(20px)',
+          background: 'radial-gradient(circle at 50% 40%, rgba(123,104,238,0.24) 0%, transparent 65%)',
           pointerEvents: 'none',
+          animation: 'glowPulse 4s ease-in-out infinite',
         }}
-        animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.08, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(123,104,238,0.04) 3px, rgba(123,104,238,0.04) 4px)',
@@ -217,7 +179,6 @@ function NightAvatar() {
         zIndex: 0,
       }} />
 
-      
       <div style={{
         position: 'absolute',
         top: 0, left: 0, right: 0,
@@ -239,16 +200,18 @@ function NightAvatar() {
           fontSize: '0.55rem',
           fontWeight: 700,
           letterSpacing: '0.18em',
-          color: 'rgba(123,104,238,0.6)',
+          color: 'rgba(160,150,255,0.75)',
           textTransform: 'uppercase',
         }}>muaz.dev</span>
       </div>
 
-      
-      <motion.div
-        animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'relative', zIndex: 1, marginTop: '14px' }}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          marginTop: '14px',
+          animation: 'avatarBob 4.5s ease-in-out infinite',
+        }}
       >
         <div style={{
           width: '100px', height: '100px',
@@ -262,39 +225,29 @@ function NightAvatar() {
           position: 'relative',
           overflow: 'hidden',
         }}>
-          <Image 
-            src="/assets/character/muazdp.png" 
-            alt="Abdullah Al Muaz" 
-            width={100} 
-            height={100} 
-            priority
-            className="rounded-full object-cover" 
+          <Image
+            src="/assets/character/muazdp.png"
+            alt="Abdullah Al Muaz"
+            width={100}
+            height={100}
+            sizes="(max-width: 768px) 100px, 110px"
+            preload
+            fetchPriority="high"
+            className="rounded-full object-cover"
             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
           />
 
-          
-          {[['top:4px','left:4px'],['top:4px','right:4px'],['bottom:4px','left:4px'],['bottom:4px','right:4px']].map((pos, i) => {
-            const [v, h] = pos;
-            const vKey = v.split(':')[0];
-            const hKey = h.split(':')[0];
-            return (
-              <div key={i} style={{
-                position: 'absolute',
-                [vKey]: '4px',
-                [hKey]: '4px',
-                width: '10px', height: '10px',
-                borderTop: vKey === 'top' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
-                borderBottom: vKey === 'bottom' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
-                borderLeft: hKey === 'left' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
-                borderRight: hKey === 'right' ? '1.5px solid rgba(123,104,238,0.7)' : 'none',
-                pointerEvents: 'none',
-              }} />
-            );
-          })}
+          {[
+            { top: '4px', left: '4px', borderTop: '1.5px solid rgba(123,104,238,0.7)', borderLeft: '1.5px solid rgba(123,104,238,0.7)' },
+            { top: '4px', right: '4px', borderTop: '1.5px solid rgba(123,104,238,0.7)', borderRight: '1.5px solid rgba(123,104,238,0.7)' },
+            { bottom: '4px', left: '4px', borderBottom: '1.5px solid rgba(123,104,238,0.7)', borderLeft: '1.5px solid rgba(123,104,238,0.7)' },
+            { bottom: '4px', right: '4px', borderBottom: '1.5px solid rgba(123,104,238,0.7)', borderRight: '1.5px solid rgba(123,104,238,0.7)' },
+          ].map((cornerStyle, i) => (
+            <div key={i} style={{ position: 'absolute', width: '10px', height: '10px', pointerEvents: 'none', ...cornerStyle }} />
+          ))}
         </div>
-      </motion.div>
+      </div>
 
-      
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <p style={{
           fontFamily: "var(--font-orbitron), sans-serif",
@@ -311,37 +264,33 @@ function NightAvatar() {
           fontWeight: 700,
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: 'rgba(123,104,238,0.75)',
+          color: 'rgba(160,150,255,0.85)',
           margin: '4px 0 0',
         }}>Full Stack Dev</p>
       </div>
 
-      
       <div style={{
         display: 'flex', gap: '6px',
         position: 'relative', zIndex: 1,
       }}>
         {[0, 1, 2].map((i) => (
-          <motion.div
+          <div
             key={i}
             style={{
               width: '5px', height: '5px', borderRadius: '50%',
-              background: 'rgba(123,104,238,0.7)',
+              background: 'rgba(123,104,238,0.75)',
+              animation: `previewDotPulse 1.4s ease-in-out ${i * 0.22}s infinite`,
             }}
-            animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.3, 0.8] }}
-            transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.22, ease: 'easeInOut' }}
           />
         ))}
       </div>
 
-      
-      <motion.div
+      <div
         style={{
           display: 'flex', alignItems: 'center', gap: '6px',
           position: 'relative', zIndex: 1,
+          animation: 'statusPulse 2.2s ease-in-out infinite',
         }}
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div style={{
           width: '6px', height: '6px', borderRadius: '50%',
@@ -354,15 +303,12 @@ function NightAvatar() {
           fontWeight: 700,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color: 'rgba(200,210,240,0.55)',
+          color: 'rgba(200,210,240,0.65)',
         }}>Signal: Online</span>
-      </motion.div>
+      </div>
     </div>
   );
 }
-
-
-
 
 export default function ThreeDCharacter({ theme }) {
   const isDay = theme === 'day';

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import { db } from '../lib/firebase';
@@ -71,7 +71,7 @@ function StarRating({ challengeId, currentStars, isDay }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <motion.button
+        <m.button
           type="button"
           onClick={handleStar}
           aria-label={hasStarred ? 'Already starred' : 'Star this solution'}
@@ -92,7 +92,7 @@ function StarRating({ challengeId, currentStars, isDay }) {
           }}>
             {currentStars || 0}
           </span>
-        </motion.button>
+        </m.button>
         {hasStarred && (
           <span style={{
             fontFamily: "var(--font-rajdhani), sans-serif", fontSize: '0.68rem',
@@ -180,7 +180,7 @@ function RepliesSection({ challengeId, comments = [], isDay }) {
           disabled={posting}
           style={{ flex: 1, minWidth: 0, padding: '12px 16px', borderRadius: '10px', background: isDay ? 'rgba(15,23,42,0.55)' : 'rgba(123,104,238,0.08)', border: isDay ? '1px solid rgba(196,181,253,0.45)' : '1px solid rgba(123,104,238,0.25)', color: '#f8fafc', fontSize: '0.9rem', outline: 'none' }}
         />
-        <motion.button 
+        <m.button 
           type="submit"
           disabled={posting || !replyText.trim()}
           whileHover={!posting && replyText.trim() ? { scale: 1.05 } : {}}
@@ -188,7 +188,7 @@ function RepliesSection({ challengeId, comments = [], isDay }) {
           style={{ padding: '0 20px', borderRadius: '10px', background: isDay ? '#8b5cf6' : '#7b68ee', color: '#ffffff', border: 'none', cursor: posting || !replyText.trim() ? 'not-allowed' : 'pointer', opacity: posting || !replyText.trim() ? 0.6 : 1, fontWeight: 700, fontFamily: "var(--font-orbitron)" }}
         >
           {posting ? '...' : 'POST'}
-        </motion.button>
+        </m.button>
       </form>
       {replyError && (
         <p role="alert" style={{ marginTop: '8px', fontSize: '0.78rem', color: '#fca5a5', fontFamily: "var(--font-nunito), sans-serif" }}>
@@ -205,7 +205,7 @@ function SolvedCard({ challenge, isDay, index }) {
   const cat = CATEGORIES.find(c => c.id === challenge.category);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -273,7 +273,7 @@ function SolvedCard({ challenge, isDay, index }) {
           <StarRating challengeId={challenge.id} currentStars={challenge.stars} isDay={isDay} />
         </div>
 
-        <motion.div
+        <m.div
           animate={{ rotate: expanded ? 180 : 0 }}
           transition={{ duration: 0.3 }}
           style={{
@@ -283,12 +283,12 @@ function SolvedCard({ challenge, isDay, index }) {
             color: isDay ? 'rgba(255,255,255,0.8)' : 'rgba(160,150,255,0.8)',
             fontSize: '0.9rem', flexShrink: 0,
           }}
-        >▾</motion.div>
+        >▾</m.div>
       </div>
 
       <AnimatePresence>
         {expanded && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -347,10 +347,10 @@ function SolvedCard({ challenge, isDay, index }) {
 
               <RepliesSection challengeId={challenge.id} comments={challenge.comments} isDay={isDay} />
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -456,12 +456,12 @@ function ChallengeForm({ isDay }) {
 
         
         {step === 'idle' && (
-          <motion.div key="idle"
+          <m.div key="idle"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.4 }}
             style={{ textAlign: 'center' }}
           >
-            <motion.button
+            <m.button
               onClick={() => setStep('category')}
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
               style={{
@@ -479,25 +479,25 @@ function ChallengeForm({ isDay }) {
                 position: 'relative', overflow: 'hidden',
               }}
             >
-              <motion.div
+              <div
                 style={{
                   position: 'absolute', inset: 0,
                   background: isDay
                     ? 'linear-gradient(90deg, transparent, rgba(79,70,229,0.12), transparent)'
                     : 'linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)',
+                  animation: 'ctaShimmer 4s linear infinite',
+                  pointerEvents: 'none',
                 }}
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 1.2 }}
               />
               <span style={{ fontSize: '1.2rem' }}>🎯</span>
               <span>Throw Challenge to Muaz</span>
-            </motion.button>
-          </motion.div>
+            </m.button>
+          </m.div>
         )}
 
         
         {step === 'category' && (
-          <motion.div key="category"
+          <m.div key="category"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.4 }}
           >
@@ -511,7 +511,7 @@ function ChallengeForm({ isDay }) {
             <div style={{ display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' }}>
               {CATEGORIES.map((cat, i) => (
-                <motion.button
+                <m.button
                   key={cat.id}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -539,7 +539,7 @@ function ChallengeForm({ isDay }) {
                     color: isDay ? '#cbd5e1' : 'rgba(200,210,240,0.6)',
                     lineHeight: 1.4,
                   }}>{cat.desc}</div>
-                </motion.button>
+                </m.button>
               ))}
             </div>
 
@@ -550,12 +550,12 @@ function ChallengeForm({ isDay }) {
                 color: isDay ? '#cbd5e1' : 'rgba(200,210,240,0.6)',
               }}>← Back</button>
             </div>
-          </motion.div>
+          </m.div>
         )}
 
         
         {step === 'form' && !result && (
-          <motion.div key="form"
+          <m.div key="form"
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -24 }} transition={{ duration: 0.4 }}
             style={{
@@ -627,7 +627,7 @@ function ChallengeForm({ isDay }) {
               }}>{challenge.length}/800</div>
             </div>
 
-            <motion.button
+            <m.button
               onClick={handleSubmit}
               disabled={sending || !name.trim() || !challenge.trim()}
               whileHover={!sending && name && challenge ? { scale: 1.03, y: -2 } : {}}
@@ -653,13 +653,13 @@ function ChallengeForm({ isDay }) {
                 : <><span>{isDay ? '✈️' : '🚀'}</span>
                    {isDay ? 'Send Challenge' : 'Launch Challenge'}</>
               }
-            </motion.button>
-          </motion.div>
+            </m.button>
+          </m.div>
         )}
 
         
         {result && (
-          <motion.div key="result"
+          <m.div key="result"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -695,7 +695,7 @@ function ChallengeForm({ isDay }) {
                 ? 'Your submission was blocked by Firebase security rules. Please check database permissions.'
                 : 'Something went wrong. Please try again in a moment.'}
             </p>
-            <motion.button
+            <m.button
               onClick={reset}
               whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
               style={{
@@ -711,8 +711,8 @@ function ChallengeForm({ isDay }) {
               }}
             >
               {result === 'success' ? 'Throw Another →' : 'Try Again →'}
-            </motion.button>
-          </motion.div>
+            </m.button>
+          </m.div>
         )}
       </AnimatePresence>
     </div>
@@ -800,7 +800,7 @@ export default function TestMe({ theme }) {
     }}>
       <div style={{ maxWidth: '860px', margin: '0 auto' }}>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -833,9 +833,9 @@ export default function TestMe({ theme }) {
               ? 'Think you can stump me? Throw any challenge — problem-solving, design, business, life. I solve it and post the solution right here.'
               : 'Think your problem can escape my radar? Transmit any challenge. I will decode it and broadcast the solution publicly.'}
           </p>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -843,30 +843,29 @@ export default function TestMe({ theme }) {
           style={{ marginBottom: '72px' }}
         >
           <ChallengeForm isDay={isDay} />
-        </motion.div>
+        </m.div>
 
         {loading ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0' }}>
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+            <div
               style={{
                 width: '44px', height: '44px',
                 border: isDay ? '3px solid rgba(255,255,255,0.2)' : '3px solid rgba(123,104,238,0.2)',
                 borderTopColor: isDay ? '#fff' : '#7b68ee',
-                borderRadius: '50%'
+                borderRadius: '50%',
+                animation: 'spin360 1s linear infinite',
               }}
             />
           </div>
         ) : fetchError ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
             style={{ textAlign: 'center', padding: '40px', color: isDay ? '#ff6b6b' : '#ff8787', fontFamily: "var(--font-nunito)" }}
           >
             <p>⚠️ {fetchError}</p>
-          </motion.div>
+          </m.div>
         ) : (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -922,7 +921,7 @@ export default function TestMe({ theme }) {
                 </p>
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
 
       </div>

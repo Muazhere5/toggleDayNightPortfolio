@@ -23,27 +23,28 @@
 
 import { ThemeProvider } from './ThemeContext';
 import LenisProvider     from './LenisProvider';
+import MotionProvider    from './MotionProvider';
 import './globals.css';
 import { Orbitron, Rajdhani, Nunito } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 const orbitron = Orbitron({
   subsets: ['latin'],
-  weight: ['400', '600', '700', '900'],
+  weight: ['400', '700', '900'],
   variable: '--font-orbitron',
   display: 'swap',
 });
 
 const rajdhani = Rajdhani({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['600', '700'],
   variable: '--font-rajdhani',
   display: 'swap',
 });
 
 const nunito = Nunito({
   subsets: ['latin'],
-  weight: ['300', '400', '600', '700'],
+  weight: ['400', '600', '700'],
   variable: '--font-nunito',
   display: 'swap',
 });
@@ -99,11 +100,13 @@ export default function RootLayout({ children }) {
 
       <body id="app-root">
         
-        <ThemeProvider>
-          <LenisProvider>
-            {children}
-          </LenisProvider>
-        </ThemeProvider>
+        <MotionProvider>
+          <ThemeProvider>
+            <LenisProvider>
+              {children}
+            </LenisProvider>
+          </ThemeProvider>
+        </MotionProvider>
         <Analytics />
       </body>
     </html>

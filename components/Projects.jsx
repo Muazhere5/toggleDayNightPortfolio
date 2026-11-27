@@ -22,7 +22,7 @@
 
 
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useState } from 'react';
 import {
   FaGithub, FaExternalLinkAlt,
@@ -166,25 +166,24 @@ function ProjectPreview({ project, isDay, hovered }) {
         )}
 
         
-        <motion.div
+        <m.div
           animate={{ scale: hovered ? [1,1.15,1] : 1, y: hovered ? [0,-6,0] : 0 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
           style={{ fontSize: '2.8rem', position: 'relative', zIndex: 1 }}
         >
           {project.previewIcon || '📁'}
-        </motion.div>
+        </m.div>
 
         
         <div style={{ display:'flex', gap:'5px', position:'relative', zIndex:1 }}>
           {[0,1,2].map(i => (
-            <motion.div
+            <div
               key={i}
               style={{
                 width:'5px', height:'5px', borderRadius:'50%',
                 background: isDay ? 'rgba(30,100,180,0.5)' : 'rgba(123,104,238,0.7)',
+                animation: `previewDotPulse 1.4s ease-in-out ${i * 0.2}s infinite`,
               }}
-              animate={{ opacity:[0.2,1,0.2], scale:[0.8,1.3,0.8] }}
-              transition={{ duration:1.4, repeat:Infinity, delay: i*0.2, ease:'easeInOut' }}
             />
           ))}
         </div>
@@ -291,7 +290,7 @@ function ProjectCard({ project, isDay, index }) {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
@@ -320,7 +319,7 @@ function ProjectCard({ project, isDay, index }) {
 
       
       {!isDay && hovered && (
-        <motion.div
+        <m.div
           style={{
             position: 'absolute',
             inset: '-2px',
@@ -411,7 +410,7 @@ function ProjectCard({ project, isDay, index }) {
         <div style={{ display: 'flex', gap: '12px', marginTop: 'auto' }}>
 
           
-          <motion.a
+          <m.a
             href={project.liveUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -449,11 +448,11 @@ function ProjectCard({ project, isDay, index }) {
           >
             <FaExternalLinkAlt size={11} />
             Live Demo
-          </motion.a>
+          </m.a>
 
           
           {project.githubUrl && (
-            <motion.a
+            <m.a
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -483,12 +482,12 @@ function ProjectCard({ project, isDay, index }) {
             >
               <FaGithub size={13} />
               GitHub
-            </motion.a>
+            </m.a>
           )}
 
           
           {project.githubServerUrl && (
-            <motion.a
+            <m.a
               href={project.githubServerUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -518,7 +517,7 @@ function ProjectCard({ project, isDay, index }) {
             >
               <FaGithub size={13} />
               Server
-            </motion.a>
+            </m.a>
           )}
 
         </div>
@@ -540,7 +539,7 @@ function ProjectCard({ project, isDay, index }) {
         </div>
       )}
 
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -563,7 +562,7 @@ export default function Projects({ theme }) {
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
 
         
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -617,7 +616,7 @@ export default function Projects({ theme }) {
                 : 'linear-gradient(90deg, rgba(123,104,238,0.6), transparent)',
             }} />
           </div>
-        </motion.div>
+        </m.div>
 
         
         <div style={{
@@ -637,7 +636,7 @@ export default function Projects({ theme }) {
         </div>
 
         
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -653,7 +652,7 @@ export default function Projects({ theme }) {
           }}>
             {isDay ? 'More projects flying in soon ✈' : 'More missions launching soon 🚀'}
           </p>
-          <motion.a
+          <m.a
             href="https://github.com/Muazhere5"
             target="_blank"
             rel="noopener noreferrer"
@@ -681,8 +680,8 @@ export default function Projects({ theme }) {
           >
             <FaGithub size={14} />
             View All on GitHub
-          </motion.a>
-        </motion.div>
+          </m.a>
+        </m.div>
 
       </div>
     </section>

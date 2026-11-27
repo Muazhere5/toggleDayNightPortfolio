@@ -367,24 +367,60 @@
 /* GPU-compositing hint for the fixed background panels */
 .bg-panel {
   will-change: opacity;
-  /* layout + style containment: scopes layout and style recalcs to this subtree
-     without the paint-clipping side-effect of 'strict' that would clip
-     cloud/plane/satellite animations that travel beyond the panel edge. */
   contain: layout style;
 }
 
-/* CSS-driven cloud drift — replaces Framer Motion for clouds */
-@keyframes cloudDriftCSS {
-  0%   { transform: translateX(-450px); }
-  100% { transform: translateX(110vw); }
+.bg-paused,
+.bg-paused * {
+  animation-play-state: paused !important;
 }
 
-/* CSS orbit animation for skills — replaces nested Framer Motion */
-@keyframes orbitSpin {
-  from { transform: rotate(0deg) translateX(var(--orbit-r, 100px)) rotate(0deg); }
-  to   { transform: rotate(360deg) translateX(var(--orbit-r, 100px)) rotate(-360deg); }
+/* Shared CSS ambient animations (offload infinite loops from Framer Motion JS scheduler) */
+@keyframes ctaShimmer {
+  0%   { transform: translateX(-100%); }
+  62%  { transform: translateX(100%);  }
+  100% { transform: translateX(100%);  }
 }
 
+@keyframes spin360 {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes previewDotPulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50%       { opacity: 1;   transform: scale(1.3); }
+}
+
+@keyframes avatarBob {
+  0%, 100% { transform: translateY(0px);   }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.85; }
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1;    }
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(8px); }
+}
+
+@keyframes miniCloudFloat {
+  0%, 100% { transform: translate(0px, 0px);  }
+  50%       { transform: translate(4px, -8px); }
+}
+
+@keyframes orbitStarSpin {
+  from { transform: rotate(0deg)   translateX(var(--orbit-r, 150px)); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-r, 150px)); }
+}
 
 @media (max-width: 768px) {
   .section {
@@ -399,11 +435,24 @@
     padding: 9px 22px;
     font-size: 0.88rem;
   }
+
+  .glass-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
 }
 
 @media (max-width: 480px) {
   .section {
     padding: 40px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
