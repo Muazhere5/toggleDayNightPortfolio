@@ -4,11 +4,6 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 
 // ─── Star generation (deterministic seeded random, SSR-safe) ─────────────────
-// PERF FIX: Reduced from 220 → 120 stars.
-// Stars are grouped into 3 CSS animation classes (slow/mid/fast).
-// Instead of per-element animationDelay inline styles (which force 220
-// individual browser style recalculations), we use a single CSS variable
-// --delay on each circle. This is resolved once and never recalculated.
 function generateStars(count, seed = 42) {
   const stars = [];
   let s = seed;
@@ -20,7 +15,7 @@ function generateStars(count, seed = 42) {
     stars.push({
       id: i,
       x: rand() * 100,
-      y: rand() * 130,
+      y: rand() * 100,
       r: rand() * 1.6 + 0.3,
       group: Math.floor(rand() * 3),   // 0=slow 1=mid 2=fast
       delay: rand() * 6,
@@ -89,9 +84,6 @@ const PlanetSmall = ({ r = 16, color = 'rgba(80,180,160,0.5)' }) => (
 );
 
 // ─── CSS string injected once ─────────────────────────────────────────────────
-// PERF FIX: All nebula and shooting-star animations moved from Framer Motion
-// to CSS @keyframes. This removes ~9 Framer animation instances from the
-// JS scheduler, moving them to the GPU compositor thread.
 const NIGHT_CSS = `
   @keyframes twinkle-slow {
     0%, 100% { opacity: var(--star-max, 1);    }
@@ -109,7 +101,6 @@ const NIGHT_CSS = `
   .star-mid  { animation: twinkle-mid  2.8s ease-in-out infinite; }
   .star-fast { animation: twinkle-fast 1.8s ease-in-out infinite; }
 
-  /* Nebula blobs — CSS replaces Framer Motion NebulaBlob component */
   @keyframes nebulaGlowAnim {
     0%, 100% { opacity: 0.06; transform: scale(1);    }
     50%       { opacity: 0.15; transform: scale(1.08); }
@@ -121,12 +112,13 @@ const NIGHT_CSS = `
     filter: blur(60px);
   }
 
-  /* Shooting stars — CSS replaces Framer ShootingStar component */
+  /* Shooting stars — idle pause is baked into the 3%–100% range so they never freeze */
   @keyframes shoot {
-    0%   { opacity: 0; transform: translateX(0) translateY(0)   scaleX(0);   }
-    8%   { opacity: 1; }
-    70%  { opacity: 1; }
-    100% { opacity: 0; transform: translateX(-160px) translateY(90px) scaleX(1); }
+    0%   { opacity: 0; transform: rotate(-35deg) translateX(0) scaleX(0); }
+    0.4% { opacity: 1; }
+    2.2% { opacity: 1; }
+    3%   { opacity: 0; transform: rotate(-35deg) translateX(-190px) scaleX(1); }
+    100% { opacity: 0; transform: rotate(-35deg) translateX(-190px) scaleX(0); }
   }
   .shooting-star {
     position: absolute;
@@ -134,12 +126,14 @@ const NIGHT_CSS = `
     height: 2px;
     border-radius: 999px;
     background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 100%);
-    transform: rotate(-35deg);
     transform-origin: right center;
-    animation: shoot ease-out infinite;
+    animation-name: shoot;
+    animation-timing-function: ease-out;
+    animation-iteration-count: infinite;
+    animation-fill-mode: both;
   }
 
-  /* Satellite cross-screen drift — CSS replaces Framer Motion */
+  /* Satellite cross-screen drift */
   @keyframes satelliteLTR {
     from { transform: translateX(-80px);  }
     to   { transform: translateX(110vw);  }
@@ -159,7 +153,6 @@ const NIGHT_CSS = `
 const GROUP_CLASS = ['star-slow', 'star-mid', 'star-fast'];
 
 export default function NightBackground() {
-  // 120 stars (down from 220) — memoised so they never regenerate on re-render
   const stars = useMemo(() => generateStars(120), []);
 
   return (
@@ -185,7 +178,7 @@ export default function NightBackground() {
 
       {/* ── Stars ─────────────────────────────────────────────────────────── */}
       <svg
-        width="100%" height="130%"
+        width="100%" height="100%"
         style={{ position: 'absolute', top: 0, left: 0 }}
         preserveAspectRatio="none"
       >
@@ -200,7 +193,7 @@ export default function NightBackground() {
             style={{
               '--star-max': brightness,
               '--star-min': brightness * 0.15,
-              animationDelay: `${delay}s`,
+              animationDelay: `${-delay}s`,
             }}
           />
         ))}
@@ -216,19 +209,19 @@ export default function NightBackground() {
           style={{ animationDuration: '8s',  animationDelay: '0s'  }} />
         <ellipse className="nebula-ellipse night-mobile-hidden" cx="80%" cy="15%" rx="220" ry="150"
           fill="rgba(80,140,255,0.09)"
-          style={{ animationDuration: '10s', animationDelay: '2s'  }} />
+          style={{ animationDuration: '10s', animationDelay: '-2s'  }} />
         <ellipse className="nebula-ellipse" cx="60%" cy="55%" rx="300" ry="200"
           fill="rgba(160,80,220,0.08)"
-          style={{ animationDuration: '12s', animationDelay: '4s'  }} />
+          style={{ animationDuration: '12s', animationDelay: '-4s'  }} />
         <ellipse className="nebula-ellipse night-mobile-hidden" cx="20%" cy="75%" rx="250" ry="160"
           fill="rgba(50,200,180,0.07)"
-          style={{ animationDuration: '9s',  animationDelay: '1s'  }} />
+          style={{ animationDuration: '9s',  animationDelay: '-1s'  }} />
         <ellipse className="nebula-ellipse" cx="90%" cy="80%" rx="200" ry="140"
           fill="rgba(123,104,238,0.10)"
-          style={{ animationDuration: '11s', animationDelay: '3s'  }} />
+          style={{ animationDuration: '11s', animationDelay: '-3s'  }} />
       </svg>
 
-      {/* ── Ringed planet — 1 Framer float (lightweight) ─────────────────── */}
+      {/* ── Ringed planet — 1 Framer float ───────────────────────────────── */}
       <motion.div
         style={{ position: 'absolute', top: '6%', right: '5%', pointerEvents: 'none' }}
         animate={{ y: [0, -15, 0], rotate: [0, 2, 0] }}
@@ -237,7 +230,7 @@ export default function NightBackground() {
         <PlanetRinged r={38} />
       </motion.div>
 
-      {/* ── Small planets — Framer floats (lightweight) ───────────────────── */}
+      {/* ── Small planets — Framer floats ────────────────────────────────── */}
       <motion.div
         style={{ position: 'absolute', top: '40%', left: '2%', pointerEvents: 'none' }}
         animate={{ y: [0, -20, 0] }}
@@ -254,7 +247,7 @@ export default function NightBackground() {
         <PlanetSmall r={14} color="rgba(220,120,80,0.45)" />
       </motion.div>
 
-      {/* ── Rocket — 1 Framer float (lightweight) ────────────────────────── */}
+      {/* ── Rocket — 1 Framer float ──────────────────────────────────────── */}
       <motion.div
         style={{ position: 'absolute', top: '15%', right: '10%', pointerEvents: 'none' }}
         animate={{ y: [0, -30, 0], rotate: [8, 12, 8] }}
@@ -263,11 +256,6 @@ export default function NightBackground() {
         <Rocket />
       </motion.div>
 
-      {/*
-        PERF FIX: Satellites now use pure CSS animation instead of nested
-        Framer Motion (which used 2 motion.div instances per satellite = 4 total).
-        CSS animations run on the compositor thread — no JS scheduler cost.
-      */}
       {/* Satellite LTR */}
       <div
         className="night-mobile-hidden"
@@ -275,7 +263,7 @@ export default function NightBackground() {
           position: 'absolute',
           top: '25%',
           pointerEvents: 'none',
-          animation: 'satelliteLTR 90s linear 5s infinite',
+          animation: 'satelliteLTR 90s linear -5s infinite both',
         }}
       >
         <div style={{ animation: 'satRotateCW 20s linear infinite' }}>
@@ -290,7 +278,7 @@ export default function NightBackground() {
           position: 'absolute',
           top: '60%',
           pointerEvents: 'none',
-          animation: 'satelliteRTL 75s linear 25s infinite',
+          animation: 'satelliteRTL 75s linear -25s infinite both',
         }}
       >
         <div style={{ animation: 'satRotateCCW 16s linear infinite' }}>
@@ -298,17 +286,13 @@ export default function NightBackground() {
         </div>
       </div>
 
-      {/*
-        PERF FIX: Shooting stars converted from Framer multi-keyframe animation
-        to pure CSS @keyframes. Each gets a unique animation-delay and
-        animation-duration via inline style — resolved once, never recalculated.
-      */}
+      {/* Shooting stars — pause baked into total cycle duration */}
       {[
-        { top: '12%', delay:  3, duration:  1.2, repeatDelay: 39 },
-        { top: '28%', delay:  9, duration:  1.0, repeatDelay: 45 },
-        { top: '55%', delay: 18, duration:  1.3, repeatDelay: 57 },
-        { top: '72%', delay: 28, duration:  1.1, repeatDelay: 56 },
-      ].map(({ top, delay, duration, repeatDelay }, i) => (
+        { top: '12%', delay:  3, duration: 40 },
+        { top: '28%', delay: 14, duration: 46 },
+        { top: '55%', delay: 27, duration: 58 },
+        { top: '72%', delay: 39, duration: 57 },
+      ].map(({ top, delay, duration }, i) => (
         <div
           key={`shoot-${i}`}
           className="shooting-star night-mobile-hidden"
@@ -316,11 +300,7 @@ export default function NightBackground() {
             top,
             left: '75%',
             animationDuration: `${duration}s`,
-            // CSS can't express repeatDelay natively, so we embed the pause
-            // inside the keyframe by extending total duration
-            animationDelay: `${delay}s`,
-            // total period = duration + repeatDelay approximated via long duration
-            animationIterationCount: 'infinite',
+            animationDelay: `${-delay}s`,
           }}
         />
       ))}

@@ -30,19 +30,25 @@ import {
 import {
   SiReact, SiNodedotjs, SiMongodb,
   SiExpress, SiNextdotjs, SiTailwindcss,
-  SiJavascript, SiHtml5,
+  SiJavascript, SiHtml5, SiDaisyui, SiFirebase,
 } from 'react-icons/si';
 
 
 const TAG_ICONS = {
-  'React':      <SiReact />,
-  'Next.js':    <SiNextdotjs />,
-  'Node.js':    <SiNodedotjs />,
-  'MongoDB':    <SiMongodb />,
-  'Express':    <SiExpress />,
-  'Tailwind':   <SiTailwindcss />,
-  'JavaScript': <SiJavascript />,
-  'HTML/CSS':   <SiHtml5 />,
+  'React':              <SiReact />,
+  'Next.js':            <SiNextdotjs />,
+  'Node.js':            <SiNodedotjs />,
+  'MongoDB':            <SiMongodb />,
+  'MongoDB Atlas':      <SiMongodb />,
+  'Express':            <SiExpress />,
+  'Tailwind':           <SiTailwindcss />,
+  'Tailwind CSS':       <SiTailwindcss />,
+  'DaisyUI':            <SiDaisyui />,
+  'Firebase Auth':      <SiFirebase />,
+  'Firebase Admin SDK': <SiFirebase />,
+  'JavaScript':         <SiJavascript />,
+  'JavaScript (ES6)':   <SiJavascript />,
+  'HTML/CSS':           <SiHtml5 />,
 };
 
 
@@ -54,7 +60,7 @@ const PROJECTS = [
     title: 'StyleDecor',
     subtitle: 'Smart Home & Ceremony Decoration Booking Platform',
     description:
-      'A full-stack service marketplace that digitizes how local decoration businesses operate — replacing manual bookings and guesswork with real-time scheduling, secure payments, and live progress tracking. Customers browse services, book consultations, and watch their event come together status-by-status, while admins and decorators manage assignments through dedicated role-based dashboards. (Admin Login: james_cosmo@gameofthron.com / 7654321)',
+      'A full-stack service marketplace that digitizes how local decoration businesses operate — replacing manual bookings and guesswork with real-time scheduling, secure payments, and live progress tracking. Customers browse services, book consultations, and watch their event come together status-by-status, while admins and decorators manage assignments through dedicated role-based dashboards.',
     tags: ['React', 'Vite', 'Node.js', 'Express', 'MongoDB', 'Firebase Auth', 'JWT', 'Stripe', 'Tailwind CSS', 'DaisyUI', 'Framer Motion'],
     previewIcon: '🎉',
     previewLabel: 'Book it. Track it. Celebrate it.',
@@ -268,7 +274,7 @@ function ProjectCard({ project, isDay, index }) {
     borderRadius: '20px',
     overflow: 'visible',
     background: isDay
-      ? 'rgba(255,255,255,0.48)'
+      ? 'rgba(255,255,255,0.68)'
       : 'rgba(8,8,24,0.72)',
     border: isDay
       ? '1.5px solid rgba(255,255,255,0.75)'
@@ -341,7 +347,7 @@ function ProjectCard({ project, isDay, index }) {
           fontWeight: 700,
           letterSpacing: '0.2em',
           textTransform: 'uppercase',
-          color: isDay ? 'rgba(46,134,193,0.9)' : 'rgba(123,104,238,0.85)',
+          color: isDay ? '#1d72b4' : 'rgba(123,104,238,0.85)',
           marginBottom: '5px',
         }}>
           {project.subtitle}
@@ -352,11 +358,11 @@ function ProjectCard({ project, isDay, index }) {
           fontFamily: "var(--font-orbitron), sans-serif",
           fontSize: '1.18rem',
           fontWeight: 700,
-          color: isDay ? '#1e293b' : '#E8E8F0',
+          color: isDay ? '#0f172a' : '#E8E8F0',
           marginBottom: '10px',
           letterSpacing: '0.03em',
           textShadow: isDay
-            ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 12px rgba(46,134,193,0.3)'
+            ? '0 1px 10px rgba(255,255,255,0.6)'
             : '0 2px 12px rgba(123,104,238,0.4)',
         }}>
           {project.title}
@@ -367,7 +373,7 @@ function ProjectCard({ project, isDay, index }) {
           fontFamily: "var(--font-nunito), sans-serif",
           fontSize: '0.9rem',
           lineHeight: 1.6,
-          color: isDay ? 'rgba(255,255,255,0.8)' : 'rgba(200,210,240,0.72)',
+          color: isDay ? '#334155' : 'rgba(200,210,240,0.78)',
           marginBottom: '16px',
         }}>
           {project.description}
@@ -388,14 +394,14 @@ function ProjectCard({ project, isDay, index }) {
               padding: '4px 12px',
               borderRadius: '20px',
               background: isDay
-                ? 'rgba(46,134,193,0.12)'
+                ? 'rgba(29,114,180,0.12)'
                 : 'rgba(123,104,238,0.12)',
-              color: isDay ? 'rgba(30,100,160,0.95)' : 'rgba(170,160,255,0.9)',
+              color: isDay ? '#0f4c81' : 'rgba(170,160,255,0.9)',
               border: isDay
-                ? '1px solid rgba(46,134,193,0.25)'
+                ? '1px solid rgba(29,114,180,0.28)'
                 : '1px solid rgba(123,104,238,0.28)',
             }}>
-              <span style={{ fontSize: '0.75rem' }}>{TAG_ICONS[tag]}</span>
+              {TAG_ICONS[tag] && <span style={{ fontSize: '0.75rem' }}>{TAG_ICONS[tag]}</span>}
               {tag}
             </span>
           ))}
@@ -426,17 +432,17 @@ function ProjectCard({ project, isDay, index }) {
               textTransform: 'uppercase',
               textDecoration: 'none',
               background: isDay
-                ? 'rgba(255,255,255,0.85)'
+                ? '#1d72b4'
                 : 'rgba(123,104,238,0.18)',
-              color: isDay ? '#2E86C1' : '#c8c0ff',
+              color: isDay ? '#ffffff' : '#c8c0ff',
               border: isDay
-                ? '1.5px solid rgba(255,255,255,0.9)'
+                ? '1.5px solid #1d72b4'
                 : '1.5px solid rgba(123,104,238,0.45)',
               backdropFilter: 'blur(8px)',
               transition: 'background 0.3s, box-shadow 0.3s',
               boxShadow: hovered
                 ? isDay
-                  ? '0 4px 16px rgba(46,134,193,0.25)'
+                  ? '0 4px 16px rgba(29,114,180,0.28)'
                   : '0 4px 16px rgba(123,104,238,0.3)'
                 : 'none',
             }}
@@ -467,10 +473,10 @@ function ProjectCard({ project, isDay, index }) {
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 textDecoration: 'none',
-                background: 'transparent',
-                color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.8)',
+                background: isDay ? 'rgba(255,255,255,0.82)' : 'transparent',
+                color: isDay ? '#1d72b4' : 'rgba(200,210,240,0.85)',
                 border: isDay
-                  ? '1.5px solid rgba(255,255,255,0.55)'
+                  ? '1.5px solid rgba(29,114,180,0.45)'
                   : '1.5px solid rgba(200,210,240,0.2)',
                 transition: 'background 0.3s, border 0.3s',
               }}
@@ -502,10 +508,10 @@ function ProjectCard({ project, isDay, index }) {
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
                 textDecoration: 'none',
-                background: 'transparent',
-                color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.8)',
+                background: isDay ? 'rgba(255,255,255,0.82)' : 'transparent',
+                color: isDay ? '#1d72b4' : 'rgba(200,210,240,0.85)',
                 border: isDay
-                  ? '1.5px solid rgba(255,255,255,0.55)'
+                  ? '1.5px solid rgba(29,114,180,0.45)'
                   : '1.5px solid rgba(200,210,240,0.2)',
                 transition: 'background 0.3s, border 0.3s',
               }}
@@ -571,7 +577,7 @@ export default function Projects({ theme }) {
             fontWeight: 700,
             letterSpacing: '0.28em',
             textTransform: 'uppercase',
-            color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(123,104,238,0.8)',
+            color: isDay ? '#0f172a' : 'rgba(123,104,238,0.8)',
             marginBottom: '10px',
           }}>
             {isDay ? '✈ Things I Built' : '🛸 Missions Completed'}
@@ -582,10 +588,10 @@ export default function Projects({ theme }) {
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
-            color: isDay ? '#1e293b' : '#E8E8F0',
+            color: isDay ? '#0f172a' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
+              ? '0 2px 18px rgba(255,255,255,0.6)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>
@@ -641,7 +647,8 @@ export default function Projects({ theme }) {
           <p style={{
             fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '0.92rem',
-            color: isDay ? 'rgba(255,255,255,0.65)' : 'rgba(200,210,240,0.5)',
+            fontWeight: 600,
+            color: isDay ? '#1e293b' : 'rgba(200,210,240,0.55)',
             marginBottom: '16px',
           }}>
             {isDay ? 'More projects flying in soon ✈' : 'More missions launching soon 🚀'}
@@ -664,11 +671,11 @@ export default function Projects({ theme }) {
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               textDecoration: 'none',
-              color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.75)',
+              color: isDay ? '#0f172a' : 'rgba(200,210,240,0.8)',
               border: isDay
-                ? '1.5px solid rgba(255,255,255,0.4)'
+                ? '1.5px solid rgba(29,114,180,0.45)'
                 : '1.5px solid rgba(200,210,240,0.2)',
-              background: 'transparent',
+              background: isDay ? 'rgba(255,255,255,0.78)' : 'transparent',
               backdropFilter: 'blur(8px)',
             }}
           >

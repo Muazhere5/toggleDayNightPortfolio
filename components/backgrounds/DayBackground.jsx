@@ -139,7 +139,7 @@ const HotAirBalloon = () => (
   </motion.div>
 );
 
-// ─── Aircraft SVGs (static, no animation — they're wrapped in CSS animated divs)
+// ─── Aircraft SVGs (static, no animation — wrapped in CSS animated divs) ───────
 const BirdShape = ({ x, y, scale = 1 }) => (
   <g transform={`translate(${x},${y}) scale(${scale})`}>
     <path d="M0,0 Q-8,-5 -14,0" stroke="rgba(60,80,100,0.7)" strokeWidth="1.8" fill="none" strokeLinecap="round" />
@@ -172,9 +172,6 @@ const PrivatePlane = () => (
 );
 
 // ─── CSS-animated cloud data ──────────────────────────────────────────────────
-// PERF FIX: Reduced from 9 to 5 clouds (odd-indexed ones removed matching the
-// original mobile-hidden pattern). All moved to pure CSS @keyframes animation
-// which runs on the GPU compositor — zero Framer Motion JS scheduler cost.
 const clouds = [
   { id: 'c1', Type: CloudLarge,  top: '6%',  duration: 62, delay: 0,  opacity: 0.88 },
   { id: 'c3', Type: CloudLarge,  top: '22%', duration: 70, delay: 18, opacity: 0.72 },
@@ -192,7 +189,7 @@ const birdFlocks = [
 const planes = [
   { id: 'p1', top: '4%',  type: 'fighter', duration: 48, delay: 10, direction:  1 },
   { id: 'p2', top: '18%', type: 'private', duration: 72, delay: 35, direction: -1 },
-  { id: 'p3', top: '8%',  type: 'fighter', duration: 55, delay: 55, direction:  1 },
+  { id: 'p3', top: '8%',  type: 'fighter', duration: 55, delay: 25, direction:  1 },
 ];
 
 // CSS for all the moving elements — runs on compositor thread, not JS thread
@@ -265,20 +262,11 @@ export default function DayBackground() {
         pointerEvents: 'none',
       }} />
 
-      {/* Sun — 1 Framer pulse (lightweight, acceptable) */}
       <Sun />
-
-      {/* Kite — 1 Framer float (lightweight, acceptable) */}
       <Kite />
-
-      {/* Hot Air Balloon — 1 Framer float (lightweight, acceptable) */}
       <HotAirBalloon />
 
-      {/*
-        PERF FIX: Clouds now use pure CSS animation instead of Framer Motion.
-        `animation-fill-mode: forwards` + `animation-iteration-count: infinite`
-        keeps the loop running entirely on the GPU compositor thread.
-      */}
+      {/* Clouds — pure CSS animation with negative delay + both fill mode */}
       {clouds.map(({ id, Type, top, duration, delay, opacity }) => (
         <div
           key={id}
@@ -288,7 +276,7 @@ export default function DayBackground() {
             pointerEvents: 'none',
             animationName: 'cloudMove',
             animationDuration: `${duration}s`,
-            animationDelay: `${-delay}s`,   // negative delay = instant start mid-cycle
+            animationDelay: `${-delay}s`,
             animationTimingFunction: 'linear',
             animationIterationCount: 'infinite',
             animationFillMode: 'both',
@@ -298,7 +286,7 @@ export default function DayBackground() {
         </div>
       ))}
 
-      {/* Birds — CSS animated */}
+      {/* Birds — CSS animated with negative delay + both fill mode */}
       {birdFlocks.map(({ id, top, duration, delay, scale }) => (
         <div
           key={id}
@@ -309,9 +297,10 @@ export default function DayBackground() {
             pointerEvents: 'none',
             animationName: 'birdMove',
             animationDuration: `${duration}s`,
-            animationDelay: `${delay}s`,
+            animationDelay: `${-delay}s`,
             animationTimingFunction: 'linear',
             animationIterationCount: 'infinite',
+            animationFillMode: 'both',
           }}
         >
           <svg width="100" height="40" viewBox="0 0 100 40" fill="none">
@@ -324,7 +313,7 @@ export default function DayBackground() {
         </div>
       ))}
 
-      {/* Planes — CSS animated */}
+      {/* Planes — CSS animated with negative delay + both fill mode */}
       {planes.map(({ id, top, type, duration, delay, direction }) => (
         <div
           key={id}
@@ -335,9 +324,10 @@ export default function DayBackground() {
             pointerEvents: 'none',
             animationName: direction > 0 ? 'planeMoveLTR' : 'planeMoveRTL',
             animationDuration: `${duration}s`,
-            animationDelay: `${delay}s`,
+            animationDelay: `${-delay}s`,
             animationTimingFunction: 'linear',
             animationIterationCount: 'infinite',
+            animationFillMode: 'both',
           }}
         >
           {type === 'fighter'
@@ -347,7 +337,7 @@ export default function DayBackground() {
         </div>
       ))}
 
-      {/* Light streaks — CSS animated */}
+      {/* Light streaks — CSS animated with negative delay + both fill mode */}
       {[18, 38, 62, 82].map((top, i) => (
         <div
           key={`streak-${i}`}
@@ -362,9 +352,10 @@ export default function DayBackground() {
             width: `${80 + i * 30}px`,
             animationName: 'streakMove',
             animationDuration: `${25 + i * 8}s`,
-            animationDelay: `${i * 7 + 3}s`,
+            animationDelay: `${-(i * 7 + 3)}s`,
             animationTimingFunction: 'linear',
             animationIterationCount: 'infinite',
+            animationFillMode: 'both',
           }}
         />
       ))}

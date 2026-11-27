@@ -24,86 +24,95 @@
 import {
   createContext,
   useContext,
-  useState,
   useEffect,
   useCallback,
   useMemo,
+  useSyncExternalStore,
 } from 'react';
 
 
 const ThemeContext = createContext({
-  theme: 'day',
+  theme: 'night',
   toggleTheme: () => {},
 });
+
+const themeListeners = new Set();
+
+function subscribeTheme(callback) {
+  themeListeners.add(callback);
+  const onStorage = (e) => {
+    if (e.key === 'portfolio-theme') callback();
+  };
+  window.addEventListener('storage', onStorage);
+  return () => {
+    themeListeners.delete(callback);
+    window.removeEventListener('storage', onStorage);
+  };
+}
+
+function getThemeSnapshot() {
+  try {
+    return window.localStorage.getItem('portfolio-theme') === 'day' ? 'day' : 'night';
+  } catch {
+    return 'night';
+  }
+}
+
+function getThemeServerSnapshot() {
+  return 'night';
+}
 
 
 
 
 export function ThemeProvider({ children }) {
-  
-  
-  
-  const [theme, setTheme] = useState('night');
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
 
-  
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem('portfolio-theme');
-      if (saved === 'day' || saved === 'night') {
-        
-        setTheme(saved);
-      }
-    } catch {
-      
-    }
-  }, []); 
-
-  
-  
-  
+  // Sync DOM root class whenever theme changes (never writes to localStorage on mount)
   useEffect(() => {
     const html = document.documentElement;
     html.classList.remove('day-mode', 'night-mode');
     html.classList.add(theme === 'day' ? 'day-mode' : 'night-mode');
-
-    try {
-      window.localStorage.setItem('portfolio-theme', theme);
-    } catch {
-      
-    }
   }, [theme]);
 
-  
-  
-  
-  
-  
   // Remove the no-transitions class that the inline script set on page load.
-  // A 200ms timeout covers the hydration gap; the readyState guard ensures
-  // it fires even if the component mounts before DOMContentLoaded completes.
   useEffect(() => {
     const remove = () => document.documentElement.classList.remove('no-transitions');
+    let innerTimer = null;
 
     if (document.readyState === 'loading') {
-      // Document still loading — wait for it, then remove with a small buffer
-      const onReady = () => { setTimeout(remove, 100); };
+      const onReady = () => {
+        innerTimer = setTimeout(remove, 100);
+      };
       document.addEventListener('DOMContentLoaded', onReady, { once: true });
-      // Belt-and-suspenders: also set a fallback timer
-      const timer = setTimeout(remove, 300);
+      const fallbackTimer = setTimeout(remove, 300);
       return () => {
         document.removeEventListener('DOMContentLoaded', onReady);
-        clearTimeout(timer);
+        clearTimeout(fallbackTimer);
+        if (innerTimer) clearTimeout(innerTimer);
       };
     } else {
-      // Document already interactive or complete
       const timer = setTimeout(remove, 150);
       return () => clearTimeout(timer);
     }
-  }, []); // runs once on mount
+  }, []);
 
-  
   const toggleTheme = useCallback(() => {
-    setTheme((prev) => (prev === 'day' ? 'night' : 'day'));
+    const current = getThemeSnapshot();
+    const next = current === 'day' ? 'night' : 'day';
+    try {
+      window.localStorage.setItem('portfolio-theme', next);
+    } catch {
+      // Ignore storage errors in restricted environments
+    }
+    const html = document.documentElement;
+    html.classList.remove('day-mode', 'night-mode');
+    html.classList.add(next === 'day' ? 'day-mode' : 'night-mode');
+    themeListeners.forEach((listener) => listener());
   }, []);
 
   

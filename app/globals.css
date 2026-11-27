@@ -3,8 +3,10 @@
 
 
 
+@import "tailwindcss";
+
 .day-mode {
-  
+  background-color: #e6f4f8;
   --bg-primary: #e6f4f8;
   --bg-gradient: linear-gradient(180deg, #1d72b4 0%, #4ea8de 25%, #87CEEB 60%, #b8e4f7 85%, #d5f0ff 100%);
   --bg-card: rgba(255, 255, 255, 0.82);
@@ -97,57 +99,48 @@
 }
 
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-html {
-  /* scroll-behavior is handled by Lenis — removed to prevent conflict */
-  font-size: 16px;
-}
+  html {
+    /* scroll-behavior is handled by Lenis — removed to prevent conflict */
+    font-size: 16px;
+  }
 
-body {
-  font-family: var(--font-nunito), sans-serif;
-  font-weight: 400;
-  line-height: 1.6;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  min-height: 100vh;
-}
+  body {
+    font-family: var(--font-nunito), sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color 0.8s ease, color 0.55s ease;
+  }
 
-h1, h2, h3 {
-  font-family: var(--font-orbitron), sans-serif;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-}
+  h1, h2, h3 {
+    font-family: var(--font-orbitron), sans-serif;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+  }
 
-h4, h5, h6, label, .label {
-  font-family: var(--font-rajdhani), sans-serif;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
+  h4, h5, h6, label, .label {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
 
-p, span, li {
-  font-family: var(--font-nunito), sans-serif;
-  color: var(--text-secondary);
-}
-
-
-/*
-  PERF FIX: Removed the blanket 'body *' transition rule.
-  It was forcing the browser to recalculate transitions on every single DOM
-  node during theme toggles, causing massive layout/paint thrashing.
-  Transitions are now applied only to specific, targeted elements.
-  body gets a single targeted transition here — not duplicated above.
-*/
-body {
-  transition: background 0.8s ease, color 0.55s ease;
+  p, span, li {
+    font-family: var(--font-nunito), sans-serif;
+    color: var(--text-secondary);
+  }
 }
 
 /* Only the elements that visibly change on theme toggle get transitions */

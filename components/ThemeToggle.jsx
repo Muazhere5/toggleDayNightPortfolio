@@ -25,7 +25,7 @@
 
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { useTheme } from '@/app/ThemeContext';
 
 const SunIcon = () => (
@@ -104,6 +104,25 @@ const Burst = ({ isDay }) => (
 
 
 
+const calibrationListeners = new Set();
+
+function subscribeCalibration(callback) {
+  calibrationListeners.add(callback);
+  return () => calibrationListeners.delete(callback);
+}
+
+function getCalibrationSnapshot() {
+  try {
+    return window.localStorage.getItem('hasCalibratedTheme') === 'true';
+  } catch {
+    return true;
+  }
+}
+
+function getCalibrationServerSnapshot() {
+  return true;
+}
+
 export default function ThemeToggle() {
 
   const { theme, toggleTheme } = useTheme();
@@ -113,49 +132,64 @@ export default function ThemeToggle() {
   
   
   const [showNudge, setShowNudge] = useState(false);
-  const [hasCalibratedTheme, setHasCalibratedTheme] = useState(true); 
+  const hasCalibratedTheme = useSyncExternalStore(
+    subscribeCalibration,
+    getCalibrationSnapshot,
+    getCalibrationServerSnapshot
+  );
+  const timersRef = useRef([]);
+  const nudgeVisibleRef = useRef(false);
+
+  const clearToggleTimers = () => {
+    timersRef.current.forEach((id) => clearTimeout(id));
+    timersRef.current = [];
+  };
 
   useEffect(() => {
-    
-    const calibrated = localStorage.getItem('hasCalibratedTheme') === 'true';
-    setHasCalibratedTheme(calibrated);
-    
-    if (calibrated) return;
+    if (hasCalibratedTheme) return;
 
     const handleScroll = () => {
-      
-      if (window.scrollY > 300) {
-        setShowNudge(true);
-      } else {
-        setShowNudge(false);
+      const shouldShow = window.scrollY > 300;
+      if (shouldShow !== nudgeVisibleRef.current) {
+        nudgeVisibleRef.current = shouldShow;
+        setShowNudge(shouldShow);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [hasCalibratedTheme]);
+
+  useEffect(() => clearToggleTimers, []);
 
   
   const handleToggle = () => {
     // Dismiss nudge
     if (!hasCalibratedTheme || showNudge) {
+      nudgeVisibleRef.current = false;
       setShowNudge(false);
-      setHasCalibratedTheme(true);
-      localStorage.setItem('hasCalibratedTheme', 'true');
+      try {
+        window.localStorage.setItem('hasCalibratedTheme', 'true');
+      } catch {
+        // Ignore storage errors
+      }
+      calibrationListeners.forEach((listener) => listener());
     }
 
-    // Burst animation
+    clearToggleTimers();
     setBursting(false);
+
     const t1 = setTimeout(() => {
       setBursting(true);
       toggleTheme();
       const t2 = setTimeout(() => setBursting(false), 600);
-      return () => clearTimeout(t2);
+      timersRef.current.push(t2);
     }, 10);
-    return () => clearTimeout(t1);
+    timersRef.current.push(t1);
   };
 
   return (

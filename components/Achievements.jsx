@@ -86,11 +86,11 @@ const ACHIEVEMENTS = [
 
 
 const TYPE_CONFIG = {
-  education: { label: 'Education', dayColor: 'rgba(100,160,220,0.8)',  nightColor: 'rgba(100,160,255,0.8)' },
-  project:   { label: 'Project',   dayColor: 'rgba(255,165,50,0.85)',  nightColor: 'rgba(255,180,80,0.8)'  },
-  skill:     { label: 'Skill',     dayColor: 'rgba(80,190,130,0.85)',  nightColor: 'rgba(80,220,160,0.8)'  },
-  personal:  { label: 'Personal',  dayColor: 'rgba(220,100,180,0.85)', nightColor: 'rgba(230,130,200,0.8)' },
-  award:     { label: 'Award',     dayColor: 'rgba(255,215,0,0.9)',    nightColor: 'rgba(255,215,0,0.85)'  },
+  education: { label: 'Education', dayRgb: '29,114,180',  nightRgb: '100,160,255', dayText: '#155e96', dayColor: 'rgba(29,114,180,0.85)',  nightColor: 'rgba(100,160,255,0.85)' },
+  project:   { label: 'Project',   dayRgb: '217,119,6',   nightRgb: '255,180,80',  dayText: '#b45309', dayColor: 'rgba(217,119,6,0.85)',   nightColor: 'rgba(255,180,80,0.85)'  },
+  skill:     { label: 'Skill',     dayRgb: '22,163,74',   nightRgb: '80,220,160',  dayText: '#15803d', dayColor: 'rgba(22,163,74,0.85)',   nightColor: 'rgba(80,220,160,0.85)'  },
+  personal:  { label: 'Personal',  dayRgb: '190,24,93',   nightRgb: '230,130,200', dayText: '#9d174d', dayColor: 'rgba(190,24,93,0.85)',   nightColor: 'rgba(230,130,200,0.85)' },
+  award:     { label: 'Award',     dayRgb: '202,138,4',   nightRgb: '255,215,0',   dayText: '#a16207', dayColor: 'rgba(202,138,4,0.9)',    nightColor: 'rgba(255,215,0,0.85)'   },
 };
 
 
@@ -181,9 +181,9 @@ function CloudBannerCard({ achievement, index }) {
               textTransform: 'uppercase',
               padding: '2px 9px',
               borderRadius: '20px',
-              background: `${typeConf.dayColor}22`,
-              color: typeConf.dayColor.replace('0.8', '1').replace('0.85', '1'),
-              border: `1px solid ${typeConf.dayColor}`,
+              background: `rgba(${typeConf.dayRgb}, 0.14)`,
+              color: typeConf.dayText,
+              border: `1px solid rgba(${typeConf.dayRgb}, 0.45)`,
             }}>
               {typeConf.label}
             </span>
@@ -360,7 +360,7 @@ function StarMapAchievements() {
                 
                 <motion.circle
                   cx={pos.x} cy={pos.y} r={isActive ? 4.5 : 3}
-                  fill={typeConf.nightColor.replace('0.8', '0.12')}
+                  fill={`rgba(${typeConf.nightRgb}, 0.14)`}
                   animate={{ opacity: isActive ? [0.4, 0.9, 0.4] : [0.2, 0.5, 0.2] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 />
@@ -422,7 +422,9 @@ function StarMapAchievements() {
 
       
       <AnimatePresence mode="wait">
-        {activeAchievement && (
+        {activeAchievement && (() => {
+          const activeConf = TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal;
+          return (
           <motion.div
             key={activeAchievement.id}
             initial={{ opacity: 0, y: 20 }}
@@ -433,9 +435,9 @@ function StarMapAchievements() {
               padding: '22px 24px',
               borderRadius: '16px',
               background: 'rgba(6,6,20,0.8)',
-              border: `1.5px solid ${(TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).nightColor}44`,
+              border: `1.5px solid rgba(${activeConf.nightRgb}, 0.35)`,
               backdropFilter: 'blur(16px)',
-              boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 24px ${(TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).nightColor}18`,
+              boxShadow: `0 8px 32px rgba(0,0,0,0.5), 0 0 24px rgba(${activeConf.nightRgb}, 0.14)`,
             }}
           >
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
@@ -450,11 +452,11 @@ function StarMapAchievements() {
                     textTransform: 'uppercase',
                     padding: '2px 9px',
                     borderRadius: '20px',
-                    background: `${(TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).nightColor}18`,
-                    color: (TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).nightColor,
-                    border: `1px solid ${(TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).nightColor}55`,
+                    background: `rgba(${activeConf.nightRgb}, 0.14)`,
+                    color: activeConf.nightColor,
+                    border: `1px solid rgba(${activeConf.nightRgb}, 0.4)`,
                   }}>
-                    {(TYPE_CONFIG[activeAchievement.type] || TYPE_CONFIG.personal).label}
+                    {activeConf.label}
                   </span>
                   {activeAchievement.highlight && (
                     <span style={{
@@ -496,7 +498,8 @@ function StarMapAchievements() {
               </div>
             </div>
           </motion.div>
-        )}
+          );
+        })()}
       </AnimatePresence>
 
       
@@ -568,7 +571,7 @@ export default function Achievements({ theme }) {
             fontWeight: 700,
             letterSpacing: '0.28em',
             textTransform: 'uppercase',
-            color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(123,104,238,0.8)',
+            color: isDay ? '#0f172a' : 'rgba(123,104,238,0.8)',
             marginBottom: '10px',
           }}>
             {isDay ? '☁️ Hall of Clouds' : '★ Star Map'}
@@ -578,10 +581,10 @@ export default function Achievements({ theme }) {
             fontFamily: "var(--font-orbitron), sans-serif",
             fontSize: 'clamp(1.8rem, 4.5vw, 2.8rem)',
             fontWeight: 900,
-            color: isDay ? '#1e293b' : '#E8E8F0',
+            color: isDay ? '#0f172a' : '#E8E8F0',
             letterSpacing: '0.04em',
             textShadow: isDay
-              ? '0px 1px 3px rgba(0,0,0,0.6), 0 2px 24px rgba(46,134,193,0.4)'
+              ? '0 2px 18px rgba(255,255,255,0.6)'
               : '0 2px 24px rgba(123,104,238,0.5)',
             marginBottom: '16px',
           }}>
@@ -591,7 +594,8 @@ export default function Achievements({ theme }) {
           <p style={{
             fontFamily: "var(--font-nunito), sans-serif",
             fontSize: '1rem',
-            color: isDay ? 'rgba(255,255,255,0.72)' : 'rgba(200,210,240,0.62)',
+            fontWeight: 600,
+            color: isDay ? '#1e293b' : 'rgba(200,210,240,0.62)',
             maxWidth: '460px',
             margin: '0 auto',
             lineHeight: 1.6,
@@ -627,10 +631,10 @@ export default function Achievements({ theme }) {
           <p style={{
             fontFamily: "var(--font-rajdhani), sans-serif",
             fontSize: '0.8rem',
-            fontWeight: 600,
+            fontWeight: 700,
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            color: isDay ? 'rgba(255,255,255,0.45)' : 'rgba(200,210,240,0.35)',
+            color: isDay ? '#334155' : 'rgba(200,210,240,0.45)',
           }}>
             {isDay ? '— More clouds forming soon ☁️ —' : '— More stars being charted ★ —'}
           </p>

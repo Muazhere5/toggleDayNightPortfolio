@@ -6,11 +6,11 @@ import { useTheme } from './ThemeContext';
 // ─── Fixed backgrounds: client-only, no SSR ─────────────────────────────────
 // Loaded once, both stay in DOM — theme visibility controlled via CSS opacity.
 // This ELIMINATES the AnimatePresence dual-background compositor overload.
-const DayBackground = dynamic(() => import('./DayVision/page'), {
+const DayBackground = dynamic(() => import('@/components/backgrounds/DayBackground'), {
   ssr: false,
   loading: () => null,
 });
-const NightBackground = dynamic(() => import('./NightVision/page'), {
+const NightBackground = dynamic(() => import('@/components/backgrounds/NightBackground'), {
   ssr: false,
   loading: () => null,
 });

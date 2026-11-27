@@ -112,9 +112,10 @@ const ScrollIndicator = ({ isDay }) => (
     <span style={{
       fontFamily: "var(--font-rajdhani), sans-serif",
       fontSize: '0.68rem',
+      fontWeight: 700,
       letterSpacing: '0.18em',
       textTransform: 'uppercase',
-      color: isDay ? 'rgba(255,255,255,0.7)' : 'rgba(200,210,240,0.6)',
+      color: isDay ? '#0f172a' : 'rgba(200,210,240,0.75)',
     }}>
       {isDay ? 'Explore Below' : 'Begin Mission'}
     </span>
@@ -125,9 +126,9 @@ const ScrollIndicator = ({ isDay }) => (
     >
       {isDay ? (
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-          <path d="M11 2 L20 11 L11 8 L2 11 Z" fill="rgba(255,255,255,0.85)" />
-          <path d="M11 8 L11 20" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5" strokeLinecap="round" />
-          <path d="M7 16 L11 20 L15 16" stroke="rgba(255,255,255,0.85)" strokeWidth="1.5"
+          <path d="M11 2 L20 11 L11 8 L2 11 Z" fill="#0f172a" />
+          <path d="M11 8 L11 20" stroke="#0f172a" strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M7 16 L11 20 L15 16" stroke="#0f172a" strokeWidth="1.5"
             strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
       ) : (
@@ -264,12 +265,13 @@ export default function Landing({ theme }) {
     padding: '5px 14px',
     borderRadius: '20px',
     background: isDay
-      ? 'rgba(255,255,255,0.22)'
+      ? 'rgba(255,255,255,0.78)'
       : 'rgba(123,104,238,0.15)',
-    color: isDay ? 'rgba(255,255,255,0.95)' : 'rgba(180,170,255,0.9)',
+    color: isDay ? '#0f172a' : 'rgba(180,170,255,0.95)',
     border: isDay
-      ? '1px solid rgba(255,255,255,0.45)'
+      ? '1px solid rgba(29,114,180,0.28)'
       : '1px solid rgba(123,104,238,0.35)',
+    boxShadow: isDay ? '0 2px 8px rgba(29,114,180,0.1)' : 'none',
     backdropFilter: 'blur(6px)',
   };
 
@@ -282,12 +284,12 @@ export default function Landing({ theme }) {
     padding: '14px 36px',
     borderRadius: '50px',
     border: isDay
-      ? '2px solid rgba(255,255,255,0.85)'
+      ? '2px solid rgba(29,114,180,0.45)'
       : '2px solid rgba(123,104,238,0.6)',
     background: isDay
-      ? 'rgba(255,255,255,0.18)'
+      ? 'rgba(255,255,255,0.82)'
       : 'rgba(123,104,238,0.12)',
-    color: isDay ? '#1e293b' : '#c8c0ff',
+    color: isDay ? '#0f172a' : '#c8c0ff',
     cursor: 'pointer',
     backdropFilter: 'blur(10px)',
     display: 'flex',
@@ -331,12 +333,11 @@ export default function Landing({ theme }) {
             <motion.p style={{
               fontFamily: "var(--font-rajdhani), sans-serif",
               fontSize: '1.05rem',
-              fontWeight: 600,
+              fontWeight: 700,
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
-              color: isDay ? 'rgba(255,255,255,0.85)' : 'rgba(200,210,240,0.75)',
-              WebkitTextStroke: isDay ? '0.5px rgba(0,0,0,0.4)' : 'none',
-              textShadow: isDay ? '0px 1px 3px rgba(0,0,0,0.5)' : 'none',
+              color: isDay ? '#0f172a' : 'rgba(200,210,240,0.85)',
+              textShadow: isDay ? '0 1px 10px rgba(255,255,255,0.6)' : 'none',
             }} {...fadeLeft(0.3)}>
               {isDay ? '✈ Welcome to my sky' : '🛸 Incoming transmission'}
             </motion.p>
@@ -347,9 +348,8 @@ export default function Landing({ theme }) {
                 fontFamily: "var(--font-nunito), sans-serif",
                 fontSize: 'clamp(1.1rem, 3vw, 1.4rem)',
                 fontWeight: 700,
-                color: isDay ? 'rgba(255,255,255,0.9)' : 'rgba(200,210,240,0.85)',
-                WebkitTextStroke: isDay ? '0.5px rgba(0,0,0,0.4)' : 'none',
-                textShadow: isDay ? '0px 1px 3px rgba(0,0,0,0.5)' : 'none',
+                color: isDay ? '#0f172a' : 'rgba(200,210,240,0.9)',
+                textShadow: isDay ? '0 1px 10px rgba(255,255,255,0.6)' : 'none',
               }}>
                 Hey there! I&apos;m 👋
               </span>
@@ -361,9 +361,9 @@ export default function Landing({ theme }) {
               fontSize: 'clamp(2.4rem, 6vw, 3.8rem)',
               fontWeight: 900,
               lineHeight: 1.05,
-              color: isDay ? '#1e293b' : '#E8E8F0',
+              color: isDay ? '#0f172a' : '#E8E8F0',
               textShadow: isDay
-                ? '0px 1px 3px rgba(0,0,0,0.7), 0 2px 20px rgba(46,134,193,0.5), 0 0 40px rgba(255,255,255,0.3)'
+                ? '0 2px 18px rgba(255,255,255,0.65), 0 4px 24px rgba(29,114,180,0.25)'
                 : '0 2px 20px rgba(123,104,238,0.6), 0 0 40px rgba(123,104,238,0.2)',
               letterSpacing: '0.04em',
             }} {...fadeLeft(0.6)}>
@@ -375,9 +375,10 @@ export default function Landing({ theme }) {
             <motion.p style={{
               fontFamily: "var(--font-nunito), sans-serif",
               fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)',
-              fontWeight: 600,
-              color: isDay ? 'rgba(255,255,255,0.82)' : 'rgba(200,210,240,0.78)',
-              lineHeight: 1.5,
+              fontWeight: 700,
+              color: isDay ? '#1e293b' : 'rgba(200,210,240,0.82)',
+              textShadow: isDay ? '0 1px 12px rgba(255,255,255,0.75)' : 'none',
+              lineHeight: 1.55,
               maxWidth: '360px',
             }} {...fadeUp(1.0)}>
               {isDay

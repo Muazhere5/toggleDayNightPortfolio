@@ -77,7 +77,7 @@ function DayAvatar() {
         <div style={{
           width: '110px', height: '110px',
           borderRadius: '50%',
-          background: 'radial-gradient(135deg at 35% 35%, #FFF9E6 0%, #FFD580 45%, #FF9F00 100%)',
+          background: 'radial-gradient(circle at 35% 35%, #FFF9E6 0%, #FFD580 45%, #FF9F00 100%)',
           border: '3px solid rgba(255,255,255,0.85)',
           boxShadow: '0 0 0 6px rgba(255,215,0,0.18), 0 8px 32px rgba(255,160,0,0.3)',
           display: 'flex',
@@ -253,7 +253,7 @@ function NightAvatar() {
         <div style={{
           width: '100px', height: '100px',
           borderRadius: '50%',
-          background: 'radial-gradient(135deg at 35% 35%, rgba(123,104,238,0.6) 0%, rgba(30,10,80,0.9) 100%)',
+          background: 'radial-gradient(circle at 35% 35%, rgba(123,104,238,0.6) 0%, rgba(30,10,80,0.9) 100%)',
           border: '2px solid rgba(123,104,238,0.6)',
           boxShadow: '0 0 0 5px rgba(123,104,238,0.1), 0 0 30px rgba(123,104,238,0.35)',
           display: 'flex',
